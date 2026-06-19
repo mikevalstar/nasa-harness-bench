@@ -1,0 +1,204 @@
+---
+const base = import.meta.env.BASE_URL; // "/" locally, sub-path on GitHub Pages
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NASA Harness Bench</title>
+    <link rel="stylesheet" href={`${base}styles/global.css`} />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <h1>NASA Harness Bench</h1>
+          <div class="sub">1-shot harness + model results</div>
+        </div>
+        <nav class="nav" id="nav">
+          <div class="nav-section">About</div>
+          <a class="item" href="#/intro" data-route="intro">Introduction &amp; Methodology</a>
+          <div class="nav-section">Results</div>
+          <div id="nav-benches"><div class="empty">Loading…</div></div>
+        </nav>
+        <div class="sidebar-foot" id="nav-foot">—</div>
+      </aside>
+
+      <main class="main">
+        <!-- Intro view -->
+        <section class="doc" id="view-intro">
+          <h1>NASA Harness Bench</h1>
+          <p>
+            A small, transparent benchmark that gives a coding
+            <b>harness + model</b> combination a single
+            <b>1-shot prompt</b> and a fixed NASA dataset, then displays exactly
+            what it produced.
+          </p>
+
+          <h2>Methodology</h2>
+          <ol>
+            <li>Every run starts from the identical prompt in <code>bench/PLAN.md</code> and a read-only copy of <code>bench/data/</code>.</li>
+            <li>A fresh bench instance is created <b>outside this repo</b> so we can watch whether the harness wanders the filesystem.</li>
+            <li>The harness gets <b>one shot</b> — no follow-up clarification.</li>
+            <li>Its output is required to build with <code>pnpm build</code> into a static <code>dist/</code>.</li>
+            <li>We collect the run verbatim — the <b>complete source tree it wrote</b> (under <code>output/</code>) <i>and</i> its compiled site (<code>output/dist/</code>) — link the data back to the one canonical copy, and grade a handful of fields by hand.</li>
+          </ol>
+          <p style="color:var(--muted);font-size:13px">
+            Both the source and the compiled output are kept, so you can read what
+            the harness actually produced, not just the rendered result.
+          </p>
+
+          <h2>What's measured</h2>
+          <p>Each result records (some automatic, some hand-graded):</p>
+          <pre><code>harness · model · effort · createdAt
+broken · cheated · buildSucceeded
+tokenUsage · estimatedCostUsd · timeTakenSeconds
+tags · summary · free-form notes · raw run log</code></pre>
+
+          <h2>How to read a result</h2>
+          <p>
+            Pick a run on the left. The header shows its metadata; below it, the
+            harness's compiled site is embedded live in an <code>&lt;iframe&gt;</code>.
+            The links open the raw notes, run log, metadata, and (once the repo is
+            public) the full source the harness wrote, on GitHub.
+          </p>
+
+          <p style="color:var(--muted);font-size:13px;margin-top:32px">
+            ⚠ Placeholder phase — the concrete NASA task and dataset are not yet
+            designed. The pipeline and site are scaffolded so the shape can be
+            reviewed first.
+          </p>
+        </section>
+
+        <!-- Bench view -->
+        <section id="view-bench" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+          <header class="bench-head" id="bench-head"></header>
+          <div class="viewer" id="viewer"></div>
+        </section>
+      </main>
+    </div>
+
+    <script define:vars={{ base }}>
+      // Normalise base to always end with a single slash.
+      const BASE = base.endsWith("/") ? base : base + "/";
+
+      // The repo's GitHub URL (no trailing slash). When set, each result links to
+      // its source folder on GitHub so people can explore it.
+      const REPO_URL = "https://github.com/mikevalstar/nasa-harness-bench";
+      const sourceLink = (slug) =>
+        REPO_URL ? `${REPO_URL}/tree/main/results/${slug}/output` : "";
+      const $ = (id) => document.getElementById(id);
+      let DATA = { benches: [] };
+
+      function fmtNum(n) {
+        return n == null ? "—" : new Intl.NumberFormat().format(n);
+      }
+      function boolBadge(label, val) {
+        // val: true / false / null(unknown). For "broken"/"cheated", true is bad.
+        if (val == null) return `<span class="badge muted">${label}: ?</span>`;
+        const cls = val ? "bad" : "good";
+        return `<span class="badge ${cls}">${label}: ${val ? "yes" : "no"}</span>`;
+      }
+
+      function renderNav(activeSlug) {
+        const box = $("nav-benches");
+        if (!DATA.benches.length) {
+          box.innerHTML = `<div class="empty">No results yet.</div>`;
+          return;
+        }
+        box.innerHTML = DATA.benches
+          .map(
+            (b) => `<a class="item ${b.slug === activeSlug ? "active" : ""}"
+                 href="#/bench/${b.slug}">
+                ${b.harness || "?"} · ${b.model || "?"}
+                <span class="meta">${b.effort || "?"} · ${(b.createdAt || "").slice(0, 10)}</span>
+              </a>`,
+          )
+          .join("");
+        // Toggle active state on the intro link.
+        document
+          .querySelector('[data-route="intro"]')
+          .classList.toggle("active", !activeSlug);
+      }
+
+      function renderBench(slug) {
+        const b = DATA.benches.find((x) => x.slug === slug);
+        $("view-intro").style.display = "none";
+        $("view-bench").style.display = "flex";
+        if (!b) {
+          $("bench-head").innerHTML = `<div class="title">Unknown result: ${slug}</div>`;
+          $("viewer").innerHTML = "";
+          return;
+        }
+
+        const tu = b.tokenUsage || {};
+        $("bench-head").innerHTML = `
+          <div class="title">${b.slug}</div>
+          <div class="facts">
+            <span class="fact">harness <b>${b.harness || "?"}${b.harnessVersion && b.harnessVersion !== "unknown" ? " " + b.harnessVersion : ""}</b></span>
+            <span class="fact">model <b>${b.model || "?"}</b></span>
+            <span class="fact">effort <b>${b.effort || "?"}</b></span>
+            <span class="fact">run <b>${b.createdAt ? b.createdAt.replace("T", " ").replace("Z", " UTC") : "?"}</b></span>
+            ${boolBadge("broken", b.broken)}
+            ${boolBadge("cheated", b.cheated)}
+            <span class="badge ${b.buildSucceeded === false ? "bad" : b.buildSucceeded ? "good" : "muted"}">build: ${b.buildSucceeded == null ? "?" : b.buildSucceeded ? "ok" : "fail"}</span>
+          </div>
+          <div class="facts" style="margin-top:8px">
+            <span class="fact">tokens <b>${fmtNum(tu.total)}</b></span>
+            <span class="fact">cost <b>${b.estimatedCostUsd == null ? "—" : "$" + b.estimatedCostUsd}</b></span>
+            <span class="fact">time <b>${b.timeTakenSeconds == null ? "—" : b.timeTakenSeconds + "s"}</b></span>
+            ${b.summary ? `<span class="fact">${b.summary}</span>` : ""}
+          </div>
+          <div class="bench-links">
+            ${b.hasNotes ? `<a href="${BASE}results/${b.slug}/notes.md" target="_blank">notes.md ↗</a>` : ""}
+            ${b.hasRunlog ? `<a href="${BASE}results/${b.slug}/runlog.txt" target="_blank">runlog.txt ↗</a>` : ""}
+            <a href="${BASE}results/${b.slug}/metadata.json" target="_blank">metadata.json ↗</a>
+            ${sourceLink(b.slug) ? `<a href="${sourceLink(b.slug)}" target="_blank">source on GitHub ↗</a>` : ""}
+          </div>`;
+
+        if (b.hasDist) {
+          $("viewer").innerHTML =
+            `<iframe src="${BASE}results/${b.slug}/output/dist/index.html" title="${b.slug} output"></iframe>`;
+        } else {
+          $("viewer").innerHTML =
+            `<div class="placeholder">No compiled <code>output/dist/</code> for this run yet.</div>`;
+        }
+      }
+
+      function showIntro() {
+        $("view-bench").style.display = "none";
+        $("view-intro").style.display = "block";
+        renderNav(null);
+      }
+
+      function route() {
+        const h = location.hash;
+        const m = h.match(/^#\/bench\/(.+)$/);
+        if (m) {
+          renderNav(m[1]);
+          renderBench(m[1]);
+        } else {
+          showIntro();
+        }
+      }
+
+      window.addEventListener("hashchange", route);
+
+      fetch(`${BASE}results/all.json`)
+        .then((r) => (r.ok ? r.json() : { benches: [] }))
+        .catch(() => ({ benches: [] }))
+        .then((d) => {
+          DATA = d && Array.isArray(d.benches) ? d : { benches: [] };
+          const count =
+            `${DATA.benches.length} result(s)` +
+            (DATA.generatedAt ? ` · ${DATA.generatedAt.slice(0, 10)}` : "");
+          $("nav-foot").innerHTML =
+            count +
+            (REPO_URL ? `<br><a href="${REPO_URL}" target="_blank">source on GitHub ↗</a>` : "");
+          route();
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "nasa-harness-bench",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A 1-shot benchmark of harness + model combos, and a static site to display the results.",
+  "scripts": {
+    "dev": "pnpm run sync && astro dev",
+    "sync": "node scripts/sync-results.mjs",
+    "prebuild": "pnpm run sync",
+    "build": "astro build",
+    "preview": "astro preview",
+    "compile": "node scripts/compile.mjs"
+  },
+  "devDependencies": {
+    "astro": "^6.4.8"
+  }
+}

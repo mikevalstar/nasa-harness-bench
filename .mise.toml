@@ -1,0 +1,11 @@
+# Tool versions for this repo. Run `mise install` to set everything up.
+# https://mise.jdx.dev
+[tools]
+node = "26"
+pnpm = "11"
+# gum powers the interactive prompts in scripts/*.sh
+gum = "latest"
+
+[env]
+# Make pnpm-installed binaries available on PATH within the project.
+_.path = ["node_modules/.bin"]

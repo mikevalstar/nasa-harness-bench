@@ -1,0 +1,13 @@
+# dependencies
+node_modules/
+
+# Astro build output (deployed to GitHub Pages via CI)
+dist/
+.astro/
+
+# prebuild artifact: a symlink-resolved copy of results/ for the build
+public/results/
+
+# OS / editor
+.DS_Store
+*.log

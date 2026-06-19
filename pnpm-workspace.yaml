@@ -1,0 +1,9 @@
+# Allow the dependency install scripts the bundler needs. esbuild is required;
+# sharp is only used for image optimization (none here) but allowing it avoids
+# the ignored-build warning that otherwise fails pnpm's pre-run deps check.
+allowBuilds:
+  esbuild: true
+  sharp: true
+
+# Don't re-run install before every `pnpm <script>`.
+verifyDepsBeforeRun: false

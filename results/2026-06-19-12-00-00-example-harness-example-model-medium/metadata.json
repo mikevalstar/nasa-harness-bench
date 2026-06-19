@@ -1,0 +1,20 @@
+{
+  "slug": "2026-06-19-12-00-00-example-harness-example-model-medium",
+  "harness": "example-harness",
+  "harnessVersion": "0.0.0",
+  "model": "example-model",
+  "effort": "medium",
+  "createdAt": "2026-06-19T12:00:00Z",
+  "collectedAt": "2026-06-19T12:00:00Z",
+  "benchPath": "/path/outside/this/repo/2026-06-19-12-00-00-example-harness-example-model-medium",
+
+  "_comment": "PLACEHOLDER example. Fields below are graded BY HAND. null = not yet filled.",
+  "broken": null,
+  "cheated": null,
+  "buildSucceeded": null,
+  "tokenUsage": { "input": null, "output": null, "total": null },
+  "estimatedCostUsd": null,
+  "timeTakenSeconds": null,
+  "tags": ["placeholder"],
+  "summary": "Placeholder example so the layout can be reviewed before the real benchmark exists."
+}
