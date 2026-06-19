@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-19T20:41:56.150Z",
+  "generatedAt": "2026-06-19T20:58:01.168Z",
   "count": 1,
   "rubric": {
     "scale": {
@@ -159,36 +159,36 @@
       "timeTakenSeconds": 1008,
       "tags": [],
       "summary": "",
-      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Below: builds/loads + integrity are verified; the rest await a visual grade.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score computed by pnpm compile.",
       "grade": {
         "runs": {
           "builds": "pass",
           "loads": "pass",
-          "noConsoleErrors": null
+          "noConsoleErrors": "good"
         },
         "correctness": {
-          "solarSystem": null,
-          "planets": null,
-          "asteroids": null,
-          "computedPositions": null,
-          "orbitsCorrect": null,
-          "timeAnimation": null
+          "solarSystem": "pass",
+          "planets": "pass",
+          "asteroids": "pass",
+          "computedPositions": "pass",
+          "orbitsCorrect": "good",
+          "timeAnimation": "pass"
         },
         "usability": {
-          "camera": null,
-          "scale": null,
-          "legible": null,
-          "noUiIssues": null
+          "camera": "good",
+          "scale": "pass",
+          "legible": "good",
+          "noUiIssues": "partial"
         },
         "features": {
-          "filterSearch": null,
-          "investigate": null,
-          "highlight": null,
-          "scaleRisk": null,
-          "comets": null,
-          "impactRisk": null,
-          "focusFollow": null,
-          "deepLinks": null
+          "filterSearch": "pass",
+          "investigate": "pass",
+          "highlight": "pass",
+          "scaleRisk": "pass",
+          "comets": "partial",
+          "impactRisk": "pass",
+          "focusFollow": "fail",
+          "deepLinks": "pass"
         },
         "integrity": {
           "dataUntouched": true,
@@ -197,13 +197,13 @@
         }
       },
       "scoring": {
-        "status": "ungraded",
-        "score": null,
+        "status": "graded",
+        "score": 86,
         "categoryScores": {
-          "runs": 100,
-          "correctness": null,
-          "usability": null,
-          "features": null
+          "runs": 92,
+          "correctness": 96,
+          "usability": 75,
+          "features": 81
         },
         "integrityPassed": true,
         "voided": false

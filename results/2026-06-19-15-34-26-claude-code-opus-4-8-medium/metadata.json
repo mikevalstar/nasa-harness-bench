@@ -18,12 +18,12 @@
   "tags": [],
   "summary": "",
 
-  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Below: builds/loads + integrity are verified; the rest await a visual grade.",
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score computed by pnpm compile.",
   "grade": {
-    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": null },
-    "correctness": { "solarSystem": null, "planets": null, "asteroids": null, "computedPositions": null, "orbitsCorrect": null, "timeAnimation": null },
-    "usability": { "camera": null, "scale": null, "legible": null, "noUiIssues": null },
-    "features": { "filterSearch": null, "investigate": null, "highlight": null, "scaleRisk": null, "comets": null, "impactRisk": null, "focusFollow": null, "deepLinks": null },
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "good" },
+    "correctness": { "solarSystem": "pass", "planets": "pass", "asteroids": "pass", "computedPositions": "pass", "orbitsCorrect": "good", "timeAnimation": "pass" },
+    "usability": { "camera": "good", "scale": "pass", "legible": "good", "noUiIssues": "partial" },
+    "features": { "filterSearch": "pass", "investigate": "pass", "highlight": "pass", "scaleRisk": "pass", "comets": "partial", "impactRisk": "pass", "focusFollow": "fail", "deepLinks": "pass" },
     "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
   }
 }
