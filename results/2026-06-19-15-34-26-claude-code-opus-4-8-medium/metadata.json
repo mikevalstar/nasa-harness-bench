@@ -1,0 +1,20 @@
+{
+  "slug": "2026-06-19-15-34-26-claude-code-opus-4-8-medium",
+  "harness": "claude-code",
+  "harnessVersion": "2.1.183",
+  "model": "opus-4-8",
+  "effort": "medium",
+  "createdAt": "2026-06-19T19:34:34Z",
+  "collectedAt": "2026-06-19T19:55:46Z",
+  "benchPath": "/Users/mvalstar/projects/nasa-claude-opus-4.8-med/2026-06-19-15-34-26-claude-code-opus-4-8-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": { "input": 18588, "output": 193671, "cacheCreation": 236993, "cacheRead": 9509602, "total": 9958854 },
+  "estimatedCostUsd": 12.06,
+  "timeTakenSeconds": 1008,
+  "tags": [],
+  "summary": ""
+}

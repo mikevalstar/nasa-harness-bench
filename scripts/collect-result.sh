@@ -35,11 +35,16 @@ mkdir -p "$DEST/output"
 # --- copy source, excluding heavy/irrelevant dirs and the data folder ----------
 EXCLUDES=(node_modules .git .DS_Store)
 if command -v rsync >/dev/null 2>&1; then
-  args=(); for e in "${EXCLUDES[@]}" data; do args+=(--exclude "$e"); done
+  args=(); for e in "${EXCLUDES[@]}"; do args+=(--exclude "$e"); done
+  # Anchor the data exclude to the transfer root (leading slash) so we drop ONLY
+  # the top-level data/ (replaced by a symlink below) and KEEP the harness's own
+  # self-contained copy at dist/data, which the rendered site needs.
+  args+=(--exclude "/data")
   rsync -a "${args[@]}" "$BENCH_DIR"/ "$DEST/output"/
 else
   cp -R "$BENCH_DIR"/ "$DEST/output"/
-  for e in "${EXCLUDES[@]}" data; do rm -rf "$DEST/output/$e"; done
+  for e in "${EXCLUDES[@]}"; do rm -rf "$DEST/output/$e"; done
+  rm -rf "$DEST/output/data" # top-level only; leaves dist/data intact
 fi
 info "Copied source -> output/"
 

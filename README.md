@@ -5,9 +5,11 @@ a single **1-shot prompt** and a fixed NASA dataset, then publishes exactly what
 it produced. The site is static HTML; each result's compiled output is shown live
 in an `<iframe>`.
 
-> **Status: placeholder phase.** The concrete NASA task and dataset are not yet
-> designed. The whole pipeline and site are scaffolded with clearly-marked
-> `TODO`/`PLACEHOLDER` content so the shape can be reviewed first.
+> **Status: task defined, pre-test-run.** The task (`bench/PLAN.md`) and dataset
+> (`bench/data/`) are in place: build an interactive 3D visualization of the
+> inner solar system and its ~42,000 near-Earth asteroids from a fixed NASA/JPL
+> snapshot. The `results/` folder still holds a placeholder example until the
+> first real run is collected.
 
 ## How it works
 
@@ -15,6 +17,13 @@ in an `<iframe>`.
 bench/                     # the benchmark itself (source of truth)
   PLAN.md                  #   the 1-shot prompt given to every harness
   data/                    #   the canonical, read-only input dataset (one copy)
+    asteroids.json         #     ~42k NEOs, orbital + physical elements
+    close-approaches.json  #     ~50k Earth close-approach events
+    comets.json            #     ~4k comets (optional overlay)
+    sentry.json            #     ~2.2k CNEOS impact-risk objects (optional overlay)
+    planets.json           #     8 planets' orbital elements + radii
+    provenance.json        #     sources, query URLs, retrieval time
+    README.md              #     data schema, units, frame, conventions
 
 benches/                   # registry: a JSON note per created bench instance
 
@@ -53,7 +62,7 @@ Prompts (via `gum`) for harness / model / effort, then creates
 `benches/<slug>.json`. **Keep the directory outside this repo** — that's how we
 watch whether the harness wanders the filesystem.
 
-Then point the harness at that directory with `PLAN.md` as its only instruction.
+Then point the harness at that directory with `PLAN.md` as its only instruction. "Implement the PLAN.md"
 
 ### 2. Collect the finished result
 
@@ -85,7 +94,23 @@ pnpm build          # -> dist/  (deploy this)
 
 `prebuild`/`sync` copy `results/` into `public/results/` **dereferencing
 symlinks** (GitHub Pages won't follow them), so the deployed site's runtime
-`fetch`es resolve.
+`fetch`es resolve. Data is only baked for runs that have a compiled
+`output/dist/` (others have nothing to render). The repo itself stores the data
+**once** in `bench/data/`; each result's `output/data/` is a symlink to it.
+
+## The dataset
+
+A fixed NASA/JPL snapshot, committed so every harness gets identical input. It is
+regenerated only when we deliberately re-snapshot:
+
+```sh
+node scripts/fetch-data.mjs      # asteroids.json + close-approaches.json (bulk JPL APIs)
+node scripts/build-planets.mjs   # planets.json from static J2000 elements
+```
+
+`fetch-data.mjs` makes a small number of **bulk** calls (no per-object fan-out,
+no API key, no rate-limit risk). See `bench/data/README.md` for the schema and
+`bench/data/provenance.json` for exact sources and query URLs.
 
 ## Deploying to GitHub Pages
 

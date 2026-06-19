@@ -1,32 +1,32 @@
 {
-  "generatedAt": "2026-06-19T19:05:47.141Z",
+  "generatedAt": "2026-06-19T20:05:24.190Z",
   "count": 1,
   "benches": [
     {
-      "slug": "2026-06-19-12-00-00-example-harness-example-model-medium",
-      "harness": "example-harness",
-      "harnessVersion": "0.0.0",
-      "model": "example-model",
+      "slug": "2026-06-19-15-34-26-claude-code-opus-4-8-medium",
+      "harness": "claude-code",
+      "harnessVersion": "2.1.183",
+      "model": "opus-4-8",
       "effort": "medium",
-      "createdAt": "2026-06-19T12:00:00Z",
-      "collectedAt": "2026-06-19T12:00:00Z",
-      "benchPath": "/path/outside/this/repo/2026-06-19-12-00-00-example-harness-example-model-medium",
-      "_comment": "PLACEHOLDER example. Fields below are graded BY HAND. null = not yet filled.",
-      "broken": null,
-      "cheated": null,
-      "buildSucceeded": null,
+      "createdAt": "2026-06-19T19:34:34Z",
+      "collectedAt": "2026-06-19T19:55:46Z",
+      "benchPath": "/Users/mvalstar/projects/nasa-claude-opus-4.8-med/2026-06-19-15-34-26-claude-code-opus-4-8-medium",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": false,
+      "cheated": false,
+      "buildSucceeded": true,
       "tokenUsage": {
-        "input": null,
-        "output": null,
-        "total": null
+        "input": 18588,
+        "output": 193671,
+        "cacheCreation": 236993,
+        "cacheRead": 9509602,
+        "total": 9958854
       },
-      "estimatedCostUsd": null,
-      "timeTakenSeconds": null,
-      "tags": [
-        "placeholder"
-      ],
-      "summary": "Placeholder example so the layout can be reviewed before the real benchmark exists.",
-      "hasDist": false,
+      "estimatedCostUsd": 12.06,
+      "timeTakenSeconds": 1008,
+      "tags": [],
+      "summary": "",
+      "hasDist": true,
       "hasNotes": true,
       "hasRunlog": true
     }

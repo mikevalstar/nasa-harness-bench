@@ -2,7 +2,7 @@
 node_modules/
 
 # Astro build output (deployed to GitHub Pages via CI)
-dist/
+/dist/
 .astro/
 
 # prebuild artifact: a symlink-resolved copy of results/ for the build
