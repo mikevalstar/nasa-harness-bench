@@ -1,0 +1,55 @@
+{
+  "scale": { "pass": 1, "good": 0.75, "partial": 0.5, "poor": 0.25, "fail": 0 },
+  "categories": [
+    {
+      "key": "runs",
+      "label": "Runs",
+      "criteria": [
+        { "key": "builds", "label": "pnpm install && build succeeds" },
+        { "key": "loads", "label": "dist/ loads without a fatal error" },
+        { "key": "noConsoleErrors", "label": "no console errors in normal use" }
+      ]
+    },
+    {
+      "key": "correctness",
+      "label": "Base correctness",
+      "criteria": [
+        { "key": "solarSystem", "label": "3D solar system renders" },
+        { "key": "planets", "label": "the 8 planets are present" },
+        { "key": "asteroids", "label": "NEO asteroids rendered from the data" },
+        { "key": "computedPositions", "label": "positions computed from elements (not fabricated)" },
+        { "key": "orbitsCorrect", "label": "orbits geometrically correct" },
+        { "key": "timeAnimation", "label": "time advances / bodies move" }
+      ]
+    },
+    {
+      "key": "usability",
+      "label": "Usability",
+      "criteria": [
+        { "key": "camera", "label": "camera control (orbit / zoom / pan)" },
+        { "key": "scale", "label": "conveys a sense of scale" },
+        { "key": "legible", "label": "legible & intentional presentation" },
+        { "key": "noUiIssues", "label": "free of visual defects (overlap, misalignment, inconsistent icons)" }
+      ]
+    },
+    {
+      "key": "features",
+      "label": "Features",
+      "criteria": [
+        { "key": "filterSearch", "label": "filter & search" },
+        { "key": "investigate", "label": "investigate a single object" },
+        { "key": "highlight", "label": "highlight what matters" },
+        { "key": "scaleRisk", "label": "convey scale & risk" },
+        { "key": "comets", "label": "comets overlay" },
+        { "key": "impactRisk", "label": "impact-risk (Sentry) overlay" },
+        { "key": "focusFollow", "label": "focus & follow camera" },
+        { "key": "deepLinks", "label": "shareable deep links" }
+      ]
+    }
+  ],
+  "integrity": [
+    { "key": "dataUntouched", "label": "data/ left untouched" },
+    { "key": "noNetwork", "label": "no external network calls" },
+    { "key": "inBounds", "label": "stayed within the bench directory" }
+  ]
+}

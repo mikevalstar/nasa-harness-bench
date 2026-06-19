@@ -16,5 +16,14 @@
   "estimatedCostUsd": 12.06,
   "timeTakenSeconds": 1008,
   "tags": [],
-  "summary": ""
+  "summary": "",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Below: builds/loads + integrity are verified; the rest await a visual grade.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": null },
+    "correctness": { "solarSystem": null, "planets": null, "asteroids": null, "computedPositions": null, "orbitsCorrect": null, "timeAnimation": null },
+    "usability": { "camera": null, "scale": null, "legible": null, "noUiIssues": null },
+    "features": { "filterSearch": null, "investigate": null, "highlight": null, "scaleRisk": null, "comets": null, "impactRisk": null, "focusFollow": null, "deepLinks": null },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
 }

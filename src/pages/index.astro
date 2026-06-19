@@ -89,6 +89,14 @@ tags · summary · free-form notes · raw run log</code></pre>
       <div class="markdown" id="notes-body"></div>
     </dialog>
 
+    <dialog id="grade-dialog" class="notes-dialog">
+      <div class="notes-dialog-head">
+        <span id="grade-dialog-title">Grade</span>
+        <button class="notes-close" id="grade-close" aria-label="Close">✕</button>
+      </div>
+      <div class="grade-detail" id="grade-body"></div>
+    </dialog>
+
     <script>
       import { marked } from "marked";
       marked.setOptions({ gfm: true, breaks: false });
@@ -115,6 +123,42 @@ tags · summary · free-form notes · raw run log</code></pre>
         return `<span class="badge ${cls}">${label}: ${val ? "yes" : "no"}</span>`;
       }
 
+      // --- scoring display ---
+      const scoreTier = (s) => (s >= 75 ? "good" : s >= 50 ? "warn" : "bad");
+      const tierWord = (s) => (s >= 75 ? "strong" : s >= 50 ? "mixed" : "weak");
+      // Short labels for the compact bars ("Base correctness" -> "Correctness").
+      const SHORT_CAT = { runs: "Runs", correctness: "Correctness", usability: "Usability", features: "Features" };
+
+      function scorePanel(b) {
+        const sc = b.scoring || {};
+        if (sc.voided)
+          return `<div class="score-num void">VOID</div><div class="score-label">integrity gate failed</div>`;
+        if (sc.status !== "graded" || sc.score == null)
+          return `<div class="score-pending">ungraded</div>`;
+        return `<div class="score-num ${scoreTier(sc.score)}">${sc.score}<span>/100</span></div>
+                <div class="score-label ${scoreTier(sc.score)}">${tierWord(sc.score)}</div>`;
+      }
+      function categoryBars(b) {
+        const cs = (b.scoring || {}).categoryScores || {};
+        return ((DATA.rubric || {}).categories || [])
+          .map((cat) => {
+            const v = cs[cat.key];
+            const cls = v == null ? "na" : scoreTier(v);
+            return `<div class="cbar">
+                <span class="cbar-label">${SHORT_CAT[cat.key] || cat.label}</span>
+                <span class="cbar-track"><span class="cbar-fill ${cls}" style="width:${v == null ? 0 : v}%"></span></span>
+                <span class="cbar-val ${cls}">${v == null ? "—" : v}</span>
+              </div>`;
+          })
+          .join("");
+      }
+      function navScore(b) {
+        const sc = b.scoring || {};
+        if (sc.voided) return `<span class="nav-score void">VOID</span>`;
+        if (sc.status !== "graded" || sc.score == null) return `<span class="nav-score ungraded">—</span>`;
+        return `<span class="nav-score ${scoreTier(sc.score)}">${sc.score}</span>`;
+      }
+
       function renderNav(activeSlug) {
         const box = $("nav-benches");
         if (!DATA.benches.length) {
@@ -125,7 +169,7 @@ tags · summary · free-form notes · raw run log</code></pre>
           .map(
             (b) => `<a class="item ${b.slug === activeSlug ? "active" : ""}"
                  href="#/bench/${b.slug}">
-                ${b.harness || "?"} · ${b.model || "?"}
+                <span class="item-row">${b.harness || "?"} · ${b.model || "?"}${navScore(b)}</span>
                 <span class="meta">${b.effort || "?"} · ${(b.createdAt || "").slice(0, 10)}</span>
               </a>`,
           )
@@ -147,31 +191,38 @@ tags · summary · free-form notes · raw run log</code></pre>
         }
 
         const tu = b.tokenUsage || {};
+        const fact = (label, val) => `<span class="fact">${label}<b>${val}</b></span>`;
         $("bench-head").innerHTML = `
           <button class="header-toggle" data-header-toggle title="Hide details">▲ hide</button>
-          <div class="title">${b.slug}</div>
-          <div class="facts">
-            <span class="fact">harness <b>${b.harness || "?"}${b.harnessVersion && b.harnessVersion !== "unknown" ? " " + b.harnessVersion : ""}</b></span>
-            <span class="fact">model <b>${b.model || "?"}</b></span>
-            <span class="fact">effort <b>${b.effort || "?"}</b></span>
-            <span class="fact">run <b>${b.createdAt ? b.createdAt.replace("T", " ").replace("Z", " UTC") : "?"}</b></span>
-            ${boolBadge("broken", b.broken)}
-            ${boolBadge("cheated", b.cheated)}
-            <span class="badge ${b.buildSucceeded === false ? "bad" : b.buildSucceeded ? "good" : "muted"}">build: ${b.buildSucceeded == null ? "?" : b.buildSucceeded ? "ok" : "fail"}</span>
-          </div>
-          <div class="facts" style="margin-top:8px">
-            <span class="fact">tokens <b>${fmtNum(tu.total)}</b></span>
-            <span class="fact">cost <b>${b.estimatedCostUsd == null ? "—" : "$" + b.estimatedCostUsd}</b></span>
-            <span class="fact">time <b>${b.timeTakenSeconds == null ? "—" : b.timeTakenSeconds + "s"}</b></span>
-            ${b.summary ? `<span class="fact">${b.summary}</span>` : ""}
-          </div>
-          <div class="bench-actions">
-            ${b.hasNotes ? `<button class="btn-notes" data-notes="${b.slug}">📝 Notes</button>` : ""}
-            <div class="bench-links">
-              ${b.hasRunlog ? `<a href="${BASE}results/${b.slug}/runlog.txt" target="_blank">runlog.txt ↗</a>` : ""}
-              <a href="${BASE}results/${b.slug}/metadata.json" target="_blank">metadata.json ↗</a>
-              ${sourceLink(b.slug) ? `<a href="${sourceLink(b.slug)}" target="_blank">source on GitHub ↗</a>` : ""}
+          <div class="bh-grid">
+            <div class="bh-main">
+              <div class="title">${b.slug}</div>
+              <div class="meta-strip">
+                ${fact("harness ", (b.harness || "?") + (b.harnessVersion && b.harnessVersion !== "unknown" ? " " + b.harnessVersion : ""))}
+                ${fact("model ", b.model || "?")}
+                ${fact("effort ", b.effort || "?")}
+                ${fact("run ", b.createdAt ? b.createdAt.replace("T", " ").replace("Z", " UTC") : "?")}
+              </div>
+              <div class="meta-strip">
+                ${fact("tokens ", fmtNum(tu.total))}
+                ${fact("cost ", b.estimatedCostUsd == null ? "—" : "$" + b.estimatedCostUsd)}
+                ${fact("time ", b.timeTakenSeconds == null ? "—" : b.timeTakenSeconds + "s")}
+              </div>
+              ${b.summary ? `<p class="bh-summary">${b.summary}</p>` : ""}
+              <div class="bench-actions">
+                ${b.hasNotes ? `<button class="btn-notes" data-notes="${b.slug}">📝 Notes</button>` : ""}
+                <div class="bench-links">
+                  ${b.hasRunlog ? `<a href="${BASE}results/${b.slug}/runlog.txt" target="_blank">run log ↗</a>` : ""}
+                  <a href="${BASE}results/${b.slug}/metadata.json" target="_blank">metadata ↗</a>
+                  ${sourceLink(b.slug) ? `<a href="${sourceLink(b.slug)}" target="_blank">source ↗</a>` : ""}
+                </div>
+              </div>
             </div>
+            <aside class="bh-score">
+              <div class="score-panel">${scorePanel(b)}</div>
+              <div class="cbars">${categoryBars(b)}</div>
+              <button class="btn-grade" data-grade="${b.slug}">grade breakdown ▸</button>
+            </aside>
           </div>`;
 
         if (b.hasDist) {
@@ -200,6 +251,50 @@ tags · summary · free-form notes · raw run log</code></pre>
           showIntro();
         }
       }
+
+      // --- grade dialog ---
+      const gradeDialog = $("grade-dialog");
+      function markChip(v) {
+        const cls = { pass: "mpass", good: "mgood", partial: "mpartial", poor: "mpoor", fail: "mfail" }[v] || "mna";
+        return `<span class="mark ${cls}">${v == null ? "—" : v}</span>`;
+      }
+      function openGrade(slug) {
+        const b = DATA.benches.find((x) => x.slug === slug);
+        if (!b) return;
+        const rubric = DATA.rubric || { categories: [], integrity: [] };
+        const grade = b.grade || {};
+        const sc = b.scoring || {};
+        const cs = sc.categoryScores || {};
+        let html = `<div class="grade-summary">Score <b>${
+          sc.voided ? "VOID" : sc.score == null ? "ungraded" : sc.score + " / 100"
+        }</b>${sc.voided ? ' <span class="mark mfail">integrity gate failed</span>' : ""}</div>`;
+        for (const cat of rubric.categories) {
+          const v = cs[cat.key];
+          html += `<h3>${cat.label}<span class="cat-pct ${v == null ? "" : scoreTier(v)}">${v == null ? "—" : v + "%"}</span></h3><table class="grade-table">`;
+          for (const c of cat.criteria) {
+            html += `<tr><td>${c.label}</td><td>${markChip((grade[cat.key] || {})[c.key])}</td></tr>`;
+          }
+          html += `</table>`;
+        }
+        html += `<h3>Integrity gate<span class="cat-pct ${sc.integrityPassed ? "good" : "bad"}">${sc.integrityPassed ? "passed" : "FAILED"}</span></h3><table class="grade-table">`;
+        for (const c of rubric.integrity) {
+          const v = (grade.integrity || {})[c.key];
+          const chip = v === true ? markChip("pass") : v === false ? markChip("fail") : markChip(null);
+          html += `<tr><td>${c.label}</td><td>${chip}</td></tr>`;
+        }
+        html += `</table>`;
+        $("grade-body").innerHTML = html;
+        $("grade-dialog-title").textContent = "Grade — " + slug;
+        gradeDialog.showModal();
+      }
+      document.addEventListener("click", (e) => {
+        const g = e.target.closest("[data-grade]");
+        if (g) openGrade(g.getAttribute("data-grade"));
+      });
+      $("grade-close").addEventListener("click", () => gradeDialog.close());
+      gradeDialog.addEventListener("click", (e) => {
+        if (e.target === gradeDialog) gradeDialog.close();
+      });
 
       // --- collapsible header ---
       let headerHidden = localStorage.getItem("benchHeaderHidden") === "1";

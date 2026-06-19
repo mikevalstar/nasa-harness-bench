@@ -115,10 +115,19 @@ cat > "$DEST/metadata.json" <<JSON
   "estimatedCostUsd": null,
   "timeTakenSeconds": null,
   "tags": [],
-  "summary": ""
+  "summary": "",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": null, "loads": null, "noConsoleErrors": null },
+    "correctness": { "solarSystem": null, "planets": null, "asteroids": null, "computedPositions": null, "orbitsCorrect": null, "timeAnimation": null },
+    "usability": { "camera": null, "scale": null, "legible": null, "noUiIssues": null },
+    "features": { "filterSearch": null, "investigate": null, "highlight": null, "scaleRisk": null, "comets": null, "impactRisk": null, "focusFollow": null, "deepLinks": null },
+    "integrity": { "dataUntouched": null, "noNetwork": null, "inBounds": null }
+  }
 }
 JSON
-info "Wrote metadata.json (hand-grade the null fields)"
+info "Wrote metadata.json (hand-grade the null fields + grade block)"
 
 # Mark the note as collected (best-effort).
 if command -v jq >/dev/null 2>&1 && [ -f "$NOTE" ]; then
