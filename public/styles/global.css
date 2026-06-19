@@ -122,7 +122,45 @@ a:hover { text-decoration: underline; }
   border-bottom: 1px solid var(--border);
   padding: 16px 24px;
   background: var(--panel);
+  position: relative;
 }
+.header-toggle {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font: inherit;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.header-toggle:hover { color: var(--text); border-color: var(--accent-dim); }
+
+/* collapsed state: hide the header, show a floating restore pill over the viewer */
+#view-bench { position: relative; }
+#view-bench.header-hidden .bench-head { display: none; }
+.header-restore { display: none; }
+#view-bench.header-hidden .header-restore {
+  display: block;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  font: inherit;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  cursor: pointer;
+  opacity: 0.85;
+}
+#view-bench.header-hidden .header-restore:hover { color: var(--text); opacity: 1; }
 .bench-head .title { font-size: 16px; font-family: var(--mono); margin: 0 0 10px; }
 .facts { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
 .fact { font-size: 12px; color: var(--muted); }
@@ -153,3 +191,103 @@ a:hover { text-decoration: underline; }
 }
 
 .loading { padding: 40px 48px; color: var(--muted); }
+
+/* ---- notes button + dialog ---- */
+.bench-actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.btn-notes {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: filter 0.12s ease;
+}
+.btn-notes:hover { filter: brightness(1.1); }
+.bench-actions .bench-links { margin-top: 0; }
+
+.notes-dialog {
+  width: min(760px, 92vw);
+  max-height: 82vh;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.notes-dialog::backdrop { background: rgba(5, 8, 13, 0.66); }
+.notes-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-2);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.notes-close {
+  font: inherit;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 5px;
+}
+.notes-close:hover { color: var(--text); background: var(--border); }
+
+/* ---- markdown rendering (used inside the notes dialog) ---- */
+.markdown {
+  padding: 20px 24px 28px;
+  overflow-y: auto;
+  max-height: calc(82vh - 50px);
+  line-height: 1.6;
+}
+.markdown > :first-child { margin-top: 0; }
+.markdown h1 { font-size: 20px; margin: 24px 0 10px; }
+.markdown h2 { font-size: 16px; margin: 22px 0 8px; }
+.markdown h3 { font-size: 14px; margin: 18px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.markdown p { margin: 10px 0; }
+.markdown ul, .markdown ol { margin: 10px 0; padding-left: 22px; }
+.markdown li { margin: 4px 0; }
+.markdown a { color: var(--accent); }
+.markdown code {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.markdown pre {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  overflow-x: auto;
+}
+.markdown pre code { background: none; border: 0; padding: 0; }
+.markdown blockquote {
+  margin: 12px 0;
+  padding: 4px 14px;
+  border-left: 3px solid var(--accent-dim);
+  color: var(--muted);
+}
+.markdown hr { border: 0; border-top: 1px solid var(--border); margin: 18px 0; }
+.markdown table { border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+.markdown th, .markdown td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+.markdown .muted { color: var(--muted); }
