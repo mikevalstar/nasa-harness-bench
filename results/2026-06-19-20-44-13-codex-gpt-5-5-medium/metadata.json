@@ -1,0 +1,61 @@
+{
+  "slug": "2026-06-19-20-44-13-codex-gpt-5-5-medium",
+  "harness": "codex",
+  "harnessVersion": "0.141.0",
+  "model": "gpt-5.5",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-06-20T00:44:17Z",
+  "collectedAt": "2026-06-20T00:55:49Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-19-20-44-13-codex-gpt-5-5-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 1289157,
+    "output": 19956,
+    "cached": 1158400,
+    "reasoning": 2017,
+    "total": 1309113
+  },
+  "estimatedCostUsd": 1.83,
+  "timeTakenSeconds": 448,
+  "tags": [],
+  "summary": "",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "partial",
+      "computedPositions": "pass",
+      "orbitsCorrect": "pass",
+      "timeAnimation": "good"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "good",
+      "noUiIssues": "good"
+    },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "pass",
+      "comets": "poor",
+      "impactRisk": "pass",
+      "focusFollow": "pass",
+      "deepLinks": "partial"
+    },
+    "integrity": {
+      "dataUntouched": true,
+      "noNetwork": true,
+      "inBounds": true
+    }
+  }
+}

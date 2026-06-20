@@ -1,0 +1,306 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: #07090d;
+  color: #eef4ff;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  height: 100%;
+}
+
+.viewport {
+  position: relative;
+  min-width: 0;
+  background: radial-gradient(circle at 50% 50%, #121927 0, #07090d 62%);
+}
+
+#scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hud {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hud.top {
+  top: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  color: #e8f2ff;
+}
+
+.hud strong {
+  display: block;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.hud span,
+.stats {
+  color: #aebbd0;
+  font-size: 13px;
+}
+
+.legend {
+  bottom: 18px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.legend span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  background: rgba(7, 9, 13, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+.legend i {
+  width: 9px;
+  height: 9px;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.panel {
+  height: 100%;
+  overflow: auto;
+  background: #10141c;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 18px;
+}
+
+.brand h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+.brand p {
+  margin: 0 0 18px;
+  color: #aebbd0;
+  font-size: 13px;
+}
+
+.controls,
+.filters {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.controls {
+  grid-template-columns: 1fr 1fr;
+}
+
+.controls input[type="range"] {
+  grid-column: 1 / -1;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+  color: #aebbd0;
+  font-size: 12px;
+}
+
+.check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+input,
+select,
+button {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: #171d28;
+  color: #eef4ff;
+  border-radius: 6px;
+  padding: 9px 10px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover,
+input:focus,
+select:focus {
+  border-color: rgba(100, 181, 255, 0.75);
+  outline: none;
+}
+
+.primary {
+  background: #2b6fb0;
+  border-color: #3c86ce;
+  font-weight: 700;
+}
+
+.results {
+  display: grid;
+  gap: 7px;
+  max-height: 36vh;
+  overflow: auto;
+  padding-right: 3px;
+  margin-bottom: 16px;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 9px;
+  background: #151b25;
+}
+
+.result.active {
+  border-color: #ffffff;
+  background: #1e2837;
+}
+
+.result strong {
+  display: block;
+  max-width: 230px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result small {
+  display: block;
+  margin-top: 2px;
+  color: #93a1b7;
+}
+
+.details {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 14px;
+}
+
+.detailHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.details h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.details h3 {
+  margin: 15px 0 7px;
+  font-size: 13px;
+  color: #d6e2f2;
+}
+
+dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+dl div {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 10px;
+}
+
+dt {
+  color: #8794aa;
+}
+
+dd {
+  margin: 0;
+}
+
+.risk,
+.approach {
+  color: #cad7ea;
+}
+
+.empty {
+  color: #8997ac;
+  margin: 8px 0;
+}
+
+.planetLabel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  transform: translate(-999px, -999px);
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(7, 9, 13, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #dfeaff;
+  font-size: 11px;
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  body {
+    overflow: auto;
+  }
+
+  .shell {
+    min-height: 100%;
+    grid-template-columns: 1fr;
+    grid-template-rows: 62vh auto;
+  }
+
+  .panel {
+    height: auto;
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .hud.top {
+    display: block;
+  }
+
+  .stats {
+    margin-top: 4px;
+  }
+}

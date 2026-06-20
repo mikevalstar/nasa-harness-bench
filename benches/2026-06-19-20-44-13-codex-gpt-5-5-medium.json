@@ -1,0 +1,11 @@
+{
+  "slug": "2026-06-19-20-44-13-codex-gpt-5-5-medium",
+  "createdAt": "2026-06-20T00:44:17Z",
+  "harness": "codex",
+  "harnessVersion": "0.141.0",
+  "model": "gpt-5.5",
+  "effort": "medium",
+  "interface": "cli",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-19-20-44-13-codex-gpt-5-5-medium",
+  "collected": true
+}

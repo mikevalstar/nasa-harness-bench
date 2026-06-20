@@ -31,6 +31,8 @@ HARNESS="$(ask 'Harness (e.g. claude-code, cursor, aider)' 'claude-code')"
 HARNESS_VERSION="$(ask 'Harness version (e.g. 1.2.3)' 'unknown')"
 MODEL="$(ask 'Model (e.g. opus-4-8, gpt-5, sonnet-4-6)' 'opus-4-8')"
 EFFORT="$(choose 'Effort / reasoning level' low medium high max none)"
+# Free-form: many harnesses ship multiple surfaces (cli, ide, agent window, …).
+INTERFACE="$(ask 'Interface / surface (e.g. cli, ide, agent-window)' 'cli')"
 
 # Timestamp prefix gives chronological, sortable, unique slugs.
 TS="$(date +%Y-%m-%d-%H-%M-%S)"
@@ -57,6 +59,7 @@ cat > "$REPO_ROOT/benches/$SLUG.json" <<JSON
   "harnessVersion": "$HARNESS_VERSION",
   "model": "$MODEL",
   "effort": "$EFFORT",
+  "interface": "$INTERFACE",
   "benchPath": "$BENCH_DIR",
   "collected": false
 }

@@ -1,0 +1,92 @@
+{
+  "extractedAt": "2026-06-20T01:00:13.502Z",
+  "sessionId": "019ee27e-1f24-7d91-a8cb-61331a475283",
+  "codexVersion": "0.141.0",
+  "modelProvider": "openai",
+  "models": [
+    "gpt-5.5"
+  ],
+  "effort": "medium",
+  "cwd": "/Users/mikevalstar/projects/nbench/2026-06-19-20-44-13-codex-gpt-5-5-medium",
+  "span": {
+    "start": "2026-06-20T00:47:58.156Z",
+    "end": "2026-06-20T00:55:25.978Z",
+    "wallSeconds": 448,
+    "durationSeconds": 448,
+    "timeToFirstTokenMs": 1307
+  },
+  "messages": {
+    "user": 1,
+    "assistant": 23
+  },
+  "tokens": {
+    "input_tokens": 1289157,
+    "output_tokens": 19956,
+    "cached_input_tokens": 1158400,
+    "reasoning_output_tokens": 2017,
+    "total_tokens": 1309113,
+    "total": 1309113
+  },
+  "tools": {
+    "exec_command": 36,
+    "apply_patch": 4,
+    "view_image": 4,
+    "write_stdin": 3
+  },
+  "filesWritten": [
+    "vite.config.js",
+    "src/main.js",
+    "src/styles.css",
+    "README.md"
+  ],
+  "filesEdited": [
+    "index.html",
+    "src/main.js",
+    "package.json"
+  ],
+  "shellCommands": [
+    "pwd && rg --files",
+    "sed -n '1,240p' PLAN.md",
+    "sed -n '1,260p' data/README.md",
+    "du -h data/*",
+    "for f in data/*.json; do printf '%s ' \"$f\"; jq 'if type==\"array\" then length else keys end' \"$f\"; done",
+    "jq '.[0:3]' data/planets.json",
+    "jq '.[0:2]' data/asteroids.json",
+    "jq '.[0:3]' data/sentry.json && jq '.[0:3]' data/close-approaches.json",
+    "cat > package.json <<'EOF'\n{\"scripts\":{\"dev\":\"vite --host 0.0.0.0\",\"build\":\"vite build && rm -rf dist/data && cp -R data dist/data\",\"preview\":\"vite preview --host 0.0.0.0\"},\"dependencies\":{\"@vitejs/plugin-basic-ssl\":\"latest\",\"vite\":\"latest\",\"typescript\":\"latest\",\"three\":\"latest\"},\"devDependencies\":{}}\nEOF\ncat > index.html <<'EOF'\n<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/><title>Near-Earth Objects</title></head><body><div id=\"app\"></div><script type=\"module\" src=\"/src/main.js\"></script></body></html>\nEOF\nmkdir -p src",
+    "pnpm install",
+    "pnpm build",
+    "pnpm preview --host 127.0.0.1 --port 4173",
+    "node -e \"try{require('playwright'); console.log('playwright yes')}catch(e){console.log('playwright no')}\"",
+    "curl -I http://127.0.0.1:4173/ && curl -I http://127.0.0.1:4173/data/asteroids.json",
+    "which chromium || which chromium-browser || which google-chrome || which \"Google Chrome\" || ls /Applications | rg -i 'chrome|chromium'",
+    "which node && node --version && pnpm --version",
+    "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --disable-gpu=false --no-first-run --no-default-browser-check --window-size=1440,1000 --virtual-time-budget=12000 --screenshot=/tmp/neo-explorer.png http://127.0.0.1:4173/",
+    "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --disable-gpu=false --no-first-run --no-default-browser-check --window-size=1440,1000 --virtual-time-budget=45000 --screenshot=/tmp/neo-explorer-45.png http://127.0.0.1:4173/",
+    "pnpm add -D puppeteer-core",
+    "node --input-type=module <<'NODE'\nimport puppeteer from 'puppeteer-core';\nconst browser = await puppeteer.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless:true, args:['--no-first-run','--no-default-browser-check','--window-size=1440,1000']});\nconst page = await browser.newPage();\npage.on('console', msg => console.log('console', msg.type(), msg.text()));\npage.on('pageerror', err => console.log('pageerror', err.message));\nawait page.goto('http://127.0.0.1:4173/', {waitUntil:'domcontentloaded', timeout: 60000});\nawait page.waitForFunction(() => document.querySelector('#status')?.textContent && !document.querySelector('#status').textContent.includes('Loading'), {timeout: 60000});\nawait page.screenshot({path:'/tmp/neo-explorer-ready.png', fullPage:false});\nconst info = await page.evaluate(() => ({status: document.querySelector('#status')?.textContent, stats: document.querySelector('#stats')?.textContent, results: document.querySelectorAll('.result').length, details: document.querySelector('.details')?.innerText.slice(0, 200)}));\nconsole.log(JSON.stringify(info, null, 2));\nawait browser.close();\nNODE",
+    "node --input-type=module <<'NODE'\nimport puppeteer from 'puppeteer-core';\nconst browser = await puppeteer.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless:true, args:['--no-first-run','--no-default-browser-check']});\nfor (const [name, width, height] of [['desktop',1440,1000], ['mobile',390,844]]) {\n  const page = await browser.newPage();\n  await page.setViewport({width, height, deviceScaleFactor:1});\n  const errors = [];\n  page.on('console', msg => { if (msg.type() === 'error' && !msg.text().includes('favicon')) errors.push(msg.text()); });\n  page.on('pageerror', err => errors.push(err.message));\n  await page.goto('http://127.0.0.1:4173/', {waitUntil:'domcontentloaded', timeout:60000});\n  await page.waitForFunction(() => document.querySelector('#status')?.textContent && !document.querySelector('#status').textContent.includes('Loading'), {timeout:60000});\n  await page.screenshot({path:`/tmp/neo-${name}.png`});\n  const metrics = await page.evaluate(() => {\n    const canvas = document.querySelector('canvas');\n    const c = document.createElement('canvas');\n    c.width = 80; c.height = 80;\n    const ctx = c.getContext('2d');\n    ctx.drawImage(canvas, 0, 0, 80, 80);\n    const data = ctx.getImageData(0, 0, 80, 80).data;\n    let bright = 0, varied = new Set();\n    for (let i=0; i<data.length; i+=4) {\n      const key = `${data[i]>>4},${data[i+1]>>4},${data[i+2]>>4}`;\n      varied.add(key);\n      if (data[i] + data[i+1] + data[i+2] > 80) bright++;\n    }\n    return {status: document.querySelector('#status').textContent, stats: document.querySelector('#stats').textContent, results: document.querySelectorAll('.result').length, bright, colors: varied.size, bodyW: document.body.scrollWidth, bodyH: document.body.scrollHeight};\n  });\n  console.log(name, JSON.stringify({errors, metrics}, null, 2));\n  await page.close();\n}\nawait browser.close();\nNODE",
+    "pnpm build",
+    "pnpm preview --host 127.0.0.1 --port 4173",
+    "node --input-type=module <<'NODE'\nimport puppeteer from 'puppeteer-core';\nconst browser = await puppeteer.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless:true, args:['--no-first-run','--no-default-browser-check']});\nfor (const [name, width, height] of [['desktop',1440,1000], ['mobile',390,844]]) {\n  const page = await browser.newPage();\n  await page.setViewport({width, height, deviceScaleFactor:1});\n  const errors = [];\n  page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });\n  page.on('pageerror', err => errors.push(err.message));\n  await page.goto('http://127.0.0.1:4173/', {waitUntil:'domcontentloaded', timeout:60000});\n  await page.waitForFunction(() => document.querySelector('#status')?.textContent && !document.querySelector('#status').textContent.includes('Loading'), {timeout:60000});\n  await page.screenshot({path:`/tmp/neo-${name}.png`});\n  const metrics = await page.evaluate(() => {\n    const canvas = document.querySelector('canvas');\n    const c = document.createElement('canvas');\n    c.width = 100; c.height = 100;\n    const ctx = c.getContext('2d');\n    ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 100, 100);\n    const data = ctx.getImageData(0, 0, 100, 100).data;\n    let bright = 0, varied = new Set();\n    for (let i=0; i<data.length; i+=4) {\n      varied.add(`${data[i]>>4},${data[i+1]>>4},${data[i+2]>>4}`);\n      if (data[i] + data[i+1] + data[i+2] > 70) bright++;\n    }\n    return {status: document.querySelector('#status').textContent, stats: document.querySelector('#stats').textContent, results: document.querySelectorAll('.result').length, bright, colors: varied.size, bodyW: document.body.scrollWidth, bodyH: document.body.scrollHeight};\n  });\n  console.log(name, JSON.stringify({errors, metrics}, null, 2));\n  await page.close();\n}\nawait browser.close();\nNODE",
+    "pnpm build",
+    "pnpm preview --host 127.0.0.1 --port 4173",
+    "node --input-type=module <<'NODE'\nimport puppeteer from 'puppeteer-core';\nconst browser = await puppeteer.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless:true, args:['--no-first-run','--no-default-browser-check']});\nconst page = await browser.newPage();\nawait page.setViewport({width:1440, height:1000, deviceScaleFactor:1});\nconst errors = [];\npage.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });\npage.on('pageerror', err => errors.push(err.message));\nawait page.goto('http://127.0.0.1:4173/', {waitUntil:'domcontentloaded', timeout:60000});\nawait page.waitForFunction(() => document.querySelector('#status')?.textContent && !document.querySelector('#status').textContent.includes('Loading'), {timeout:60000});\nawait page.screenshot({path:'/tmp/neo-final.png'});\nconst metrics = await page.evaluate(() => {\n  const canvas = document.querySelector('canvas');\n  const c = document.createElement('canvas');\n  c.width = 100; c.height = 100;\n  const ctx = c.getContext('2d');\n  ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 100, 100);\n  const data = ctx.getImageData(0, 0, 100, 100).data;\n  let bright = 0, varied = new Set();\n  for (let i=0; i<data.length; i+=4) {\n    varied.add(`${data[i]>>4},${data[i+1]>>4},${data[i+2]>>4}`);\n    if (data[i] + data[i+1] + data[i+2] > 70) bright++;\n  }\n  return {status: document.querySelector('#status').textContent, stats: document.querySelector('#stats').textContent, results: document.querySelectorAll('.result').length, bright, colors: varied.size};\n});\nconsole.log(JSON.stringify({errors, metrics}, null, 2));\nawait browser.close();\nNODE",
+    "node --input-type=module <<'NODE'\nimport puppeteer from 'puppeteer-core';\nconst browser = await puppeteer.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless:true, args:['--no-first-run','--no-default-browser-check']});\nconst page = await browser.newPage();\nawait page.setViewport({width:390, height:844, deviceScaleFactor:1});\nconst errors = [];\npage.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });\npage.on('pageerror', err => errors.push(err.message));\nawait page.goto('http://127.0.0.1:4173/', {waitUntil:'domcontentloaded', timeout:60000});\nawait page.waitForFunction(() => document.querySelector('#status')?.textContent && !document.querySelector('#status').textContent.includes('Loading'), {timeout:60000});\nawait page.screenshot({path:'/tmp/neo-mobile-final.png'});\nconst metrics = await page.evaluate(() => ({errors: [], status: document.querySelector('#status').textContent, results: document.querySelectorAll('.result').length, scrollW: document.body.scrollWidth, innerW}));\nconsole.log(JSON.stringify({errors, metrics}, null, 2));\nawait browser.close();\nNODE",
+    "node --input-type=module <<'NODE'\nimport puppeteer from 'puppeteer-core';\nconst browser = await puppeteer.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless:true, args:['--no-first-run','--no-default-browser-check']});\nconst page = await browser.newPage();\nawait page.setViewport({width:390, height:844, deviceScaleFactor:1});\nconst errors = [];\npage.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });\npage.on('pageerror', err => errors.push(err.message));\nawait page.goto('http://127.0.0.1:4173/', {waitUntil:'domcontentloaded', timeout:60000});\nawait page.waitForFunction(() => document.querySelector('#status')?.textContent && !document.querySelector('#status').textContent.includes('Loading'), {timeout:60000});\nawait page.screenshot({path:'/tmp/neo-mobile-final.png'});\nconst metrics = await page.evaluate(() => ({status: document.querySelector('#status').textContent, results: document.querySelectorAll('.result').length, scrollW: document.body.scrollWidth, innerW: window.innerWidth}));\nconsole.log(JSON.stringify({errors, metrics}, null, 2));\nawait browser.close();\nNODE",
+    "git status --short",
+    "find dist -maxdepth 2 -type f | sort | sed -n '1,40p'",
+    "ls -la",
+    "pnpm remove @vitejs/plugin-basic-ssl typescript puppeteer-core",
+    "cat package.json",
+    "pnpm build",
+    "pnpm build"
+  ],
+  "finalMessage": "Implemented the PLAN.md as a complete static Three.js app.\n\nWhat’s included:\n- 3D solar system with Sun, planets, full 42,075 asteroid catalog, and closed-orbit comet overlay.\n- Orbital propagation from runtime-fetched `data/*.json`.\n- Interactive time controls, date scrub, play/pause, speed.\n- Search and filters for PHA, Sentry, close approaches, large objects, low MOID.\n- Selected-object detail panel with orbit, size, hazard, Sentry risk, close approaches, highlighted orbit, follow mode.\n- Relative asset/data paths and `dist/data/` copied during build.\n- Short implementation notes in [README.md](/Users/mikevalstar/projects/nbench/2026-06-19-20-44-13-codex-gpt-5-5-medium/README.md).\n\nVerification:\n- `pnpm build` succeeds and emits `dist/`.\n- Served build was checked in Chrome at desktop and mobile sizes.\n- Browser check loaded the full catalog with no console errors and confirmed nonblank canvas rendering.\n\nOnly note: Vite reports the JS chunk is over 500 kB because Three.js is bundled. The build still succeeds.",
+  "files": {
+    "raw": [
+      "session/rollout-2026-06-19T20-46-16-019ee27e-1f24-7d91-a8cb-61331a475283.jsonl"
+    ],
+    "transcript": "session/transcript.md"
+  }
+}

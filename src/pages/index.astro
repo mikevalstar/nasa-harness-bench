@@ -52,7 +52,7 @@ const base = import.meta.env.BASE_URL; // "/" locally, sub-path on GitHub Pages
 
           <h2>What's measured</h2>
           <p>Each result records (some automatic, some hand-graded):</p>
-          <pre><code>harness · model · effort · createdAt
+          <pre><code>harness · interface · model · effort · createdAt
 broken · cheated · buildSucceeded
 tokenUsage · estimatedCostUsd · timeTakenSeconds
 tags · summary · free-form notes · raw run log</code></pre>
@@ -170,7 +170,7 @@ tags · summary · free-form notes · raw run log</code></pre>
             (b) => `<a class="item ${b.slug === activeSlug ? "active" : ""}"
                  href="#/bench/${b.slug}">
                 <span class="item-row">${b.harness || "?"} · ${b.model || "?"}${navScore(b)}</span>
-                <span class="meta">${b.effort || "?"} · ${(b.createdAt || "").slice(0, 10)}</span>
+                <span class="meta">${b.interface || "cli"} · ${b.effort || "?"} · ${(b.createdAt || "").slice(0, 10)}</span>
               </a>`,
           )
           .join("");
@@ -199,6 +199,7 @@ tags · summary · free-form notes · raw run log</code></pre>
               <div class="title">${b.slug}</div>
               <div class="meta-strip">
                 ${fact("harness ", (b.harness || "?") + (b.harnessVersion && b.harnessVersion !== "unknown" ? " " + b.harnessVersion : ""))}
+                ${fact("interface ", b.interface || "cli")}
                 ${fact("model ", b.model || "?")}
                 ${fact("effort ", b.effort || "?")}
                 ${fact("run ", b.createdAt ? b.createdAt.replace("T", " ").replace("Z", " UTC") : "?")}

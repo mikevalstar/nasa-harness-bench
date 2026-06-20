@@ -92,6 +92,7 @@ get() { # get <key> <fallback>
 }
 HARNESS="$(get harness)"; HARNESS_VERSION="$(get harnessVersion)"
 MODEL="$(get model)"; EFFORT="$(get effort)"
+INTERFACE="$(get interface)"; [ -n "$INTERFACE" ] || INTERFACE="cli"
 CREATED_AT="$(get createdAt)"; BENCH_PATH="$(get benchPath)"
 [ -n "$BENCH_PATH" ] || BENCH_PATH="$BENCH_DIR"
 COLLECTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -103,6 +104,7 @@ cat > "$DEST/metadata.json" <<JSON
   "harnessVersion": "$HARNESS_VERSION",
   "model": "$MODEL",
   "effort": "$EFFORT",
+  "interface": "$INTERFACE",
   "createdAt": "$CREATED_AT",
   "collectedAt": "$COLLECTED_AT",
   "benchPath": "$BENCH_PATH",
