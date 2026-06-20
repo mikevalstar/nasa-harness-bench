@@ -1,0 +1,51 @@
+{
+  "slug": "2026-06-20-08-40-48-minimax-code-minimax-m3-medium",
+  "harness": "minimax-code",
+  "harnessVersion": "3.0.46",
+  "model": "minimax-m3",
+  "effort": "medium",
+  "interface": "agent-window",
+  "createdAt": "2026-06-20T12:40:50Z",
+  "collectedAt": "2026-06-20T13:31:24Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-20-08-40-48-minimax-code-minimax-m3-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": { "input": 6577102, "output": 113275, "total": 6690377 },
+  "estimatedCostUsd": 5.99,
+  "timeTakenSeconds": 2854,
+  "tags": [],
+  "summary": "",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "good",
+      "computedPositions": "good",
+      "orbitsCorrect": "fail",
+      "timeAnimation": "good"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "good",
+      "noUiIssues": "partial"
+    },
+    "features": {
+      "filterSearch": "poor",
+      "investigate": "fail",
+      "highlight": "fail",
+      "scaleRisk": "partial",
+      "comets": "poor",
+      "impactRisk": "partial",
+      "focusFollow": "partial",
+      "deepLinks": "pass"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}

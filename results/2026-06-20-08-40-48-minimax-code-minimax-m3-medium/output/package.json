@@ -1,0 +1,24 @@
+{
+  "name": "solar-system-explorer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "copy-data": "node scripts/copy-data.mjs",
+    "preprocess": "node scripts/copy-data.mjs && node scripts/preprocess-data.mjs",
+    "dev": "node scripts/copy-data.mjs && node scripts/preprocess-data.mjs && vite",
+    "build": "tsc --noEmit && vite build && node scripts/copy-data.mjs && node scripts/preprocess-data.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.169.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inner Solar System · Near-Earth Explorer</title>
+    <meta
+      name="description"
+      content="Interactive 3D visualization of the inner solar system and near-Earth objects, propagated from real NASA/JPL orbital elements."
+    />
+    <link rel="icon" href="data:," />
+    <script type="module" crossorigin src="./assets/index-mVOir93t.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-FVAiNBmM.css">
+  </head>
+  <body>
+    <div id="loading" class="loading">
+      <div class="loading-card">
+        <div class="loading-title">Loading orbital data&hellip;</div>
+        <div class="loading-bar"><div class="loading-bar-fill" id="loading-bar-fill"></div></div>
+        <div class="loading-status" id="loading-status">Connecting…</div>
+      </div>
+    </div>
+
+    <div id="app" class="app hidden">
+      <canvas id="scene"></canvas>
+
+      <!-- Top-left: scene stats -->
+      <div class="panel panel-top-left" id="panel-stats">
+        <div class="panel-title">Inner Solar System</div>
+        <div class="panel-sub" id="stats-sub">42,000+ objects · real NASA/JPL data</div>
+        <div class="panel-meta">
+          <div><span class="meta-label">Date</span> <span id="ui-date">—</span></div>
+          <div><span class="meta-label">Speed</span> <span id="ui-speed">—</span></div>
+          <div><span class="meta-label">Shown</span> <span id="ui-shown">—</span></div>
+        </div>
+      </div>
+
+      <!-- Top-right: filters & search -->
+      <div class="panel panel-top-right" id="panel-filters">
+        <div class="panel-title">Filters</div>
+        <div class="filter-row">
+          <label class="toggle">
+            <input type="checkbox" id="filter-orbits" checked />
+            <span>Orbit lines</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="filter-labels" />
+            <span>Planet labels</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="filter-comets" />
+            <span>Comets</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="filter-pha" />
+            <span>PHAs only</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="filter-sentry" />
+            <span>Sentry risk</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="filter-close" checked />
+            <span>Close approaches</span>
+          </label>
+        </div>
+
+        <div class="filter-row">
+          <label class="select">
+            <span>Class</span>
+            <select id="filter-class">
+              <option value="">All</option>
+              <option value="AMO">AMO (Amor)</option>
+              <option value="APO">APO (Apollo)</option>
+              <option value="ATE">ATE (Aten)</option>
+              <option value="IEO">IEO (Atira)</option>
+            </select>
+          </label>
+          <label class="select">
+            <span>Min diameter (km)</span>
+            <input id="filter-diameter" type="number" min="0" step="0.1" placeholder="any" />
+          </label>
+          <label class="select">
+            <span>Max MOID (au)</span>
+            <input id="filter-moid" type="number" min="0" step="0.01" placeholder="any" />
+          </label>
+        </div>
+
+        <div class="filter-row">
+          <label class="search">
+            <span>Search</span>
+            <input id="filter-search" type="text" placeholder="e.g. Apophis, 433, Eros…" />
+          </label>
+          <button id="filter-reset" class="btn">Reset</button>
+        </div>
+      </div>
+
+      <!-- Bottom-left: selected object -->
+      <div class="panel panel-bottom-left hidden" id="panel-detail">
+        <div class="panel-title" id="detail-name">—</div>
+        <div class="panel-sub" id="detail-designation">—</div>
+        <div class="detail-grid" id="detail-grid"></div>
+        <div class="detail-section">
+          <div class="detail-section-title">Close approaches to Earth</div>
+          <div class="table-wrap">
+            <table class="table" id="detail-approaches">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Dist (au)</th>
+                  <th>v<sub>rel</sub> (km/s)</th>
+                  <th>H</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="detail-section hidden" id="detail-sentry-section">
+          <div class="detail-section-title">CNEOS Sentry impact risk</div>
+          <div class="detail-grid" id="detail-sentry-grid"></div>
+        </div>
+        <div class="detail-actions">
+          <button class="btn" id="detail-follow">Follow</button>
+          <button class="btn" id="detail-share">Copy link</button>
+          <button class="btn" id="detail-close">Close</button>
+        </div>
+      </div>
+
+      <!-- Bottom-right: time controls -->
+      <div class="panel panel-bottom-right" id="panel-time">
+        <div class="time-row">
+          <button class="btn btn-primary" id="time-play">▶</button>
+          <button class="btn" id="time-back">«</button>
+          <button class="btn" id="time-fwd">»</button>
+          <select id="time-speed" class="select-inline">
+            <option value="0.5">0.5 days/s</option>
+            <option value="1" selected>1 day/s</option>
+            <option value="5">5 days/s</option>
+            <option value="20">20 days/s</option>
+            <option value="100">100 days/s</option>
+            <option value="365">1 year/s</option>
+            <option value="3650">10 years/s</option>
+          </select>
+          <button class="btn" id="time-now">Now</button>
+        </div>
+        <div class="time-row">
+          <input id="time-jump" type="text" placeholder="YYYY-MM-DD or YYYY-MM-DD HH:MM" />
+          <button class="btn" id="time-jump-btn">Jump</button>
+        </div>
+        <input id="time-scrub" class="scrub" type="range" />
+        <div class="time-row time-row-sub">
+          <span id="time-start">—</span>
+          <span id="time-end">—</span>
+        </div>
+        <div class="time-legend">
+          <span><i class="dot dot-neo"></i> NEO</span>
+          <span><i class="dot dot-pha"></i> PHA</span>
+          <span><i class="dot dot-sentry"></i> Sentry</span>
+          <span><i class="dot dot-comet"></i> Comet</span>
+          <span><i class="dot dot-planet"></i> Planet</span>
+        </div>
+      </div>
+
+      <!-- Centered tooltip on hover -->
+      <div id="tooltip" class="tooltip hidden"></div>
+
+      <!-- Toast -->
+      <div id="toast" class="toast hidden"></div>
+    </div>
+
+  </body>
+</html>
