@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-06-20T01:29:59.626Z",
-  "count": 2,
+  "generatedAt": "2026-06-20T12:35:26.591Z",
+  "count": 3,
   "rubric": {
     "scale": {
       "pass": 1,
@@ -135,6 +135,84 @@
     ]
   },
   "benches": [
+    {
+      "slug": "2026-06-20-07-14-25-cursor-opus-4-8-medium",
+      "harness": "cursor",
+      "harnessVersion": "3.8.11",
+      "model": "opus-4-8",
+      "effort": "medium",
+      "interface": "agent-window",
+      "createdAt": "2026-06-20T11:14:27Z",
+      "collectedAt": "2026-06-20T11:38:36Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-20-07-14-25-cursor-opus-4-8-medium",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": null,
+      "cheated": null,
+      "buildSucceeded": null,
+      "tokenUsage": {
+        "input": 9360435,
+        "output": 93240,
+        "cached": 9165393,
+        "cacheWrite": 194862,
+        "total": 9453675
+      },
+      "estimatedCostUsd": 8.13,
+      "timeTakenSeconds": 1317,
+      "tags": [],
+      "summary": "",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": "pass",
+          "noConsoleErrors": "pass"
+        },
+        "correctness": {
+          "solarSystem": "pass",
+          "planets": "pass",
+          "asteroids": "pass",
+          "computedPositions": "pass",
+          "orbitsCorrect": "pass",
+          "timeAnimation": "pass"
+        },
+        "usability": {
+          "camera": "pass",
+          "scale": "good",
+          "legible": "good",
+          "noUiIssues": "pass"
+        },
+        "features": {
+          "filterSearch": "pass",
+          "investigate": "good",
+          "highlight": "partial",
+          "scaleRisk": "pass",
+          "comets": "good",
+          "impactRisk": "pass",
+          "focusFollow": "pass",
+          "deepLinks": "pass"
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "scoring": {
+        "status": "graded",
+        "score": 94,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": 100,
+          "usability": 88,
+          "features": 88
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
     {
       "slug": "2026-06-19-20-44-13-codex-gpt-5-5-medium",
       "harness": "codex",
