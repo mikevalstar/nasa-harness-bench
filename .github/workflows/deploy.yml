@@ -1,22 +1,17 @@
-name: Deploy site to GitHub Pages
+name: Deploy site to server
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 # Only one concurrent deployment.
 concurrency:
-  group: pages
+  group: deploy-server
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,26 +27,23 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # BASE_PATH must match the project Pages sub-path: /<repo-name>/
+      # Served at the root of its own subdomain, so BASE_PATH is "/".
       - name: Build
         env:
-          BASE_PATH: /${{ github.event.repository.name }}/
-          SITE_URL: ${{ steps.pages.outputs.origin || 'https://example.github.io' }}
+          BASE_PATH: /
+          SITE_URL: https://nasa-harness-bench.valstar.dev
         run: pnpm build
 
-      - uses: actions/configure-pages@v5
-        id: pages
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "valstar.dev ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDGM9+xE2TN1bTegJpLSTons6YOZF7vaDFy+B345NQ6R" > ~/.ssh/known_hosts
 
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/deploy-pages@v4
-        id: deployment
+      - name: Deploy with rsync
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o UserKnownHostsFile=~/.ssh/known_hosts" \
+            dist/ \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/var/www/nasa-harness-bench/dist/"
