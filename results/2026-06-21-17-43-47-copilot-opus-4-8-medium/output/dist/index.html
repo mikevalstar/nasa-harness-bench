@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Near-Earth Object Explorer</title>
+    <script type="module" crossorigin src="./assets/index-6Mxe2iWH.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B19uk1XH.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="labels"></div>
+
+    <!-- Loading overlay -->
+    <div id="loading">
+      <div class="loadbox">
+        <div class="spinner"></div>
+        <div id="loadmsg">Loading…</div>
+      </div>
+    </div>
+
+    <!-- Hover tooltip -->
+    <div id="tooltip" class="hidden"></div>
+
+    <!-- Left control panel -->
+    <div id="controls" class="panel">
+      <div class="panel-head">
+        <h1>NEO Explorer</h1>
+        <button id="collapse-controls" class="icon-btn" title="Hide panel">‹</button>
+      </div>
+      <div class="panel-body">
+        <section>
+          <div class="sec-title">Search</div>
+          <input id="search" type="text" placeholder="Name or designation (e.g. Eros, 433, Apophis)" />
+          <div id="search-results"></div>
+        </section>
+
+        <section>
+          <div class="sec-title">Filters <span id="filter-count" class="pill"></span></div>
+          <label class="chk"><input type="checkbox" id="f-pha" /> Potentially hazardous only</label>
+          <label class="chk"><input type="checkbox" id="f-sentry" /> Impact-risk (Sentry) only</label>
+          <div class="row">
+            <label>Max H (size) <span id="f-h-val" class="mono"></span></label>
+            <input type="range" id="f-h" min="10" max="33" step="0.5" value="33" />
+          </div>
+          <div class="row">
+            <label>Max MOID (au) <span id="f-moid-val" class="mono"></span></label>
+            <input type="range" id="f-moid" min="0" max="0.5" step="0.005" value="0.5" />
+          </div>
+          <div class="sec-subtitle">Orbit class</div>
+          <div id="class-toggles" class="class-toggles"></div>
+          <button id="reset-filters" class="btn small">Reset filters</button>
+        </section>
+
+        <section>
+          <div class="sec-title">Display</div>
+          <div class="row">
+            <label>Color by</label>
+            <select id="color-mode">
+              <option value="0">Orbit class</option>
+              <option value="1">Hazard (PHA)</option>
+              <option value="2">Size</option>
+              <option value="3">Earth MOID</option>
+            </select>
+          </div>
+          <div class="row">
+            <label>Point size <span id="psize-val" class="mono"></span></label>
+            <input type="range" id="psize" min="0.4" max="3" step="0.1" value="1" />
+          </div>
+          <div class="row">
+            <label>Body scale <span id="bscale-val" class="mono"></span></label>
+            <input type="range" id="bscale" min="0.3" max="6" step="0.1" value="1.6" />
+          </div>
+          <label class="chk"><input type="checkbox" id="t-orbits" checked /> Planet orbits</label>
+          <label class="chk"><input type="checkbox" id="t-comets" /> Show comets</label>
+          <label class="chk"><input type="checkbox" id="t-asteroids" checked /> Show asteroids</label>
+        </section>
+
+        <section>
+          <div class="sec-title">Highlights</div>
+          <button class="btn small" id="h-pha">Hazardous asteroids</button>
+          <button class="btn small" id="h-large">Largest (H ≤ 17)</button>
+          <button class="btn small" id="h-close">Closest MOID</button>
+          <button class="btn small" id="h-approaches">Upcoming close approaches</button>
+          <div id="approach-list"></div>
+        </section>
+
+        <section class="muted small" id="dataset-info"></section>
+      </div>
+    </div>
+
+    <!-- Right detail panel -->
+    <div id="detail" class="panel hidden">
+      <div class="panel-head">
+        <h2 id="d-name">—</h2>
+        <button id="close-detail" class="icon-btn" title="Close">×</button>
+      </div>
+      <div class="panel-body" id="detail-body"></div>
+    </div>
+
+    <!-- Bottom time bar -->
+    <div id="timebar">
+      <div class="tb-row">
+        <button id="play" class="icon-btn big" title="Play/Pause (space)">⏸</button>
+        <button id="step-back" class="icon-btn" title="-30 days">⏪</button>
+        <button id="step-fwd" class="icon-btn" title="+30 days">⏩</button>
+        <div class="date-group">
+          <input type="date" id="date-input" />
+          <button id="now-btn" class="btn small">Now</button>
+        </div>
+        <div class="speed-group">
+          <span class="mono" id="speed-label"></span>
+          <input type="range" id="speed" min="-100" max="100" step="1" value="40" />
+        </div>
+        <div id="follow-indicator" class="hidden">🔒 Following <span id="follow-name"></span> <button id="unfollow" class="btn small">Release</button></div>
+        <button id="share-btn" class="btn small" title="Copy shareable link">Share view</button>
+      </div>
+      <input type="range" id="scrub" min="0" max="1000" step="1" value="500" />
+      <div class="tb-row tiny mono">
+        <span id="jd-label"></span>
+        <span id="scrub-range"></span>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div id="legend"></div>
+
+  </body>
+</html>
