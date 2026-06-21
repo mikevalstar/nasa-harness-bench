@@ -1,0 +1,57 @@
+{
+  "slug": "2026-06-21-17-43-47-copilot-opus-4-8-medium",
+  "harness": "copilot",
+  "harnessVersion": "1.0.63",
+  "model": "opus-4-8",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-06-21T21:43:48Z",
+  "collectedAt": "2026-06-21T22:21:11Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-21-17-43-47-copilot-opus-4-8-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": null,
+  "cheated": null,
+  "buildSucceeded": null,
+  "tokenUsage": {
+    "input": 6738406,
+    "output": 89380,
+    "cached": 6600609,
+    "cacheWrite": 137637,
+    "total": 6827786
+  },
+  "estimatedCostUsd": 6.4,
+  "timeTakenSeconds": 2185,
+  "tags": [],
+  "summary": "",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "good",
+      "timeAnimation": "good"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "pass",
+      "noUiIssues": "partial"
+    },
+    "features": {
+      "filterSearch": "good",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "pass",
+      "comets": "poor",
+      "impactRisk": "pass",
+      "focusFollow": "good",
+      "deepLinks": "pass"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}
