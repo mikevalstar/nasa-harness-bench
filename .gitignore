@@ -9,6 +9,9 @@ node_modules/
 # prebuild artifact: a symlink-resolved copy of results/ for the build
 public/results/
 
+# local run handoff notes (new-bench.sh → collect-result.sh); data lands in results/
+benches/
+
 # OS / editor
 .DS_Store
 *.log
