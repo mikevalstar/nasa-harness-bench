@@ -25,6 +25,8 @@
   "tags": [],
   "summary": "",
 
+  "selfVerificationNotes": "Started a vite preview and ran a Playwright smoke test using system Chrome, capturing console messages, page errors, and failed requests plus screenshots. Verified default load, deep-link restore, follow mode, MOID coloring, and comets — all rendering with zero JS errors.",
+
   "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
   "grade": {
     "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
@@ -42,6 +44,7 @@
       "legible": "pass",
       "noUiIssues": "partial"
     },
+    "selfVerification": { "consoleReview": "pass", "displayReview": "pass" },
     "features": {
       "filterSearch": "good",
       "investigate": "pass",

@@ -19,6 +19,8 @@
   "tags": [],
   "summary": "",
 
+  "selfVerificationNotes": "Persisted through several failed automation paths (no local Playwright, MCP connection refused, server restarts) before installing Playwright's chromium-headless-shell and driving it — capturing console/page errors and screenshots. Sanity-checked end-to-end with zero page errors (PHA filter, deep link, comets, search, scrub, zoom).",
+
   "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
   "grade": {
     "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
@@ -36,6 +38,7 @@
       "legible": "good",
       "noUiIssues": "partial"
     },
+    "selfVerification": { "consoleReview": "pass", "displayReview": "pass" },
     "features": {
       "filterSearch": "poor",
       "investigate": "fail",

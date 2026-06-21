@@ -126,35 +126,6 @@ a:hover { text-decoration: underline; }
   text-align: center; font-family: var(--mono);
 }
 
-/* hero stat strip */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 18px;
-}
-.stat {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px 18px;
-}
-.stat-num {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--text);
-}
-.stat-num span { font-size: 14px; font-weight: 500; opacity: 0.45; }
-.stat-label {
-  margin-top: 6px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--muted);
-}
-
 /* scatter card */
 .board-card {
   background: var(--panel);
@@ -165,9 +136,9 @@ a:hover { text-decoration: underline; }
 }
 .scatter { width: 100%; height: auto; display: block; }
 .scatter .grid { stroke: var(--border); stroke-width: 1; opacity: 0.5; }
-.scatter .axis { fill: var(--muted); font-size: 11px; font-family: var(--mono); }
+.scatter .axis { fill: var(--muted); font-size: 9.5px; font-family: var(--mono); }
 .scatter .axis-title {
-  fill: var(--muted); font-size: 11px;
+  fill: var(--muted); font-size: 9.5px;
   text-transform: uppercase; letter-spacing: 0.06em;
 }
 .scatter .dot { cursor: pointer; transition: r 0.12s ease; }
@@ -176,7 +147,7 @@ a:hover { text-decoration: underline; }
 .scatter .dot.warn { fill: var(--warn); }
 .scatter .dot.bad  { fill: var(--bad); }
 .scatter .dot-label {
-  fill: var(--muted); font-size: 10.5px; font-family: var(--mono);
+  fill: var(--muted); font-size: 9px; font-family: var(--mono);
   pointer-events: none;
 }
 .scatter .dot-link:hover .dot-label { fill: var(--text); }
@@ -211,10 +182,6 @@ a:hover { text-decoration: underline; }
 .board .t-num { font-family: var(--mono); text-align: right; }
 .board .t-muted { color: var(--muted); }
 .board .t-score .nav-score { display: inline-block; }
-
-@media (max-width: 720px) {
-  .stats { grid-template-columns: repeat(2, 1fr); }
-}
 
 /* ---- bench header ---- */
 .bench-head {
@@ -485,6 +452,7 @@ a:hover { text-decoration: underline; }
 .grade-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .grade-table td { padding: 5px 0; border-bottom: 1px solid var(--border); }
 .grade-table td:last-child { text-align: right; width: 80px; }
+.grade-note { margin: 8px 0 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
 .mark { font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 4px; }
 .mark.mpass { color: var(--good); background: rgba(78,201,138,0.14); }
 .mark.mgood { color: #8fd9b0; background: rgba(78,201,138,0.08); }

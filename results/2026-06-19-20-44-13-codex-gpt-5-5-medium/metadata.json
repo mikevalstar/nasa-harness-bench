@@ -25,6 +25,8 @@
   "tags": [],
   "summary": "",
 
+  "selfVerificationNotes": "Started a vite preview; with no local Playwright it added puppeteer-core and drove system Chrome headless, listening for console and page errors and taking screenshots. Caught a blank-canvas issue and fixed it (preserveDrawingBuffer); final desktop + mobile passes showed no console errors and a non-blank canvas.",
+
   "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
   "grade": {
     "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
@@ -42,6 +44,7 @@
       "legible": "good",
       "noUiIssues": "good"
     },
+    "selfVerification": { "consoleReview": "pass", "displayReview": "pass" },
     "features": {
       "filterSearch": "pass",
       "investigate": "pass",

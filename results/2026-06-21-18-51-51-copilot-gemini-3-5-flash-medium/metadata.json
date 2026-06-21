@@ -1,0 +1,62 @@
+{
+  "slug": "2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium",
+  "harness": "copilot",
+  "harnessVersion": "1.0.63",
+  "model": "gemini-3.5-flash",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-06-21T22:51:53Z",
+  "collectedAt": "2026-06-21T23:01:45Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": true,
+  "cheated": false,
+  "buildSucceeded": true,
+  "_tokenUsageNote": "Interrupted run (no session.shutdown). input/total reconstructed from the CLI process log's per-request context-window readings (sum of the 74 'Sending request to the AI model' prompt sizes); output summed from per-message events. input is all-in (incl. cache reads); cache vs fresh split is unrecoverable, so cached/cacheWrite are null.",
+  "tokenUsage": {
+    "input": 3736341,
+    "output": 36233,
+    "cached": null,
+    "cacheWrite": null,
+    "total": 3772574
+  },
+  "_estimatedCostNote": "Gemini 3.5 Flash list pricing (May 2026): $1.50/M input, $9.00/M output, $0.15/M cached input. No cache/fresh split is recorded, so fresh≈peak context (~83.9k @ $1.50/M) and the rest (~3.65M cache reads @ $0.15/M) is assumed → ~$1.00. No-cache ceiling (all input @ $1.50/M) ≈ $5.93.",
+  "estimatedCostUsd": 1.0,
+  "timeTakenSeconds": 488,
+  "tags": [],
+  "summary": "",
+
+  "selfVerificationNotes": "Verified only that 'pnpm build' compiled (and fixed an .npmrc/esbuild build issue) — it never opened the running app in a browser: no headless browser, screenshot, console capture, or navigation appears in the log. References to 'the browser' are about client-side JSON loading, not self-review.",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "pass",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "partial",
+      "scale": "pass",
+      "legible": "partial",
+      "noUiIssues": "fail"
+    },
+    "selfVerification": { "consoleReview": "fail", "displayReview": "fail" },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "fail",
+      "highlight": "fail",
+      "scaleRisk": "fail",
+      "comets": "fail",
+      "impactRisk": "fail",
+      "focusFollow": "fail",
+      "deepLinks": "poor"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}

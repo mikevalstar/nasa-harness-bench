@@ -1,0 +1,92 @@
+{
+  "extractedAt": "2026-06-21T23:13:33.012Z",
+  "sessionId": "331ccc14-de70-47fc-b6fd-74d723ec6095",
+  "interrupted": true,
+  "copilotVersion": "1.0.63",
+  "model": "gemini-3.5-flash",
+  "effort": "medium",
+  "cwd": "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium",
+  "span": {
+    "start": "2026-06-21T22:52:13.923Z",
+    "end": "2026-06-21T23:00:21.441Z",
+    "wallSeconds": 488
+  },
+  "apiDurationSeconds": null,
+  "messages": {
+    "user": 1,
+    "assistant": 3,
+    "thinking": 34
+  },
+  "tokenUsage": {
+    "input": null,
+    "output": 36233,
+    "cached": null,
+    "cacheWrite": null,
+    "freshInput": null,
+    "reasoning": null,
+    "total": null
+  },
+  "premiumRequests": null,
+  "requestCount": null,
+  "nanoAiu": null,
+  "estimatedCostUsd": null,
+  "estimatedCostUsd_1hCache": null,
+  "costNote": "Computed from Anthropic list pricing. cacheWrite billed at 5-min rate (1.25x input); estimatedCostUsd_1hCache uses the 1-hour rate (2x). Copilot does not record cache TTL — adjust by hand if the 1-hour figure is correct.",
+  "linesChanged": {
+    "added": null,
+    "removed": null
+  },
+  "filesModifiedCount": null,
+  "tools": {
+    "glob": 2,
+    "view": 3,
+    "bash": 18,
+    "sql": 19,
+    "create": 17,
+    "edit": 4,
+    "web_search": 10
+  },
+  "filesTouched": [
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/package.json",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/tsconfig.json",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/vite.config.ts",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/tailwind.config.js",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/postcss.config.js",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/index.html",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/scripts/preprocess.js",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/src/math/orbits.ts",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/src/index.css",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/src/components/OrbitViewer.tsx",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/src/components/TimeControl.tsx",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/src/components/Sidebar.tsx",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/src/components/DetailsPanel.tsx",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/src/App.tsx",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/src/main.tsx",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/.npmrc",
+    "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium/README.md"
+  ],
+  "shellCommands": [
+    "pnpm -v && node -v",
+    "ls -lh data/",
+    "node -e \"const fs = require('fs'); ['planets.json', 'asteroids.json', 'comets.json', 'sentry.json', 'close-approaches.json'].forEach(f => { const d = JSON.parse(fs.readFileSync('data/' + f, 'utf8')); console.log(f, d.length, JSON.stringify(d[0], null, 2).substring(0, 500)); })\"",
+    "mkdir -p src src/components src/math src/utils public public/data scripts",
+    "pnpm install",
+    "ls -F | grep node_modules",
+    "pnpm run preprocess",
+    "node scripts/preprocess.js",
+    "ls -lh public/data",
+    "pnpm build",
+    "node scripts/preprocess.js && ./node_modules/.bin/vite build",
+    "ls -lh dist/ && ls -lh dist/data/",
+    "pnpm approve-builds",
+    "pnpm --ignore-scripts run build",
+    "pnpm run build",
+    "pnpm run build",
+    "pnpm run build",
+    "pnpm install"
+  ],
+  "files": {
+    "raw": "session/copilot-events.jsonl",
+    "transcript": "session/transcript.md"
+  }
+}

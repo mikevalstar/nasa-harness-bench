@@ -133,7 +133,7 @@ tags · summary · free-form notes · raw run log</code></pre>
       const scoreTier = (s) => (s >= 75 ? "good" : s >= 50 ? "warn" : "bad");
       const tierWord = (s) => (s >= 75 ? "strong" : s >= 50 ? "mixed" : "weak");
       // Short labels for the compact bars ("Base correctness" -> "Correctness").
-      const SHORT_CAT = { runs: "Runs", correctness: "Correctness", usability: "Usability", features: "Features" };
+      const SHORT_CAT = { runs: "Runs", correctness: "Correctness", usability: "Usability", selfVerification: "Self-check", features: "Features" };
 
       function scorePanel(b) {
         const sc = b.scoring || {};
@@ -190,22 +190,6 @@ tags · summary · free-form notes · raw run log</code></pre>
       const fmtCost = (c) => (c == null ? "—" : "$" + c.toFixed(2));
       const fmtTime = (s) => (s == null ? "—" : s < 90 ? s + "s" : Math.round(s / 60) + "m");
 
-      function buildStats(benches) {
-        const graded = benches.filter((b) => {
-          const s = b.scoring || {};
-          return s.status === "graded" && !s.voided && s.score != null;
-        });
-        const best = graded.reduce((m, b) => Math.max(m, b.scoring.score), 0);
-        const uniq = (k) => new Set(benches.map((b) => b[k]).filter(Boolean)).size;
-        const stat = (v, l) => `<div class="stat"><div class="stat-num">${v}</div><div class="stat-label">${l}</div></div>`;
-        return `<div class="stats">
-            ${stat(benches.length, benches.length === 1 ? "result" : "results")}
-            ${stat(uniq("harness"), "harnesses")}
-            ${stat(uniq("model"), "models")}
-            ${stat(graded.length ? best + `<span>/100</span>` : "—", "top score")}
-          </div>`;
-      }
-
       function buildScatter(benches) {
         const pts = benches.filter((b) => {
           const s = b.scoring || {};
@@ -213,7 +197,7 @@ tags · summary · free-form notes · raw run log</code></pre>
         });
         if (!pts.length)
           return `<div class="board-empty">No graded runs with cost data yet.</div>`;
-        const W = 720, H = 360, mL = 44, mR = 18, mT = 16, mB = 42;
+        const W = 720, H = 460, mL = 44, mR = 18, mT = 16, mB = 42;
         const pw = W - mL - mR, ph = H - mT - mB;
         const maxCost = Math.max(...pts.map((p) => p.estimatedCostUsd), 1);
         const xMax = Math.max(2, Math.ceil(maxCost / 2) * 2);
@@ -300,7 +284,6 @@ tags · summary · free-form notes · raw run log</code></pre>
           return;
         }
         box.innerHTML =
-          buildStats(DATA.benches) +
           `<div class="board-card">${buildScatter(DATA.benches)}</div>` +
           buildTable(DATA.benches);
         box.querySelectorAll("tr[data-href]").forEach((r) =>
@@ -343,6 +326,7 @@ tags · summary · free-form notes · raw run log</code></pre>
               <div class="bench-actions">
                 ${b.hasNotes ? `<button class="btn-notes" data-notes="${b.slug}">📝 Notes</button>` : ""}
                 <div class="bench-links">
+                  ${b.hasDist ? `<a href="${BASE}results/${b.slug}/output/dist/index.html" target="_blank">open full page ↗</a>` : ""}
                   ${b.hasRunlog ? `<a href="${BASE}results/${b.slug}/runlog.txt" target="_blank">run log ↗</a>` : ""}
                   <a href="${BASE}results/${b.slug}/metadata.json" target="_blank">metadata ↗</a>
                   ${sourceLink(b.slug) ? `<a href="${sourceLink(b.slug)}" target="_blank">source ↗</a>` : ""}
@@ -407,6 +391,10 @@ tags · summary · free-form notes · raw run log</code></pre>
             html += `<tr><td>${c.label}</td><td>${markChip((grade[cat.key] || {})[c.key])}</td></tr>`;
           }
           html += `</table>`;
+          // Free-form note describing what the harness actually did to self-verify.
+          if (cat.key === "selfVerification" && b.selfVerificationNotes) {
+            html += `<p class="grade-note">${b.selfVerificationNotes}</p>`;
+          }
         }
         html += `<h3>Integrity gate<span class="cat-pct ${sc.integrityPassed ? "good" : "bad"}">${sc.integrityPassed ? "passed" : "FAILED"}</span></h3><table class="grade-table">`;
         for (const c of rubric.integrity) {

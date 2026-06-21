@@ -119,11 +119,15 @@ cat > "$DEST/metadata.json" <<JSON
   "tags": [],
   "summary": "",
 
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "",
+
   "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
   "grade": {
     "runs": { "builds": null, "loads": null, "noConsoleErrors": null },
     "correctness": { "solarSystem": null, "planets": null, "asteroids": null, "computedPositions": null, "orbitsCorrect": null, "timeAnimation": null },
     "usability": { "camera": null, "scale": null, "legible": null, "noUiIssues": null },
+    "selfVerification": { "consoleReview": null, "displayReview": null },
     "features": { "filterSearch": null, "investigate": null, "highlight": null, "scaleRisk": null, "comets": null, "impactRisk": null, "focusFollow": null, "deepLinks": null },
     "integrity": { "dataUntouched": null, "noNetwork": null, "inBounds": null }
   }

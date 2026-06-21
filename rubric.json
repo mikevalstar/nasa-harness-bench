@@ -33,6 +33,14 @@
       ]
     },
     {
+      "key": "selfVerification",
+      "label": "Self-verification",
+      "criteria": [
+        { "key": "consoleReview", "label": "reviewed console errors in a browser" },
+        { "key": "displayReview", "label": "reviewed display / visuals in a browser" }
+      ]
+    },
+    {
       "key": "features",
       "label": "Features",
       "criteria": [

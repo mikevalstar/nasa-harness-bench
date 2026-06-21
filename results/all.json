@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-06-21T22:49:54.200Z",
-  "count": 5,
+  "generatedAt": "2026-06-21T23:24:23.620Z",
+  "count": 6,
   "rubric": {
     "scale": {
       "pass": 1,
@@ -81,6 +81,20 @@
         ]
       },
       {
+        "key": "selfVerification",
+        "label": "Self-verification",
+        "criteria": [
+          {
+            "key": "consoleReview",
+            "label": "reviewed console errors in a browser"
+          },
+          {
+            "key": "displayReview",
+            "label": "reviewed display / visuals in a browser"
+          }
+        ]
+      },
+      {
         "key": "features",
         "label": "Features",
         "criteria": [
@@ -136,6 +150,92 @@
   },
   "benches": [
     {
+      "slug": "2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium",
+      "harness": "copilot",
+      "harnessVersion": "1.0.63",
+      "model": "gemini-3.5-flash",
+      "effort": "medium",
+      "interface": "cli",
+      "createdAt": "2026-06-21T22:51:53Z",
+      "collectedAt": "2026-06-21T23:01:45Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": true,
+      "cheated": false,
+      "buildSucceeded": true,
+      "_tokenUsageNote": "Interrupted run (no session.shutdown). input/total reconstructed from the CLI process log's per-request context-window readings (sum of the 74 'Sending request to the AI model' prompt sizes); output summed from per-message events. input is all-in (incl. cache reads); cache vs fresh split is unrecoverable, so cached/cacheWrite are null.",
+      "tokenUsage": {
+        "input": 3736341,
+        "output": 36233,
+        "cached": null,
+        "cacheWrite": null,
+        "total": 3772574
+      },
+      "_estimatedCostNote": "Gemini 3.5 Flash list pricing (May 2026): $1.50/M input, $9.00/M output, $0.15/M cached input. No cache/fresh split is recorded, so fresh≈peak context (~83.9k @ $1.50/M) and the rest (~3.65M cache reads @ $0.15/M) is assumed → ~$1.00. No-cache ceiling (all input @ $1.50/M) ≈ $5.93.",
+      "estimatedCostUsd": 1,
+      "timeTakenSeconds": 488,
+      "tags": [],
+      "summary": "",
+      "selfVerificationNotes": "Verified only that 'pnpm build' compiled (and fixed an .npmrc/esbuild build issue) — it never opened the running app in a browser: no headless browser, screenshot, console capture, or navigation appears in the log. References to 'the browser' are about client-side JSON loading, not self-review.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": "pass",
+          "noConsoleErrors": "pass"
+        },
+        "correctness": {
+          "solarSystem": "pass",
+          "planets": "pass",
+          "asteroids": "pass",
+          "computedPositions": "pass",
+          "orbitsCorrect": "pass",
+          "timeAnimation": "pass"
+        },
+        "usability": {
+          "camera": "partial",
+          "scale": "pass",
+          "legible": "partial",
+          "noUiIssues": "fail"
+        },
+        "selfVerification": {
+          "consoleReview": "fail",
+          "displayReview": "fail"
+        },
+        "features": {
+          "filterSearch": "pass",
+          "investigate": "fail",
+          "highlight": "fail",
+          "scaleRisk": "fail",
+          "comets": "fail",
+          "impactRisk": "fail",
+          "focusFollow": "fail",
+          "deepLinks": "poor"
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "scoring": {
+        "status": "graded",
+        "score": 53,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": 100,
+          "usability": 50,
+          "selfVerification": 0,
+          "features": 16
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
+    {
       "slug": "2026-06-21-17-43-47-copilot-opus-4-8-medium",
       "harness": "copilot",
       "harnessVersion": "1.0.63",
@@ -160,6 +260,7 @@
       "timeTakenSeconds": 2185,
       "tags": [],
       "summary": "",
+      "selfVerificationNotes": "Started a vite preview and ran a Playwright smoke test using system Chrome, capturing console messages, page errors, and failed requests plus screenshots. Verified default load, deep-link restore, follow mode, MOID coloring, and comets — all rendering with zero JS errors.",
       "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
       "grade": {
         "runs": {
@@ -181,6 +282,10 @@
           "legible": "pass",
           "noUiIssues": "partial"
         },
+        "selfVerification": {
+          "consoleReview": "pass",
+          "displayReview": "pass"
+        },
         "features": {
           "filterSearch": "good",
           "investigate": "pass",
@@ -199,11 +304,12 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 91,
+        "score": 93,
         "categoryScores": {
           "runs": 100,
           "correctness": 92,
           "usability": 88,
+          "selfVerification": 100,
           "features": 84
         },
         "integrityPassed": true,
@@ -236,6 +342,7 @@
       "timeTakenSeconds": 2854,
       "tags": [],
       "summary": "",
+      "selfVerificationNotes": "Persisted through several failed automation paths (no local Playwright, MCP connection refused, server restarts) before installing Playwright's chromium-headless-shell and driving it — capturing console/page errors and screenshots. Sanity-checked end-to-end with zero page errors (PHA filter, deep link, comets, search, scrub, zoom).",
       "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
       "grade": {
         "runs": {
@@ -257,6 +364,10 @@
           "legible": "good",
           "noUiIssues": "partial"
         },
+        "selfVerification": {
+          "consoleReview": "pass",
+          "displayReview": "pass"
+        },
         "features": {
           "filterSearch": "poor",
           "investigate": "fail",
@@ -275,11 +386,12 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 73,
+        "score": 78,
         "categoryScores": {
           "runs": 100,
           "correctness": 71,
           "usability": 81,
+          "selfVerification": 100,
           "features": 38
         },
         "integrityPassed": true,
@@ -314,6 +426,7 @@
       "timeTakenSeconds": 1317,
       "tags": [],
       "summary": "",
+      "selfVerificationNotes": "Used the built-in cursor browser MCP to navigate the preview, take screenshots, and run CDP console checks. Caught that asteroids weren't rendering (missing position attribute) plus oversized points, fixed both, and re-verified a clean final load at 60fps.",
       "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
       "grade": {
         "runs": {
@@ -335,6 +448,10 @@
           "legible": "good",
           "noUiIssues": "pass"
         },
+        "selfVerification": {
+          "consoleReview": "pass",
+          "displayReview": "pass"
+        },
         "features": {
           "filterSearch": "pass",
           "investigate": "good",
@@ -353,11 +470,12 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 94,
+        "score": 95,
         "categoryScores": {
           "runs": 100,
           "correctness": 100,
           "usability": 88,
+          "selfVerification": 100,
           "features": 88
         },
         "integrityPassed": true,
@@ -392,6 +510,7 @@
       "timeTakenSeconds": 448,
       "tags": [],
       "summary": "",
+      "selfVerificationNotes": "Started a vite preview; with no local Playwright it added puppeteer-core and drove system Chrome headless, listening for console and page errors and taking screenshots. Caught a blank-canvas issue and fixed it (preserveDrawingBuffer); final desktop + mobile passes showed no console errors and a non-blank canvas.",
       "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
       "grade": {
         "runs": {
@@ -413,6 +532,10 @@
           "legible": "good",
           "noUiIssues": "good"
         },
+        "selfVerification": {
+          "consoleReview": "pass",
+          "displayReview": "pass"
+        },
         "features": {
           "filterSearch": "pass",
           "investigate": "pass",
@@ -431,11 +554,12 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 90,
+        "score": 92,
         "categoryScores": {
           "runs": 100,
           "correctness": 88,
           "usability": 88,
+          "selfVerification": 100,
           "features": 84
         },
         "integrityPassed": true,
@@ -470,6 +594,7 @@
       "timeTakenSeconds": 1008,
       "tags": [],
       "summary": "",
+      "selfVerificationNotes": "Drove system Chrome headless via CDP against a local server with a smoke script that captured console output and screenshots: no JS/shader errors, canvas renders, 42,075 asteroids loaded. Also screenshotted search→select→detail and a deep link to confirm the visuals.",
       "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score computed by pnpm compile.",
       "grade": {
         "runs": {
@@ -491,6 +616,10 @@
           "legible": "good",
           "noUiIssues": "partial"
         },
+        "selfVerification": {
+          "consoleReview": "pass",
+          "displayReview": "pass"
+        },
         "features": {
           "filterSearch": "pass",
           "investigate": "pass",
@@ -509,11 +638,12 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 86,
+        "score": 89,
         "categoryScores": {
           "runs": 92,
           "correctness": 96,
           "usability": 75,
+          "selfVerification": 100,
           "features": 81
         },
         "integrityPassed": true,

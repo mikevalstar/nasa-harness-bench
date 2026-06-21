@@ -19,11 +19,14 @@
   "tags": [],
   "summary": "",
 
+  "selfVerificationNotes": "Drove system Chrome headless via CDP against a local server with a smoke script that captured console output and screenshots: no JS/shader errors, canvas renders, 42,075 asteroids loaded. Also screenshotted search→select→detail and a deep link to confirm the visuals.",
+
   "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score computed by pnpm compile.",
   "grade": {
     "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "good" },
     "correctness": { "solarSystem": "pass", "planets": "pass", "asteroids": "pass", "computedPositions": "pass", "orbitsCorrect": "good", "timeAnimation": "pass" },
     "usability": { "camera": "good", "scale": "pass", "legible": "good", "noUiIssues": "partial" },
+    "selfVerification": { "consoleReview": "pass", "displayReview": "pass" },
     "features": { "filterSearch": "pass", "investigate": "pass", "highlight": "pass", "scaleRisk": "pass", "comets": "partial", "impactRisk": "pass", "focusFollow": "fail", "deepLinks": "pass" },
     "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
   }

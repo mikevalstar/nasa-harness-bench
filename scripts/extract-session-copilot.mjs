@@ -68,7 +68,16 @@ if (!existsSync(STATE)) {
 // A slug can map to several sessions (init probes, retries). The real run is the
 // one whose cwd contains the slug and that emitted a session.shutdown with model
 // metrics. Among ties, take the one with the most events.
+// Prefer a completed run (one that emitted session.shutdown, which carries the
+// authoritative cumulative telemetry); fall back to the largest interrupted run
+// when no clean shutdown exists, extracting whatever it does contain.
 let best = null;
+const better = (a, b) => {
+  if (!b) return true;
+  const as = a.shutdown ? 1 : 0, bs = b.shutdown ? 1 : 0;
+  if (as !== bs) return as > bs;                 // completed beats interrupted
+  return a.events.length > b.events.length;
+};
 for (const id of readdirSync(STATE)) {
   const file = join(STATE, id, "events.jsonl");
   if (!existsSync(file)) continue;
@@ -82,19 +91,25 @@ for (const id of readdirSync(STATE)) {
     if (e.type === "session.shutdown") shutdown = e;
   }
   if (!cwd || !cwd.includes(slug)) continue;
-  if (!shutdown) continue;                       // not a completed run
-  if (!best || events.length > best.events.length) best = { id, events, shutdown, cwd, file };
+  const cand = { id, events, shutdown, cwd, file };
+  if (better(cand, best)) best = cand;
 }
 
 if (!best) {
-  console.error(`No completed Copilot session (with session.shutdown) for "${slug}" under ${STATE}.`);
+  console.error(`No Copilot session whose cwd contains "${slug}" under ${STATE}.`);
   process.exit(1);
 }
 console.log(`Session: ${best.id}`);
+if (!best.shutdown)
+  console.warn("⚠ No session.shutdown event — interrupted run. Cumulative input/"
+    + "cache tokens, cost, and code-change stats are unrecoverable and reported as "
+    + "null; output tokens (summed per-message), timing, tools, and the transcript "
+    + "are still extracted.");
 
 // --- walk the event log -------------------------------------------------------
 const trunc = (s, n = 1500) =>
   typeof s === "string" && s.length > n ? s.slice(0, n) + `\n…[truncated ${s.length - n} chars]` : s;
+const num = (x) => (x == null ? "?" : x.toLocaleString()); // null-safe for headers
 
 const tools = {};
 const shellCommands = [];
@@ -169,19 +184,27 @@ for (const e of best.events) {
 }
 
 // --- authoritative cumulative telemetry from session.shutdown -----------------
-const sd = best.shutdown.data || {};
+const hasShutdown = !!best.shutdown;
+const sd = best.shutdown?.data || {};
 const mm = sd.modelMetrics?.[model] || Object.values(sd.modelMetrics || {})[0] || {};
 const usage = mm.usage || {};
 const td = sd.tokenDetails || {};
 
 // inputTokens here is all-in (fresh input + cache read + cache write), matching
 // how the other results record tokenUsage.input. Break out the components.
-const inputAll = usage.inputTokens ?? ((td.input?.tokenCount || 0) + (td.cache_read?.tokenCount || 0) + (td.cache_write?.tokenCount || 0));
+// These cumulative totals live ONLY in session.shutdown — for an interrupted run
+// they're unrecoverable, so report null (not a misleading 0). Per-message
+// outputTokens are on every assistant.message, so output is always summable.
+const haveInput = hasShutdown
+  && (usage.inputTokens != null || td.input || td.cache_read || td.cache_write);
+const inputAll = haveInput
+  ? (usage.inputTokens ?? ((td.input?.tokenCount || 0) + (td.cache_read?.tokenCount || 0) + (td.cache_write?.tokenCount || 0)))
+  : null;
 const output = usage.outputTokens ?? td.output?.tokenCount ?? outputTokensSum;
-const cacheRead = usage.cacheReadTokens ?? td.cache_read?.tokenCount ?? 0;
-const cacheWrite = usage.cacheWriteTokens ?? td.cache_write?.tokenCount ?? 0;
-const freshInput = Math.max(0, inputAll - cacheRead - cacheWrite);
-const total = inputAll + output;
+const cacheRead = hasShutdown ? (usage.cacheReadTokens ?? td.cache_read?.tokenCount ?? 0) : null;
+const cacheWrite = hasShutdown ? (usage.cacheWriteTokens ?? td.cache_write?.tokenCount ?? 0) : null;
+const freshInput = inputAll == null ? null : Math.max(0, inputAll - (cacheRead || 0) - (cacheWrite || 0));
+const total = inputAll == null ? null : inputAll + output;
 
 const wallSeconds = firstTs && lastTs
   ? Math.round((new Date(lastTs) - new Date(firstTs)) / 1000) : null;
@@ -189,7 +212,7 @@ const wallSeconds = firstTs && lastTs
 // --- cost (computed from Anthropic list pricing) ------------------------------
 const p = PRICING[slug.match(/-(opus-[\d-]+)-/)?.[1]] || PRICING[Object.keys(PRICING).find((k) => slug.includes(k))] || null;
 let cost5m = null, cost1h = null;
-if (p) {
+if (p && inputAll != null) {
   const base = freshInput * p.input + output * p.output + cacheRead * p.cacheRead;
   cost5m = +(base + cacheWrite * p.cacheWrite5m).toFixed(2);
   cost1h = +(base + cacheWrite * p.cacheWrite1h).toFixed(2);
@@ -203,6 +226,7 @@ writeFileSync(join(outDir, "copilot-events.jsonl"), readFileSync(best.file));
 const meta = {
   extractedAt: new Date().toISOString(),
   sessionId: best.id,
+  interrupted: !hasShutdown,                       // true = no session.shutdown event
   copilotVersion,
   model,
   effort,
@@ -244,9 +268,9 @@ const tHeader = `# Session transcript — ${slug}
 
 - Session: \`${best.id}\`  ·  Copilot CLI ${copilotVersion}
 - Model: ${model}  ·  effort: ${effort}
-- Span: ${firstTs} → ${lastTs} (wall ${wallSeconds}s, API ${meta.apiDurationSeconds}s)
+- Span: ${firstTs} → ${lastTs} (wall ${wallSeconds}s, API ${num(meta.apiDurationSeconds)}s)
 - Messages: ${userMsgs} user / ${assistantMsgs} assistant text / ${thinkingBlocks} thinking
-- Tokens: ${total.toLocaleString()} total (in ${inputAll.toLocaleString()} [cache-read ${cacheRead.toLocaleString()}, cache-write ${cacheWrite.toLocaleString()}, fresh ${freshInput.toLocaleString()}], out ${output.toLocaleString()})
+- Tokens: ${num(total)} total (in ${num(inputAll)} [cache-read ${num(cacheRead)}, cache-write ${num(cacheWrite)}, fresh ${num(freshInput)}], out ${num(output)})${hasShutdown ? "" : "  ⚠ interrupted run — input/cache totals unavailable"}
 - Premium requests: ${meta.premiumRequests}  ·  est. cost $${cost5m} (5m cache) / $${cost1h} (1h cache)
 - Tools: ${Object.entries(tools).map(([k, v]) => `${k}×${v}`).join(", ") || "none"}
 - Lines changed: +${meta.linesChanged.added} / -${meta.linesChanged.removed} across ${meta.filesModifiedCount} files
@@ -259,8 +283,8 @@ writeFileSync(join(outDir, "transcript.md"), tHeader + md.join("\n") + "\n");
 const rHeader = `NASA Harness Bench — run log
 ${slug}
 Session ${best.id} · GitHub Copilot CLI ${copilotVersion} · ${model} (effort ${effort})
-${firstTs} → ${lastTs} (wall ${wallSeconds}s · API ${meta.apiDurationSeconds}s) · ${userMsgs} user / ${assistantMsgs} assistant turns · ${thinkingBlocks} thinking blocks
-Tokens: ${total.toLocaleString()} total (in ${inputAll.toLocaleString()}, out ${output.toLocaleString()}, cache-read ${cacheRead.toLocaleString()}, cache-write ${cacheWrite.toLocaleString()})
+${firstTs} → ${lastTs} (wall ${wallSeconds}s · API ${num(meta.apiDurationSeconds)}s) · ${userMsgs} user / ${assistantMsgs} assistant turns · ${thinkingBlocks} thinking blocks
+${hasShutdown ? "" : "⚠ Interrupted run (no session.shutdown): input/cache tokens, cost, and code-change stats unavailable.\n"}Tokens: ${num(total)} total (in ${num(inputAll)}, out ${num(output)}, cache-read ${num(cacheRead)}, cache-write ${num(cacheWrite)})
 Premium requests: ${meta.premiumRequests} · est. cost $${cost5m} (5m cache) / $${cost1h} (1h cache)
 Lines changed: +${meta.linesChanged.added} / -${meta.linesChanged.removed} across ${meta.filesModifiedCount} files
 (Extracted from ~/.copilot/session-state/<id>/events.jsonl. Long tool inputs/results truncated.)

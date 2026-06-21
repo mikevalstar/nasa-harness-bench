@@ -23,17 +23,18 @@ has no score until every criterion is filled in.
 
 ## Categories (equal weight)
 
-Each category is scored as the average of its criteria, then the four category
+Each category is scored as the average of its criteria, then the five category
 percentages are **averaged equally** — so no category is over-represented
 regardless of how many criteria it has. Final score is `0–100`.
 
 1. **Runs** — `pnpm build` succeeds · `dist/` loads without a fatal error · no console errors in normal use
 2. **Base correctness** — 3D solar system renders · 8 planets present · NEO asteroids rendered from the data · positions computed from elements (not fabricated) · orbits geometrically correct · time advances / bodies move
 3. **Usability** — camera control · sense of scale · legible & intentional · free of visual defects (overlap, misalignment, inconsistent icons)
-4. **Features** — each open-ended direction marked working/partial/absent: filter & search · investigate a single object · highlight what matters · convey scale & risk · comets overlay · impact-risk (Sentry) overlay · focus & follow camera · shareable deep links
+4. **Self-verification** — did the harness actually open the running app in a browser to check its own work? Two checks, judged from the run log: reviewed **console errors** · reviewed **display / visuals**. For each: `pass` = reviewed and succeeded · `partial` = tried but failed (e.g. couldn't get a browser running, review never completed) · `fail` = no attempt. The free-form `selfVerificationNotes` field records what it did.
+5. **Features** — each open-ended direction marked working/partial/absent: filter & search · investigate a single object · highlight what matters · convey scale & risk · comets overlay · impact-risk (Sentry) overlay · focus & follow camera · shareable deep links
 
 ```
-score = mean( runs%, correctness%, usability%, features% )
+score = mean( runs%, correctness%, usability%, selfVerification%, features% )
 ```
 
 ## Integrity gate
