@@ -18,6 +18,7 @@
   "timeTakenSeconds": 1008,
   "tags": [],
   "summary": "",
+  "note": "Highest cost of the Opus 4.8 runs despite near-identical work — Claude Code uses tighter, finer-grained turns (~120 vs ~30), so more per-turn thinking and cache reuse, not more or worse work.",
 
   "selfVerificationNotes": "Drove system Chrome headless via CDP against a local server with a smoke script that captured console output and screenshots: no JS/shader errors, canvas renders, 42,075 asteroids loaded. Also screenshotted search→select→detail and a deep link to confirm the visuals.",
 

@@ -176,8 +176,8 @@ const base = import.meta.env.BASE_URL; // "/" locally, sub-path on GitHub Pages
       // X-axis metrics the scatter can plot against score. Each is inverted so
       // that "better" (cheaper / faster / fewer tokens) sits on the RIGHT.
       const SCATTER_METRICS = {
-        cost: { label: "cost per run (USD) — cheaper →", get: (b) => b.estimatedCostUsd, floor: 2, tick: (v) => "$" + (v % 1 ? v.toFixed(1) : v), point: fmtCost },
-        time: { label: "time per run — faster →", get: (b) => b.timeTakenSeconds, floor: 60, tick: (v) => fmtTime(Math.round(v)), point: (v) => fmtTime(Math.round(v)) },
+        cost: { label: "cost per run (USD) — cheaper →", get: (b) => b.estimatedCostUsd, floor: 2, cap: 15, tick: (v) => "$" + (v % 1 ? v.toFixed(1) : v), point: fmtCost },
+        time: { label: "time per run — faster →", get: (b) => b.timeTakenSeconds, floor: 60, cap: 3000, step: 600, tick: (v) => fmtTime(Math.round(v)), point: (v) => fmtTime(Math.round(v)) },
         tokens: { label: "output tokens — fewer →", get: (b) => (b.tokenUsage || {}).output, floor: 1000, tick: fmtTok, point: fmtTok },
       };
       let scatterMetric = "cost";
@@ -187,6 +187,15 @@ const base = import.meta.env.BASE_URL; // "/" locally, sub-path on GitHub Pages
         v = Math.max(v, floor || 1);
         const pow = Math.pow(10, Math.floor(Math.log10(v)));
         const n = v / pow;
+        const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
+        return step * pow;
+      }
+
+      // A "nice" tick step (1/2/5 × 10ⁿ) that yields ~4 gridlines across `max`.
+      function axisStep(max) {
+        const target = max / 4;
+        const pow = Math.pow(10, Math.floor(Math.log10(target)));
+        const n = target / pow;
         const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
         return step * pow;
       }
@@ -202,7 +211,9 @@ const base = import.meta.env.BASE_URL; // "/" locally, sub-path on GitHub Pages
         const W = 720, H = 460, mL = 44, mR = 18, mT = 16, mB = 42;
         const pw = W - mL - mR, ph = H - mT - mB;
         const maxVal = Math.max(...pts.map((p) => metric.get(p)), metric.floor);
-        const xMax = niceMax(maxVal, metric.floor);
+        // Hold a fixed cap until a run actually exceeds it; then auto-scale.
+        const capped = metric.cap != null && maxVal <= metric.cap;
+        const xMax = capped ? metric.cap : niceMax(maxVal, metric.floor);
         // invert x so the "better" end sits on the RIGHT
         const x = (c) => mL + pw * (1 - c / xMax);
         const y = (s) => mT + ph * (1 - s / 100);
@@ -212,9 +223,9 @@ const base = import.meta.env.BASE_URL; // "/" locally, sub-path on GitHub Pages
           g += `<line class="grid" x1="${mL}" y1="${yy}" x2="${W - mR}" y2="${yy}"/>
                 <text class="axis" x="${mL - 8}" y="${yy + 3}" text-anchor="end">${s}</text>`;
         }
-        const ticks = 4;
-        for (let i = 0; i <= ticks; i++) {
-          const c = (xMax * i) / ticks;
+        // Honour a metric's explicit step while capped; otherwise pick a nice one.
+        const step = capped && metric.step ? metric.step : axisStep(xMax);
+        for (let c = 0; c <= xMax + 1e-9; c += step) {
           const xx = x(c);
           g += `<line class="grid" x1="${xx}" y1="${mT}" x2="${xx}" y2="${H - mB}"/>
                 <text class="axis" x="${xx}" y="${H - mB + 16}" text-anchor="middle">${metric.tick(c)}</text>`;
