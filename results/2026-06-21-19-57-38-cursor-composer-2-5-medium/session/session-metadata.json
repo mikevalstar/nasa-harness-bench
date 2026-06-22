@@ -1,0 +1,63 @@
+{
+  "extractedAt": "2026-06-22T00:02:49.331Z",
+  "composerId": "dd475d0b-f92e-4509-81ca-f7ea61bd4a92",
+  "cursorChatName": "Implementation of PLAN.md",
+  "model": "composer-2.5",
+  "effort": null,
+  "span": {
+    "start": "2026-06-21T23:58:18.250Z",
+    "end": "2026-06-22T00:00:05.656Z",
+    "wallSeconds": 107
+  },
+  "messages": {
+    "user": 1,
+    "assistant": 4,
+    "thinking": 7
+  },
+  "tokenUsage": null,
+  "contextWindowFinal": {
+    "totalUsedTokens": 51175,
+    "maxTokens": 200000,
+    "note": "Final context-window size at end of run — NOT cumulative input/output usage."
+  },
+  "linesChanged": {
+    "added": 2045,
+    "removed": 0
+  },
+  "filesChangedCount": 14,
+  "tools": {
+    "read_file_v2": 8,
+    "glob_file_search": 1,
+    "run_terminal_command_v2": 5,
+    "todo_write": 2,
+    "edit_file_v2": 22,
+    "read_lints": 1
+  },
+  "filesEdited": [
+    "package.json",
+    "tsconfig.json",
+    "vite.config.ts",
+    "index.html",
+    "src/orbit.ts",
+    "src/types.ts",
+    "src/julian.ts",
+    "src/data.ts",
+    "src/scene.ts",
+    "src/ui.ts",
+    "src/main.ts",
+    "src/styles/main.css",
+    "README.md",
+    ".gitignore"
+  ],
+  "shellCommands": [
+    "cd /Users/mikevalstar/projects/nbench/2026-06-21-19-57-38-cursor-composer-2-5-medium && node -e \"\nconst a = require('./data/asteroids.json');\nconst c = require('./data/close-approaches.json');\nconst co = require('./data/comets.json');\nconst s = require('./data/sentry.json');\nconsole.log('asteroids:', a.length, JSON.stringify(a[0], null, 2));\nconsole.log('close:', c.length, JSON.stringify(c[0], null, 2));\nconsole.log('comets:', co.length, JSON.stringify(co[0], null, 2));\nconsole.log('sentry:', s.length, JSON.stringify(s[0], null, 2));\nconst hyperbolic = co.filter(x => x.e >= 1).length;\nconsole.log('hyperbolic comets:', hyperbolic);\nconst pha = a.filter(x => x.pha).length;\nconsole.log('PHA count:', pha);\n\"",
+    "cd /Users/mikevalstar/projects/nbench/2026-06-21-19-57-38-cursor-composer-2-5-medium && pnpm install && pnpm build",
+    "cd /Users/mikevalstar/projects/nbench/2026-06-21-19-57-38-cursor-composer-2-5-medium && node -e \"\nconst co = require('./data/comets.json');\nconst hyper = co.filter(c => c.e >= 1);\nconsole.log('hyperbolic sample:', JSON.stringify(hyper[0], null, 2));\nconsole.log('with tp:', hyper.filter(c => c.tp).length);\nconsole.log('with negative a:', hyper.filter(c => c.a < 0).length);\n\"",
+    "ls /Users/mikevalstar/projects/nbench/2026-06-21-19-57-38-cursor-composer-2-5-medium/dist/data/",
+    "cd /Users/mikevalstar/projects/nbench/2026-06-21-19-57-38-cursor-composer-2-5-medium && pnpm build 2>&1 && node -e \"\nimport { propagate } from './src/orbit.ts';\nimport planets from './data/planets.json' with { type: 'json' };\n\nconst jd = 2461200.5;\nfor (const p of planets) {\n  const pos = propagate(p, jd);\n  const r = Math.sqrt(pos.x**2 + pos.y**2 + pos.z**2);\n  console.log(p.name, 'r=', r.toFixed(3), 'au (a=', p.a, ')');\n}\n\""
+  ],
+  "files": {
+    "raw": "session/cursor-composer.json",
+    "transcript": "session/transcript.md"
+  }
+}

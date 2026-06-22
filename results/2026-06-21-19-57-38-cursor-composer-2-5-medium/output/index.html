@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inner Solar System Explorer</title>
+    <link rel="stylesheet" href="./src/styles/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="canvas"></canvas>
+      <div id="loading">
+        <div class="spinner"></div>
+        <p>Loading solar system data…</p>
+      </div>
+      <div id="hud" class="hidden">
+        <header id="top-bar">
+          <h1>Inner Solar System Explorer</h1>
+          <div id="date-display"></div>
+        </header>
+        <aside id="sidebar">
+          <section class="panel">
+            <h2>Time</h2>
+            <div class="time-controls">
+              <button id="btn-play" title="Play/Pause">▶</button>
+              <button id="btn-step-back" title="Step back 1 day">◀◀</button>
+              <button id="btn-step-fwd" title="Step forward 1 day">▶▶</button>
+              <label>
+                Speed
+                <select id="speed-select">
+                  <option value="1">1 day/s</option>
+                  <option value="7">1 week/s</option>
+                  <option value="30" selected>1 month/s</option>
+                  <option value="365">1 year/s</option>
+                  <option value="3650">10 years/s</option>
+                </select>
+              </label>
+            </div>
+            <input type="range" id="time-slider" min="0" max="1000" value="500" />
+            <input type="date" id="date-input" />
+          </section>
+          <section class="panel">
+            <h2>Search &amp; Filter</h2>
+            <input type="search" id="search-input" placeholder="Name or designation…" />
+            <div class="filter-row">
+              <label><input type="checkbox" id="filter-pha" /> PHA only</label>
+              <label><input type="checkbox" id="filter-sentry" /> Sentry risk</label>
+            </div>
+            <div class="filter-row">
+              <label><input type="checkbox" id="show-comets" /> Show comets</label>
+              <label><input type="checkbox" id="show-orbits" checked /> Planet orbits</label>
+            </div>
+            <select id="class-filter">
+              <option value="">All orbit classes</option>
+            </select>
+            <label>
+              Max MOID (au)
+              <input type="number" id="moid-max" step="0.01" min="0" placeholder="Any" />
+            </label>
+          </section>
+          <section class="panel" id="detail-panel">
+            <h2>Selected Object</h2>
+            <div id="detail-content">
+              <p class="hint">Click a body in the scene or search to select.</p>
+            </div>
+          </section>
+          <section class="panel">
+            <h2>Legend</h2>
+            <ul id="legend">
+              <li><span class="dot pha"></span> Potentially Hazardous</li>
+              <li><span class="dot sentry"></span> Sentry monitored</li>
+              <li><span class="dot comet"></span> Comet</li>
+              <li><span class="dot planet"></span> Planet</li>
+            </ul>
+          </section>
+        </aside>
+        <footer id="bottom-bar">
+          <span id="stats"></span>
+          <button id="btn-reset-cam" title="Reset camera">Reset view</button>
+          <button id="btn-follow" class="hidden" title="Follow selected">Follow</button>
+          <button id="btn-share" title="Copy link">Share view</button>
+        </footer>
+      </div>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

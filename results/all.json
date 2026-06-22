@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-06-21T23:24:23.620Z",
-  "count": 6,
+  "generatedAt": "2026-06-22T00:18:47.976Z",
+  "count": 7,
   "rubric": {
     "scale": {
       "pass": 1,
@@ -149,6 +149,91 @@
     ]
   },
   "benches": [
+    {
+      "slug": "2026-06-21-19-57-38-cursor-composer-2-5-medium",
+      "harness": "cursor",
+      "harnessVersion": "3.8.11",
+      "model": "composer-2-5",
+      "effort": "medium",
+      "interface": "agent-window",
+      "createdAt": "2026-06-21T23:57:40Z",
+      "collectedAt": "2026-06-22T00:00:44Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-21-19-57-38-cursor-composer-2-5-medium",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": false,
+      "cheated": false,
+      "buildSucceeded": true,
+      "tokenUsage": {
+        "input": 527315,
+        "output": 26122,
+        "cached": 462816,
+        "cacheWrite": 0,
+        "total": 553437
+      },
+      "estimatedCostUsd": 0.19,
+      "timeTakenSeconds": 107,
+      "tags": [],
+      "summary": "",
+      "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+      "selfVerificationNotes": "No browser/visual review. Used CLI only (read/edit/terminal). Did run a numeric sanity check after build — propagated all 8 planets at a fixed JD and printed orbital radius r vs semi-major axis a to confirm the propagation math. No console/display inspection of the running app.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": "pass",
+          "noConsoleErrors": "pass"
+        },
+        "correctness": {
+          "solarSystem": "partial",
+          "planets": "partial",
+          "asteroids": "pass",
+          "computedPositions": "pass",
+          "orbitsCorrect": "good",
+          "timeAnimation": "partial"
+        },
+        "usability": {
+          "camera": "good",
+          "scale": "fail",
+          "legible": "pass",
+          "noUiIssues": "partial"
+        },
+        "selfVerification": {
+          "consoleReview": "fail",
+          "displayReview": "fail"
+        },
+        "features": {
+          "filterSearch": "fail",
+          "investigate": "partial",
+          "highlight": "good",
+          "scaleRisk": "pass",
+          "comets": "poor",
+          "impactRisk": "partial",
+          "focusFollow": "partial",
+          "deepLinks": "poor"
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "scoring": {
+        "status": "graded",
+        "score": 55,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": 71,
+          "usability": 56,
+          "selfVerification": 0,
+          "features": 47
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
     {
       "slug": "2026-06-21-18-51-51-copilot-gemini-3-5-flash-medium",
       "harness": "copilot",

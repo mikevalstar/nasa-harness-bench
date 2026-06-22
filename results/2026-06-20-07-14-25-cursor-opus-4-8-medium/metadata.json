@@ -13,7 +13,13 @@
   "broken": null,
   "cheated": null,
   "buildSucceeded": null,
-  "tokenUsage": { "input": 9360435, "output": 93240, "cached": 9165393, "cacheWrite": 194862, "total": 9453675 },
+  "tokenUsage": {
+    "input": 9360435,
+    "output": 93240,
+    "cached": 9165393,
+    "cacheWrite": 194862,
+    "total": 9453675
+  },
   "estimatedCostUsd": 8.13,
   "timeTakenSeconds": 1317,
   "tags": [],
@@ -24,10 +30,31 @@
   "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
   "grade": {
     "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
-    "correctness": { "solarSystem": "pass", "planets": "pass", "asteroids": "pass", "computedPositions": "pass", "orbitsCorrect": "pass", "timeAnimation": "pass" },
-    "usability": { "camera": "pass", "scale": "good", "legible": "good", "noUiIssues": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "pass",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "good",
+      "legible": "good",
+      "noUiIssues": "pass"
+    },
     "selfVerification": { "consoleReview": "pass", "displayReview": "pass" },
-    "features": { "filterSearch": "pass", "investigate": "good", "highlight": "partial", "scaleRisk": "pass", "comets": "good", "impactRisk": "pass", "focusFollow": "pass", "deepLinks": "pass" },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "good",
+      "highlight": "partial",
+      "scaleRisk": "pass",
+      "comets": "good",
+      "impactRisk": "pass",
+      "focusFollow": "pass",
+      "deepLinks": "pass"
+    },
     "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
   }
 }
