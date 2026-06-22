@@ -24,6 +24,7 @@
   "timeTakenSeconds": 448,
   "tags": [],
   "summary": "",
+  "note": "Model decided to use JavaScript instead of TypeScript, and did not compile the data before serving.",
 
   "selfVerificationNotes": "Started a vite preview; with no local Playwright it added puppeteer-core and drove system Chrome headless, listening for console and page errors and taking screenshots. Caught a blank-canvas issue and fixed it (preserveDrawingBuffer); final desktop + mobile passes showed no console errors and a non-blank canvas.",
 

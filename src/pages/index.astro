@@ -41,41 +41,23 @@ const base = import.meta.env.BASE_URL; // "/" locally, sub-path on GitHub Pages
             what it produced.
           </p>
 
+          <div class="purpose">
+            <h2>What to look for</h2>
+            <p>
+              The scores below are a rough instrument. They're useful for spotting
+              <b>large variances</b> between harnesses and models — where one
+              combination clearly stumbles, cuts a corner, or runs away with cost
+              or time. Treat them as a rough guideline.
+            </p>
+            <p>
+              The more interesting part is the work itself. Open the runs in the
+              <b>left nav</b> and see how each harness + model actually completed
+              the task — the live compiled site is embedded right there, so you can
+              click through and judge the output with your own eyes.
+            </p>
+          </div>
+
           <div id="leaderboard" class="leaderboard"><div class="empty">Loading…</div></div>
-
-          <h2>Methodology</h2>
-          <ol>
-            <li>Every run starts from the identical prompt in <code>bench/PLAN.md</code> and a read-only copy of <code>bench/data/</code>.</li>
-            <li>A fresh bench instance is created <b>outside this repo</b> so we can watch whether the harness wanders the filesystem.</li>
-            <li>The harness gets <b>one shot</b> — no follow-up clarification.</li>
-            <li>Its output is required to build with <code>pnpm build</code> into a static <code>dist/</code>.</li>
-            <li>We collect the run verbatim — the <b>complete source tree it wrote</b> (under <code>output/</code>) <i>and</i> its compiled site (<code>output/dist/</code>) — link the data back to the one canonical copy, and grade a handful of fields by hand.</li>
-          </ol>
-          <p style="color:var(--muted);font-size:13px">
-            Both the source and the compiled output are kept, so you can read what
-            the harness actually produced, not just the rendered result.
-          </p>
-
-          <h2>What's measured</h2>
-          <p>Each result records (some automatic, some hand-graded):</p>
-          <pre><code>harness · interface · model · effort · createdAt
-broken · cheated · buildSucceeded
-tokenUsage · estimatedCostUsd · timeTakenSeconds
-tags · summary · free-form notes · raw run log</code></pre>
-
-          <h2>How to read a result</h2>
-          <p>
-            Pick a run on the left. The header shows its metadata; below it, the
-            harness's compiled site is embedded live in an <code>&lt;iframe&gt;</code>.
-            The links open the raw notes, run log, metadata, and (once the repo is
-            public) the full source the harness wrote, on GitHub.
-          </p>
-
-          <p style="color:var(--muted);font-size:13px;margin-top:32px">
-            ⚠ Placeholder phase — the concrete NASA task and dataset are not yet
-            designed. The pipeline and site are scaffolded so the shape can be
-            reviewed first.
-          </p>
         </section>
 
         <!-- Bench view -->
@@ -189,19 +171,39 @@ tags · summary · free-form notes · raw run log</code></pre>
       // --- homepage leaderboard (DeepSWE-style: stats · scatter · table) ---
       const fmtCost = (c) => (c == null ? "—" : "$" + c.toFixed(2));
       const fmtTime = (s) => (s == null ? "—" : s < 90 ? s + "s" : Math.round(s / 60) + "m");
+      const fmtTok = (n) => (n == null ? "—" : n >= 1000 ? +(n / 1000).toFixed(n < 10000 ? 1 : 0) + "k" : String(n));
 
-      function buildScatter(benches) {
+      // X-axis metrics the scatter can plot against score. Each is inverted so
+      // that "better" (cheaper / faster / fewer tokens) sits on the RIGHT.
+      const SCATTER_METRICS = {
+        cost: { label: "cost per run (USD) — cheaper →", get: (b) => b.estimatedCostUsd, floor: 2, tick: (v) => "$" + (v % 1 ? v.toFixed(1) : v), point: fmtCost },
+        time: { label: "time per run — faster →", get: (b) => b.timeTakenSeconds, floor: 60, tick: (v) => fmtTime(Math.round(v)), point: (v) => fmtTime(Math.round(v)) },
+        tokens: { label: "output tokens — fewer →", get: (b) => (b.tokenUsage || {}).output, floor: 1000, tick: fmtTok, point: fmtTok },
+      };
+      let scatterMetric = "cost";
+
+      // Round up to a "nice" axis maximum (1/2/5 × 10ⁿ), at least `floor`.
+      function niceMax(v, floor) {
+        v = Math.max(v, floor || 1);
+        const pow = Math.pow(10, Math.floor(Math.log10(v)));
+        const n = v / pow;
+        const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
+        return step * pow;
+      }
+
+      function buildScatter(benches, metricKey) {
+        const metric = SCATTER_METRICS[metricKey] || SCATTER_METRICS.cost;
         const pts = benches.filter((b) => {
           const s = b.scoring || {};
-          return s.status === "graded" && !s.voided && s.score != null && b.estimatedCostUsd != null;
+          return s.status === "graded" && !s.voided && s.score != null && metric.get(b) != null;
         });
         if (!pts.length)
-          return `<div class="board-empty">No graded runs with cost data yet.</div>`;
+          return `<div class="board-empty">No graded runs with this data yet.</div>`;
         const W = 720, H = 460, mL = 44, mR = 18, mT = 16, mB = 42;
         const pw = W - mL - mR, ph = H - mT - mB;
-        const maxCost = Math.max(...pts.map((p) => p.estimatedCostUsd), 1);
-        const xMax = Math.max(2, Math.ceil(maxCost / 2) * 2);
-        // invert x so cheaper runs sit on the RIGHT, pricier on the left
+        const maxVal = Math.max(...pts.map((p) => metric.get(p)), metric.floor);
+        const xMax = niceMax(maxVal, metric.floor);
+        // invert x so the "better" end sits on the RIGHT
         const x = (c) => mL + pw * (1 - c / xMax);
         const y = (s) => mT + ph * (1 - s / 100);
         let g = "";
@@ -215,13 +217,13 @@ tags · summary · free-form notes · raw run log</code></pre>
           const c = (xMax * i) / ticks;
           const xx = x(c);
           g += `<line class="grid" x1="${xx}" y1="${mT}" x2="${xx}" y2="${H - mB}"/>
-                <text class="axis" x="${xx}" y="${H - mB + 16}" text-anchor="middle">$${c % 1 ? c.toFixed(1) : c}</text>`;
+                <text class="axis" x="${xx}" y="${H - mB + 16}" text-anchor="middle">${metric.tick(c)}</text>`;
         }
-        g += `<text class="axis-title" x="${mL + pw / 2}" y="${H - 4}" text-anchor="middle">cost per run (USD) — cheaper →</text>
+        g += `<text class="axis-title" x="${mL + pw / 2}" y="${H - 4}" text-anchor="middle">${metric.label}</text>
               <text class="axis-title" x="13" y="${mT + ph / 2}" text-anchor="middle" transform="rotate(-90 13 ${mT + ph / 2})">score</text>`;
         const dots = pts
           .map((p) => {
-            const cx = x(p.estimatedCostUsd), cy = y(p.scoring.score);
+            const cx = x(metric.get(p)), cy = y(p.scoring.score);
             const t = scoreTier(p.scoring.score);
             const label = `${p.harness} · ${p.model}`;
             // flip the label to the dot's left when it sits near the right edge
@@ -230,13 +232,13 @@ tags · summary · free-form notes · raw run log</code></pre>
             const anchor = flip ? "end" : "start";
             return `<a href="#/bench/${p.slug}" class="dot-link">
                 <circle class="dot ${t}" cx="${cx}" cy="${cy}" r="6">
-                  <title>${label} — ${p.scoring.score}/100 · ${fmtCost(p.estimatedCostUsd)}</title>
+                  <title>${label} — ${p.scoring.score}/100 · ${metric.point(metric.get(p))}</title>
                 </circle>
                 <text class="dot-label" x="${lx}" y="${cy + 3.5}" text-anchor="${anchor}">${label}</text>
               </a>`;
           })
           .join("");
-        return `<svg class="scatter" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="score versus cost scatter chart">${g}${dots}</svg>`;
+        return `<svg class="scatter" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="score versus ${metricKey} scatter chart">${g}${dots}</svg>`;
       }
 
       function buildTable(benches) {
@@ -253,7 +255,13 @@ tags · summary · free-form notes · raw run log</code></pre>
               : sc.score == null
                 ? `<span class="t-muted">—</span>`
                 : `<span class="nav-score ${scoreTier(sc.score)}">${sc.score}</span>`;
-            return `<tr data-href="#/bench/${b.slug}">
+            const noteRow = b.note
+              ? `<tr class="note-row" data-href="#/bench/${b.slug}">
+                <td></td>
+                <td colspan="8" class="t-note">⚠ ${b.note}</td>
+              </tr>`
+              : "";
+            return `<tr data-href="#/bench/${b.slug}"${b.note ? ' class="has-note"' : ""}>
                 <td class="t-rank">${i + 1}</td>
                 <td class="t-harness">${b.harness || "?"}${b.harnessVersion && b.harnessVersion !== "unknown" ? ` <span class="t-muted">${b.harnessVersion}</span>` : ""}</td>
                 <td>${b.model || "?"}</td>
@@ -261,16 +269,15 @@ tags · summary · free-form notes · raw run log</code></pre>
                 <td class="t-muted">${b.interface || "cli"}</td>
                 <td class="t-score">${cell}</td>
                 <td class="t-num">${fmtCost(b.estimatedCostUsd)}</td>
-                <td class="t-num">${fmtNum(tu.total)}</td>
+                <td class="t-num">${fmtNum(tu.output)}</td>
                 <td class="t-num">${fmtTime(b.timeTakenSeconds)}</td>
-                <td class="t-num t-muted">${(b.createdAt || "").slice(0, 10)}</td>
-              </tr>`;
+              </tr>${noteRow}`;
           })
           .join("");
         return `<div class="board-wrap"><table class="board">
             <thead><tr>
               <th></th><th>Harness</th><th>Model</th><th>Effort</th><th>Interface</th>
-              <th>Score</th><th>Cost</th><th>Tokens</th><th>Time</th><th>Date</th>
+              <th>Score</th><th>Cost</th><th>Output tokens</th><th>Time</th>
             </tr></thead>
             <tbody>${body}</tbody>
           </table></div>`;
@@ -283,12 +290,32 @@ tags · summary · free-form notes · raw run log</code></pre>
           box.innerHTML = `<div class="empty">No results yet.</div>`;
           return;
         }
+        const toggle = Object.entries(SCATTER_METRICS)
+          .map(
+            ([key, m]) =>
+              `<button class="metric-btn ${key === scatterMetric ? "active" : ""}" data-metric="${key}">${
+                { cost: "Cost", time: "Time", tokens: "Output tokens" }[key]
+              }</button>`,
+          )
+          .join("");
         box.innerHTML =
-          `<div class="board-card">${buildScatter(DATA.benches)}</div>` +
+          `<div class="board-card">
+             <div class="scatter-toggle"><span class="toggle-label">score vs</span><div class="metric-group">${toggle}</div></div>
+             <div id="scatter-host">${buildScatter(DATA.benches, scatterMetric)}</div>
+           </div>` +
           buildTable(DATA.benches);
         box.querySelectorAll("tr[data-href]").forEach((r) =>
           r.addEventListener("click", () => {
             location.hash = r.getAttribute("data-href");
+          }),
+        );
+        box.querySelectorAll("[data-metric]").forEach((btn) =>
+          btn.addEventListener("click", () => {
+            scatterMetric = btn.getAttribute("data-metric");
+            $("scatter-host").innerHTML = buildScatter(DATA.benches, scatterMetric);
+            box
+              .querySelectorAll("[data-metric]")
+              .forEach((x) => x.classList.toggle("active", x === btn));
           }),
         );
       }
@@ -323,6 +350,7 @@ tags · summary · free-form notes · raw run log</code></pre>
                 ${fact("time ", b.timeTakenSeconds == null ? "—" : b.timeTakenSeconds + "s")}
               </div>
               ${b.summary ? `<p class="bh-summary">${b.summary}</p>` : ""}
+              ${b.note ? `<p class="bh-note">⚠ ${b.note}</p>` : ""}
               <div class="bench-actions">
                 ${b.hasNotes ? `<button class="btn-notes" data-notes="${b.slug}">📝 Notes</button>` : ""}
                 <div class="bench-links">
