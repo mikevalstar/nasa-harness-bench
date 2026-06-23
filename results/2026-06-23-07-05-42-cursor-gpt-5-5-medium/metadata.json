@@ -1,0 +1,64 @@
+{
+  "slug": "2026-06-23-07-05-42-cursor-gpt-5-5-medium",
+  "harness": "cursor",
+  "harnessVersion": "3.8.11",
+  "model": "gpt-5-5",
+  "effort": "medium",
+  "interface": "agent-window",
+  "createdAt": "2026-06-23T11:05:44Z",
+  "collectedAt": "2026-06-23T11:13:54Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-23-07-05-42-cursor-gpt-5-5-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": null,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 1017465,
+    "output": 22810,
+    "cached": 922624,
+    "cacheWrite": 0,
+    "total": 1040275
+  },
+  "_tokenUsageNote": "From the Cursor usage page: 94,841 fresh input + 922,624 cache reads + 22,810 output = 1,040,275 total. 'input' here is all-in (fresh + cache reads), matching the other Cursor runs; 'cached' is the cache-read portion. No cache writes reported.",
+  "_estimatedCostNote": "GPT-5.5 list pricing (Jun 2026): $5.00/M input, $30.00/M output, $0.50/M cached input. 94,841 fresh @ $5.00/M = $0.47 + 922,624 cache reads @ $0.50/M = $0.46 + 22,810 output @ $30.00/M = $0.68 → ~$1.62. Final context window was 53k tokens, well under the 272k threshold, so no large-context multiplier applies.",
+  "estimatedCostUsd": 1.62,
+  "_timeTakenNote": "From the recovered Cursor session telemetry (extract-session-cursor.mjs).",
+  "timeTakenSeconds": 446,
+  "tags": [],
+  "summary": "",
+
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "Run log recovered. Shell commands were data inspection (python3), `pnpm install`, `pnpm add -D @types/three`, and `pnpm build` (×3) — no `vite preview`, no server, no browser, no screenshots. Its thinking shows it considered a browser test ('I plan to start a preview in the background', 'run vite preview --host 127.0.0.1', considered curl/Playwright) because it suspected a runtime bug in the parabolic-orbit formula, but it never actually ran any of it — it concluded only that the build compiled and emitted dist/. No console review and no display review.",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "pass",
+      "timeAnimation": "good"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "pass",
+      "noUiIssues": "pass"
+    },
+    "selfVerification": { "consoleReview": "fail", "displayReview": "fail" },
+    "features": {
+      "filterSearch": "good",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "good",
+      "comets": "partial",
+      "impactRisk": "good",
+      "focusFollow": "pass",
+      "deepLinks": "good"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}

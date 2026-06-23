@@ -1,0 +1,63 @@
+{
+  "extractedAt": "2026-06-23T11:15:20.294Z",
+  "composerId": "0782af9e-01b5-4195-8ca6-655f160a3c6e",
+  "cursorChatName": "Implementation of PLAN.md",
+  "model": "gpt-5.5",
+  "effort": null,
+  "span": {
+    "start": "2026-06-23T11:06:19.732Z",
+    "end": "2026-06-23T11:13:46.048Z",
+    "wallSeconds": 446
+  },
+  "messages": {
+    "user": 1,
+    "assistant": 18,
+    "thinking": 12
+  },
+  "tokenUsage": null,
+  "contextWindowFinal": {
+    "totalUsedTokens": 53187,
+    "maxTokens": 272000,
+    "note": "Final context-window size at end of run — NOT cumulative input/output usage."
+  },
+  "linesChanged": {
+    "added": 1690,
+    "removed": 0
+  },
+  "filesChangedCount": 11,
+  "tools": {
+    "read_file_v2": 6,
+    "glob_file_search": 3,
+    "todo_write": 5,
+    "run_terminal_command_v2": 9,
+    "edit_file_v2": 12
+  },
+  "filesEdited": [
+    "package.json",
+    "tsconfig.json",
+    "vite.config.ts",
+    "index.html",
+    "scripts/copy-data.mjs",
+    "src/types.ts",
+    "src/orbit.ts",
+    "src/data.ts",
+    "src/styles.css",
+    "src/main.ts",
+    "README.md"
+  ],
+  "shellCommands": [
+    "ls \"/Users/mikevalstar/.cursor/projects/Users-mikevalstar-projects-nbench-2026-06-23-07-05-42-cursor-gpt-5-5-medium/terminals\"",
+    "git status --short",
+    "python3 - <<'PY'\nimport json, pathlib\nroot=pathlib.Path('.')\nfor name in ['asteroids.json','close-approaches.json','sentry.json','comets.json']:\n    path=root/'data'/name\n    data=json.loads(path.read_text())\n    print('\\n', name, len(data))\n    for row in data[:2]:\n        print(row)\nPY",
+    "mkdir -p src scripts",
+    "pnpm install",
+    "pnpm build",
+    "pnpm add -D @types/three",
+    "pnpm build",
+    "pnpm build"
+  ],
+  "files": {
+    "raw": "session/cursor-composer.json",
+    "transcript": "session/transcript.md"
+  }
+}
