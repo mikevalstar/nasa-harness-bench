@@ -1,0 +1,64 @@
+{
+  "slug": "2026-06-23-06-42-42-cursor-gemini-3-5-medium",
+  "harness": "cursor",
+  "harnessVersion": "3.8.11",
+  "model": "gemini-3-5-flash",
+  "effort": "medium",
+  "interface": "agent-window",
+  "createdAt": "2026-06-23T10:42:43Z",
+  "collectedAt": "2026-06-23T10:49:44Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-23-06-42-42-cursor-gemini-3-5-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 1540272,
+    "output": 60945,
+    "cached": 1133802,
+    "cacheWrite": 0,
+    "total": 1601217
+  },
+  "_tokenUsageNote": "From the Cursor usage page: 406,470 fresh input + 1,133,802 cache reads + 60,945 output = 1,601,217 total. 'input' here is all-in (fresh + cache reads), matching the other Cursor runs; 'cached' is the cache-read portion. No cache writes reported.",
+  "_estimatedCostNote": "Gemini 3.5 Flash list pricing (May 2026): $1.50/M input, $9.00/M output, $0.15/M cached input. 406,470 fresh @ $1.50/M = $0.61 + 1,133,802 cache reads @ $0.15/M = $0.17 + 60,945 output @ $9.00/M = $0.55 → ~$1.33.",
+  "estimatedCostUsd": 1.33,
+  "_timeTakenNote": "From the recovered Cursor session telemetry (extract-session-cursor.mjs).",
+  "timeTakenSeconds": 358,
+  "tags": [],
+  "summary": "Correct Kepler engine (elliptic/hyperbolic/parabolic) and a full feature set — filter/search, detail+close-approaches, PHA/Sentry highlighting, comets, follow-cam, deep links — but the default view is broken: planetScale defaults to 5000x with planet base radii in AU, so planets render as ~75-125 AU spheres that engulf the camera and hide the asteroids entirely. Engine sound, presentation unusable out of the box.",
+
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "Run log recovered. The only terminal commands were `pnpm install` and `pnpm build` (no `vite preview`, no server, no browser, no screenshots). Its final todo claimed it would 'verify that the static site in dist/ works correctly,' but the sole verification was that the build compiled — it never opened or viewed the running app. No console review and no display review. Had it looked even once, the 5000x default planet scale (planets engulfing the camera, asteroids invisible) would have been obvious.",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "partial",
+      "planets": "partial",
+      "asteroids": "poor",
+      "computedPositions": "pass",
+      "orbitsCorrect": "partial",
+      "timeAnimation": "partial"
+    },
+    "usability": {
+      "camera": "partial",
+      "scale": "fail",
+      "legible": "poor",
+      "noUiIssues": "poor"
+    },
+    "selfVerification": { "consoleReview": "fail", "displayReview": "fail" },
+    "features": {
+      "filterSearch": "poor",
+      "investigate": "partial",
+      "highlight": "partial",
+      "scaleRisk": "partial",
+      "comets": "poor",
+      "impactRisk": "partial",
+      "focusFollow": "poor",
+      "deepLinks": "good"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}

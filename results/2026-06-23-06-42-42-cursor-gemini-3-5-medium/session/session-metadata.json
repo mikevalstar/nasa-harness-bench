@@ -1,0 +1,63 @@
+{
+  "extractedAt": "2026-06-23T11:00:38.498Z",
+  "composerId": "da0da070-cb0f-4b25-8f0d-eb5522f0fb0c",
+  "cursorChatName": "Implementation of PLAN.md",
+  "model": "gemini-3.5-flash",
+  "effort": null,
+  "span": {
+    "start": "2026-06-23T10:43:15.742Z",
+    "end": "2026-06-23T10:49:13.410Z",
+    "wallSeconds": 358
+  },
+  "messages": {
+    "user": 1,
+    "assistant": 1,
+    "thinking": 0
+  },
+  "tokenUsage": null,
+  "contextWindowFinal": {
+    "totalUsedTokens": 91185,
+    "maxTokens": 200000,
+    "note": "Final context-window size at end of run — NOT cumulative input/output usage."
+  },
+  "linesChanged": {
+    "added": 2794,
+    "removed": 0
+  },
+  "filesChangedCount": 15,
+  "tools": {
+    "read_file_v2": 3,
+    "glob_file_search": 2,
+    "run_terminal_command_v2": 5,
+    "todo_write": 6,
+    "edit_file_v2": 16
+  },
+  "filesEdited": [
+    "package.json",
+    "scripts/copy-data.js",
+    "vite.config.ts",
+    "tsconfig.json",
+    "index.html",
+    "postcss.config.js",
+    "tailwind.config.js",
+    ".npmrc",
+    "src/types.ts",
+    "src/utils/propagation.ts",
+    "src/index.css",
+    "src/components/SolarSystemCanvas.tsx",
+    "src/components/OrbitSchematic.tsx",
+    "src/App.tsx",
+    "src/main.tsx"
+  ],
+  "shellCommands": [
+    "ls -lh data",
+    "pnpm install",
+    "pnpm install",
+    "pnpm build",
+    "ls -lh dist && ls -lh dist/data"
+  ],
+  "files": {
+    "raw": "session/cursor-composer.json",
+    "transcript": "session/transcript.md"
+  }
+}
