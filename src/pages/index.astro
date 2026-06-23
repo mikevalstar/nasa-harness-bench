@@ -1,515 +1,793 @@
 ---
-const base = import.meta.env.BASE_URL; // "/" locally, sub-path on GitHub Pages
+const base = import.meta.env.BASE_URL;
 ---
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NASA Harness Bench</title>
+  <script
+    data-goatcounter="https://nasa-harness-bench.goatcounter.com/count"
+    async
+    src="//gc.zgo.at/count.js"></script>
+  <style is:global>
+    :root {
+      --bg: #16181c;
+      --surface: #1c1f24;
+      --surface-2: #22262c;
+      --line: #2c3138;
+      --line-soft: #262b31;
+      --ink: #e9ecef;
+      --muted: #9aa3ad;
+      --faint: #6b747d;
+      --accent: #6ea8fe;
+      --accent-dim: #2f4a73;
+      --good: #5fbf7e;
+      --warn: #e0b15a;
+      --bad: #e07a7a;
+      --rail-w: 296px;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--ink); }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>NASA Harness Bench</title>
-    <link rel="stylesheet" href={`${base}styles/global.css`} />
-    <script
-      data-goatcounter="https://nasa-harness-bench.goatcounter.com/count"
-      async
-      src="//gc.zgo.at/count.js"></script>
-  </head>
-  <body>
-    <div class="app">
-      <aside class="sidebar">
-        <div class="brand">
-          <h1>NASA Harness Bench</h1>
-          <div class="sub">1-shot harness + model results</div>
-        </div>
-        <nav class="nav" id="nav">
-          <div class="nav-section">About</div>
-          <a class="item" href="#/intro" data-route="intro">Introduction &amp; Methodology</a>
-          <div class="nav-section">Results</div>
-          <div id="nav-benches"><div class="empty">Loading…</div></div>
-        </nav>
-        <div class="sidebar-foot" id="nav-foot">—</div>
-      </aside>
+    /* ---- layout shell ---- */
+    .shell { display: flex; min-height: 100vh; }
+    .rail {
+      width: var(--rail-w); flex: 0 0 var(--rail-w);
+      border-right: 1px solid var(--line);
+      background: var(--surface);
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .rail-head {
+      padding: 18px 18px 14px; border-bottom: 1px solid var(--line-soft);
+    }
+    .rail-head .brand { font-size: 14px; font-weight: 650; letter-spacing: -.01em; }
+    .rail-head .brand .dot { color: var(--accent); }
+    .rail-head .sub { font-size: 11px; color: var(--faint); margin-top: 3px; letter-spacing: .02em; }
+    .overview-link {
+      display: flex; align-items: center; gap: 8px;
+      margin: 12px 12px 6px; padding: 9px 11px; border-radius: var(--radius);
+      font-size: 13px; font-weight: 550; color: var(--muted);
+      border: 1px solid transparent;
+    }
+    .overview-link:hover { background: var(--surface-2); color: var(--ink); }
+    .overview-link.active { background: var(--accent-dim); color: var(--ink); border-color: var(--accent); }
+    .overview-link .ic { font-size: 13px; opacity: .8; }
 
-      <main class="main">
-        <!-- Intro view -->
-        <section class="doc" id="view-intro">
-          <h1>NASA Harness Bench</h1>
-          <p class="lede">
-            A small, transparent benchmark that gives a coding
-            <b>harness + model</b> combination a single
-            <b>1-shot prompt</b> and a fixed NASA dataset, then displays exactly
-            what it produced.
-          </p>
+    .rail-label {
+      font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--faint); font-weight: 600; padding: 8px 20px 6px;
+    }
+    .rail-list { flex: 1; overflow-y: auto; padding: 0 10px 16px; }
+    .rail-list::-webkit-scrollbar { width: 8px; }
+    .rail-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
 
-          <div class="purpose">
-            <h2>What to look for</h2>
-            <p>
-              The scores below are a rough instrument. They're useful for spotting
-              <b>large variances</b> between harnesses and models — where one
-              combination clearly stumbles, cuts a corner, or runs away with cost
-              or time. Treat them as a rough guideline.
-            </p>
-            <p>
-              The more interesting part is the work itself. Open the runs in the
-              <b>left nav</b> and see how each harness + model actually completed
-              the task — the live compiled site is embedded right there, so you can
-              click through and judge the output with your own eyes.
-            </p>
-          </div>
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px; border-radius: var(--radius); margin-bottom: 2px;
+      border: 1px solid transparent; cursor: pointer;
+    }
+    .nav-item:hover { background: var(--surface-2); }
+    .nav-item.active { background: var(--surface-2); border-color: var(--line); }
+    .nav-item.active::before {
+      content: ""; position: absolute; left: 0; width: 3px; height: 22px;
+      background: var(--accent); border-radius: 0 3px 3px 0; margin-left: -10px;
+    }
+    .nav-item { position: relative; }
+    .nav-main { min-width: 0; flex: 1; }
+    .nav-combo {
+      font-size: 13px; font-weight: 550; color: var(--ink);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .nav-combo .ver { color: var(--faint); font-weight: 400; }
+    .nav-sub {
+      font-size: 11px; color: var(--faint); margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .nav-item .warn-ic { color: var(--warn); font-size: 11px; }
 
-          <div id="leaderboard" class="leaderboard"><div class="empty">Loading…</div></div>
-        </section>
+    .chip {
+      flex: 0 0 auto; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums;
+      min-width: 34px; text-align: center; padding: 3px 6px; border-radius: 6px;
+      border: 1px solid var(--line);
+    }
+    .chip.good { color: var(--good); border-color: rgba(95,191,126,.35); background: rgba(95,191,126,.08); }
+    .chip.warn { color: var(--warn); border-color: rgba(224,177,90,.35); background: rgba(224,177,90,.08); }
+    .chip.bad  { color: var(--bad);  border-color: rgba(224,122,122,.35); background: rgba(224,122,122,.08); }
+    .chip.void { color: var(--faint); }
 
-        <!-- Bench view -->
-        <section id="view-bench" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
-          <header class="bench-head" id="bench-head"></header>
-          <button class="header-restore" id="header-restore" title="Show details">▾ details</button>
-          <div class="viewer" id="viewer"></div>
-        </section>
-      </main>
+    /* ---- main column ---- */
+    .main { flex: 1; min-width: 0; }
+    .topbar {
+      display: none; align-items: center; gap: 12px;
+      padding: 12px 16px; border-bottom: 1px solid var(--line);
+      background: var(--surface); position: sticky; top: 0; z-index: 30;
+    }
+    .hamburger {
+      background: var(--surface-2); border: 1px solid var(--line); color: var(--ink);
+      width: 38px; height: 38px; border-radius: var(--radius); cursor: pointer;
+      font-size: 16px; line-height: 1; display: flex; align-items: center; justify-content: center;
+    }
+    .topbar .tb-brand { font-size: 14px; font-weight: 650; }
+    .topbar .tb-brand .dot { color: var(--accent); }
+
+    .content { padding: clamp(20px, 4vw, 44px) clamp(16px, 4vw, 44px) 110px; }
+    /* keep regular content centered & readable, but let the embed fill the column */
+    .content > * { max-width: 1080px; margin-left: auto; margin-right: auto; }
+    .content > .embed { max-width: none; margin-left: 0; margin-right: 0; }
+
+    /* ---- home ---- */
+    .home-head h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 650; letter-spacing: -.02em; }
+    .home-head .tag { color: var(--muted); font-size: 15px; margin-top: 6px; }
+    .home-head .intro { color: var(--muted); font-size: 14px; line-height: 1.65; margin-top: 16px; max-width: 68ch; }
+    .home-head .intro b { color: var(--ink); font-weight: 600; }
+
+    .section-title {
+      font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--faint);
+      font-weight: 600; margin: 34px 0 12px; display: flex; justify-content: space-between; align-items: baseline;
+    }
+
+    .tbl-wrap { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .tbl-scroll { overflow-x: auto; }
+    table.board { width: 100%; border-collapse: collapse; min-width: 600px; }
+    .board thead th {
+      text-align: left; font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+      font-weight: 600; color: var(--faint); padding: 11px 14px; background: var(--surface);
+      border-bottom: 1px solid var(--line); white-space: nowrap;
+    }
+    .board th.r, .board td.r { text-align: right; }
+    .board tbody tr { border-bottom: 1px solid var(--line-soft); cursor: pointer; }
+    .board tbody tr:last-child { border-bottom: none; }
+    .board tbody tr:hover { background: var(--surface-2); }
+    .board td { padding: 13px 14px; font-size: 13px; vertical-align: middle; }
+    .board td.r { font-variant-numeric: tabular-nums; color: var(--muted); }
+    .board .rank { color: var(--faint); font-variant-numeric: tabular-nums; font-size: 13px; }
+    .board .combo { font-weight: 550; color: var(--ink); }
+    .board .combo .ver { color: var(--faint); font-weight: 400; }
+    .board .csub { font-size: 11px; color: var(--faint); margin-top: 2px; }
+    .board .note-line { font-size: 11px; color: var(--warn); margin-top: 4px; }
+    .scoreval { font-weight: 650; font-variant-numeric: tabular-nums; }
+    .scoreval.good { color: var(--good); } .scoreval.warn { color: var(--warn); } .scoreval.bad { color: var(--bad); }
+    .scoreval.void { color: var(--faint); font-weight: 550; }
+    .scoreval .of { color: var(--faint); font-size: 11px; font-weight: 400; }
+
+    /* mobile cards on home */
+    .cards { display: none; }
+    .hcard {
+      display: block; border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 14px; margin-bottom: 10px; background: var(--surface);
+    }
+    .hcard .ctop { display: flex; align-items: flex-start; gap: 12px; }
+    .hcard .ctop .who { flex: 1; min-width: 0; }
+    .hcard .cstats { display: flex; gap: 18px; margin-top: 12px; flex-wrap: wrap; }
+    .hcard .cstats .s .l { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+    .hcard .cstats .s .v { font-size: 13px; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+    .foot {
+      margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line-soft);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+      font-size: 12px; color: var(--faint);
+    }
+    .foot a { color: var(--accent); }
+
+    /* ---- score-vs-efficiency scatter ---- */
+    .viz-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 14px 16px 8px; }
+    .viz-toggle { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .viz-toggle .vlab { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); font-weight: 600; }
+    .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+    .seg button { font: inherit; font-size: 12px; padding: 5px 12px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+    .seg button + button { border-left: 1px solid var(--line); }
+    .seg button:hover { color: var(--ink); background: var(--surface-2); }
+    .seg button.on { background: var(--accent-dim); color: var(--ink); }
+    .scatter { width: 100%; height: auto; display: block; }
+    .scatter .grid { stroke: var(--line); stroke-width: 1; }
+    .scatter .axis { fill: var(--faint); font-size: 9.5px; font-family: ui-monospace, monospace; }
+    .scatter .axis-title { fill: var(--muted); font-size: 9.5px; text-transform: uppercase; letter-spacing: .06em; }
+    .scatter .dot { transition: r .12s ease; cursor: pointer; }
+    .scatter .dot.good { fill: var(--good); } .scatter .dot.warn { fill: var(--warn); } .scatter .dot.bad { fill: var(--bad); }
+    .scatter a:hover .dot { r: 8; }
+    .scatter .dot-label { fill: var(--muted); font-size: 9px; font-family: ui-monospace, monospace; pointer-events: none; }
+    .scatter a:hover .dot-label { fill: var(--ink); }
+    .viz-empty { padding: 30px; text-align: center; color: var(--faint); font-size: 12px; }
+
+    /* ---- the task / plan view ---- */
+    .plandoc { max-width: 78ch; }
+    .plandoc > :first-child { margin-top: 0; }
+    .plandoc :is(h1,h2,h3,h4) { font-weight: 650; letter-spacing: -.01em; line-height: 1.25; color: var(--ink); }
+    .plandoc h1 { font-size: clamp(24px, 4vw, 32px); margin: 0 0 10px; }
+    .plandoc h2 { font-size: 19px; margin: 28px 0 8px; padding-top: 16px; border-top: 1px solid var(--line-soft); }
+    .plandoc h3 { font-size: 15px; margin: 18px 0 6px; color: var(--muted); }
+    .plandoc p { margin: 11px 0; color: var(--muted); line-height: 1.7; }
+    .plandoc ul, .plandoc ol { margin: 11px 0 11px 22px; color: var(--muted); line-height: 1.65; }
+    .plandoc li { margin: 5px 0; }
+    .plandoc strong { color: var(--ink); }
+    .plandoc a { color: var(--accent); }
+    .plandoc code { background: var(--bg); padding: 1px 5px; border-radius: 4px; font-family: ui-monospace, monospace; font-size: .85em; color: var(--ink); }
+    .plandoc pre { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; overflow-x: auto; }
+    .plandoc pre code { background: none; padding: 0; }
+    .plandoc blockquote { border-left: 2px solid var(--line); margin: 12px 0; padding: 2px 14px; color: var(--faint); }
+    .plandoc hr { border: 0; border-top: 1px solid var(--line-soft); margin: 22px 0; }
+
+    /* ---- bench detail ---- */
+    .det-head { margin-bottom: 6px; }
+    .det-head .slug { font-size: 12px; color: var(--faint); font-family: ui-monospace, monospace; word-break: break-all; }
+    .det-head h2 { font-size: clamp(22px, 3.5vw, 30px); font-weight: 650; letter-spacing: -.02em; margin-top: 0; }
+    .det-head h2 .ver { color: var(--faint); font-weight: 400; font-size: .7em; }
+
+    .idrow {
+      display: flex; flex-wrap: wrap; gap: 0; margin-top: 16px;
+      border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+    }
+    .idrow .cell { flex: 1 1 120px; padding: 11px 14px; border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
+    .idrow .cell .l { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+    .idrow .cell .v { font-size: 14px; margin-top: 3px; word-break: break-word; }
+    .summary { margin-top: 16px; font-size: 14px; line-height: 1.65; color: var(--muted); max-width: 72ch; }
+    .det-note {
+      margin-top: 14px; padding: 10px 14px; border-radius: var(--radius);
+      border: 1px solid rgba(224,177,90,.3); background: rgba(224,177,90,.07);
+      color: var(--warn); font-size: 13px;
+    }
+
+    /* compact score strip above a full-width embed */
+    .det-score {
+      display: flex; align-items: center; gap: 18px 28px; flex-wrap: wrap;
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+      padding: 12px 18px; margin-top: 18px;
+    }
+    .det-score .sc-num { font-size: 30px; font-weight: 650; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .det-score .sc-num .sc-of { font-size: 13px; color: var(--faint); font-weight: 400; margin-left: 3px; }
+    .det-score .sc-num.good { color: var(--good); } .det-score .sc-num.warn { color: var(--warn); } .det-score .sc-num.bad { color: var(--bad); }
+    .det-score .sc-num.void, .det-score .sc-num.ungr { font-size: 20px; color: var(--faint); }
+    .det-cats { display: flex; flex: 1 1 360px; flex-wrap: wrap; gap: 10px 24px; min-width: 0; }
+    .det-cats .catbar { flex: 1 1 132px; min-width: 116px; margin-bottom: 0; }
+
+    .catbar { margin-bottom: 13px; }
+    .catbar:last-child { margin-bottom: 0; }
+    .catbar .row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+    .catbar .row .pct { font-variant-numeric: tabular-nums; color: var(--ink); }
+    .catbar .track { height: 6px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .catbar .fill { height: 100%; border-radius: 4px; background: var(--muted); }
+    .catbar.good .fill { background: var(--good); } .catbar.warn .fill { background: var(--warn); } .catbar.bad .fill { background: var(--bad); }
+
+    /* action toolbar above the embed */
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 16px; }
+    .tb-group { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .tb-ext { margin-left: auto; gap: 4px; }
+
+    .tb-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font: inherit; font-size: 13px; font-weight: 550; line-height: 1;
+      padding: 9px 15px; border-radius: 8px; cursor: pointer; text-decoration: none;
+      border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+      transition: border-color .14s ease, background .14s ease, transform .04s ease;
+    }
+    .tb-btn:hover { border-color: var(--faint); background: var(--surface-2); }
+    .tb-btn:active { transform: translateY(1px); }
+    .tb-btn .ic { font-size: 13px; line-height: 1; color: var(--muted); }
+    .tb-btn:hover .ic { color: var(--ink); }
+    .tb-btn .ext { font-size: 11px; color: var(--faint); }
+    /* primary: open the live app */
+    .tb-btn.primary { background: var(--accent); border-color: var(--accent); color: #0c1730; font-weight: 650; }
+    .tb-btn.primary:hover { background: #86b7ff; border-color: #86b7ff; }
+    .tb-btn.primary .ic, .tb-btn.primary .ext { color: rgba(12,23,48,.6); }
+
+    /* quieter external resource links */
+    .tb-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font: inherit; font-size: 12.5px; font-weight: 500; color: var(--muted);
+      text-decoration: none; padding: 7px 8px; border-radius: 6px; transition: color .14s ease, background .14s ease;
+    }
+    .tb-link:hover { color: var(--ink); background: var(--surface); }
+    .tb-link .ext { font-size: 11px; color: var(--faint); }
+    .tb-link:hover .ext { color: var(--accent); }
+
+    @media (max-width: 600px) { .tb-ext { margin-left: 0; } }
+
+    .embed { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); margin-top: 16px; }
+    .embed .bar { padding: 9px 14px; border-bottom: 1px solid var(--line-soft); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); display: flex; justify-content: space-between; gap: 10px; }
+    .embed iframe { width: 100%; height: 82vh; min-height: 540px; border: 0; display: block; background: #000; }
+    .placeholder { padding: 44px 20px; text-align: center; color: var(--faint); font-size: 13px; }
+    .mobileopen { display: none; padding: 28px 20px; text-align: center; }
+    .mobileopen p { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+
+    /* ---- dialogs ---- */
+    dialog {
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink);
+      max-width: 680px; width: calc(100% - 28px); padding: 0; max-height: 86vh;
+    }
+    dialog::backdrop { background: rgba(0,0,0,.6); }
+    dialog .dhead {
+      position: sticky; top: 0; background: var(--surface); border-bottom: 1px solid var(--line);
+      display: flex; justify-content: space-between; align-items: center; padding: 13px 16px;
+      font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600;
+    }
+    dialog .dhead button { background: none; border: 0; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; }
+    dialog .dhead button:hover { color: var(--ink); }
+    dialog .dbody { padding: 16px 18px; overflow-y: auto; max-height: calc(86vh - 50px); }
+
+    .gradecat { margin-bottom: 18px; }
+    .gradecat h4 { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); border-bottom: 1px solid var(--line-soft); padding-bottom: 6px; margin-bottom: 4px; }
+    .critrow { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-size: 13px; color: var(--muted); }
+    .critrow:last-child { border-bottom: none; }
+    .mark { font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px; border-radius: 5px; white-space: nowrap; border: 1px solid var(--line); color: var(--muted); }
+    .mark.pass, .mark.good, .mark.yes { color: var(--good); border-color: rgba(95,191,126,.35); background: rgba(95,191,126,.08); }
+    .mark.partial { color: var(--warn); border-color: rgba(224,177,90,.35); background: rgba(224,177,90,.08); }
+    .mark.poor, .mark.fail, .mark.no { color: var(--bad); border-color: rgba(224,122,122,.35); background: rgba(224,122,122,.08); }
+    .mark.na { color: var(--faint); }
+    .svnotes { margin-top: 10px; font-size: 13px; line-height: 1.6; color: var(--muted); border-left: 2px solid var(--line); padding-left: 12px; }
+    .md :is(h1,h2,h3) { font-size: 15px; margin: 14px 0 6px; font-weight: 600; }
+    .md p { margin: 8px 0; font-size: 14px; line-height: 1.6; color: var(--muted); }
+    .md ul, .md ol { margin: 8px 0 8px 20px; font-size: 14px; line-height: 1.55; color: var(--muted); }
+    .md code { background: var(--bg); padding: 1px 5px; border-radius: 4px; font-family: ui-monospace, monospace; font-size: 12px; }
+    .md a { color: var(--accent); }
+    .md pre { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; overflow-x: auto; font-size: 12px; }
+    .md pre code { background: none; padding: 0; }
+
+    /* ---- mobile drawer ---- */
+    .scrim { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 40; }
+
+    @media (max-width: 860px) {
+      .topbar { display: flex; }
+      .rail {
+        position: fixed; left: 0; top: 0; z-index: 50; height: 100vh;
+        transform: translateX(-100%); transition: transform .22s ease;
+        box-shadow: 4px 0 24px rgba(0,0,0,.4);
+      }
+      .shell.nav-open .rail { transform: translateX(0); }
+      .shell.nav-open .scrim { display: block; }
+      .board { display: none; }
+      .tbl-wrap { border: none; }
+      .cards { display: block; }
+    }
+    @media (max-width: 768px) {
+      .embed.desk { display: none !important; }
+      .mobileopen { display: block; }
+    }
+    @media (min-width: 769px) { .mobileopen { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="shell" id="shell">
+    <div class="scrim" id="scrim"></div>
+    <aside class="rail" id="rail" aria-label="benchmark navigator">
+      <div class="rail-head">
+        <div class="brand">NASA Harness Bench<span class="dot">.</span></div>
+        <div class="sub">1-shot harness + model runs</div>
+      </div>
+      <a class="overview-link" id="ov-link" href="#/"><span class="ic">▤</span> Overview · leaderboard</a>
+      <a class="overview-link" id="plan-link" href="#/plan"><span class="ic">◎</span> The task · plan</a>
+      <div class="rail-label">Runs</div>
+      <div class="rail-list" id="rail-list"></div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <button class="hamburger" id="hamburger" aria-label="toggle navigator">☰</button>
+        <span class="tb-brand">NASA Harness Bench<span class="dot">.</span></span>
+      </div>
+      <div class="content" id="app"></div>
     </div>
+  </div>
 
-    <dialog id="notes-dialog" class="notes-dialog">
-      <div class="notes-dialog-head">
-        <span id="notes-dialog-title">Notes</span>
-        <button class="notes-close" id="notes-close" aria-label="Close">✕</button>
-      </div>
-      <div class="markdown" id="notes-body"></div>
-    </dialog>
+  <script>
+    import { marked } from "marked";
 
-    <dialog id="grade-dialog" class="notes-dialog">
-      <div class="notes-dialog-head">
-        <span id="grade-dialog-title">Grade</span>
-        <button class="notes-close" id="grade-close" aria-label="Close">✕</button>
-      </div>
-      <div class="grade-detail" id="grade-body"></div>
-    </dialog>
+    const RAW_BASE = import.meta.env.BASE_URL;
+    const BASE = RAW_BASE.endsWith("/") ? RAW_BASE : RAW_BASE + "/";
+    const REPO = "https://github.com/mikevalstar/nasa-harness-bench";
 
-    <script>
-      import { marked } from "marked";
-      marked.setOptions({ gfm: true, breaks: false });
+    const fmtNum = n => n==null ? "—" : new Intl.NumberFormat().format(n);
+    const fmtCost = c => c==null ? "—" : "$"+c.toFixed(2);
+    const fmtTime = s => s==null ? "—" : s<90 ? s+"s" : Math.round(s/60)+"m";
+    const fmtTok  = n => n==null ? "—" : n>=1000 ? +(n/1000).toFixed(n<10000?1:0)+"k" : String(n);
+    const scoreTier = s => s>=75 ? "good" : s>=50 ? "warn" : "bad";
+    const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+    const isMobile = () => window.matchMedia("(max-width: 768px)").matches;
 
-      // Normalise base to always end with a single slash.
-      const RAW_BASE = import.meta.env.BASE_URL;
-      const BASE = RAW_BASE.endsWith("/") ? RAW_BASE : RAW_BASE + "/";
+    const app = document.getElementById("app");
+    const railList = document.getElementById("rail-list");
+    const ovLink = document.getElementById("ov-link");
+    const planLink = document.getElementById("plan-link");
+    const shell = document.getElementById("shell");
+    const scrim = document.getElementById("scrim");
+    const hamburger = document.getElementById("hamburger");
+    let DATA = null;
 
-      // The repo's GitHub URL (no trailing slash). When set, each result links to
-      // its source folder on GitHub so people can explore it.
-      const REPO_URL = "https://github.com/mikevalstar/nasa-harness-bench";
-      const sourceLink = (slug) =>
-        REPO_URL ? `${REPO_URL}/tree/main/results/${slug}/output` : "";
-      const $ = (id) => document.getElementById(id);
-      let DATA = { benches: [] };
+    const SHORT = { runs:"Runs", correctness:"Correctness", usability:"Usability", selfVerification:"Self-check", features:"Features" };
 
-      function fmtNum(n) {
-        return n == null ? "—" : new Intl.NumberFormat().format(n);
+    /* --- score-vs-efficiency scatter (x inverted so "better" sits on the right) --- */
+    const SCATTER_METRICS = {
+      cost:   { label:"cost per run (USD) — cheaper →", get:b=>b.estimatedCostUsd, floor:2, cap:15, tick:v=>"$"+(v%1?v.toFixed(1):v), point:fmtCost },
+      time:   { label:"time per run — faster →", get:b=>b.timeTakenSeconds, floor:60, cap:3000, step:600, tick:v=>fmtTime(Math.round(v)), point:v=>fmtTime(Math.round(v)) },
+      tokens: { label:"output tokens — fewer →", get:b=>b.tokenUsage?.output, floor:1000, tick:fmtTok, point:fmtTok },
+    };
+    const METRIC_LABEL = { cost:"Cost", time:"Time", tokens:"Output tokens" };
+    let scatterMetric = "cost";
+
+    function niceMax(v, floor){ v=Math.max(v, floor||1); const pow=Math.pow(10,Math.floor(Math.log10(v))); const n=v/pow; const step=n<=1?1:n<=2?2:n<=5?5:10; return step*pow; }
+    function axisStep(max){ const target=max/4; const pow=Math.pow(10,Math.floor(Math.log10(target))); const n=target/pow; const step=n<=1?1:n<=2?2:n<=5?5:10; return step*pow; }
+
+    function buildScatter(benches, metricKey){
+      const metric = SCATTER_METRICS[metricKey] || SCATTER_METRICS.cost;
+      const pts = benches.filter(b=>{
+        const s = b.scoring || {};
+        return s.status==="graded" && !s.voided && s.score!=null && metric.get(b)!=null;
+      });
+      if (!pts.length) return `<div class="viz-empty">No graded runs with this data yet.</div>`;
+      const W=720, H=460, mL=44, mR=18, mT=16, mB=42;
+      const pw=W-mL-mR, ph=H-mT-mB;
+      const maxVal = Math.max(...pts.map(p=>metric.get(p)), metric.floor);
+      const capped = metric.cap!=null && maxVal<=metric.cap;
+      const xMax = capped ? metric.cap : niceMax(maxVal, metric.floor);
+      const x = c => mL + pw*(1 - c/xMax);
+      const y = s => mT + ph*(1 - s/100);
+      let g = "";
+      for (let s=0; s<=100; s+=25){
+        const yy=y(s);
+        g += `<line class="grid" x1="${mL}" y1="${yy}" x2="${W-mR}" y2="${yy}"/><text class="axis" x="${mL-8}" y="${yy+3}" text-anchor="end">${s}</text>`;
       }
-      function boolBadge(label, val) {
-        // val: true / false / null(unknown). For "broken"/"cheated", true is bad.
-        if (val == null) return `<span class="badge muted">${label}: ?</span>`;
-        const cls = val ? "bad" : "good";
-        return `<span class="badge ${cls}">${label}: ${val ? "yes" : "no"}</span>`;
+      const step = capped && metric.step ? metric.step : axisStep(xMax);
+      for (let c=0; c<=xMax+1e-9; c+=step){
+        const xx=x(c);
+        g += `<line class="grid" x1="${xx}" y1="${mT}" x2="${xx}" y2="${H-mB}"/><text class="axis" x="${xx}" y="${H-mB+16}" text-anchor="middle">${metric.tick(c)}</text>`;
       }
+      g += `<text class="axis-title" x="${mL+pw/2}" y="${H-4}" text-anchor="middle">${esc(metric.label)}</text><text class="axis-title" x="13" y="${mT+ph/2}" text-anchor="middle" transform="rotate(-90 13 ${mT+ph/2})">score</text>`;
+      const dots = pts.map(p=>{
+        const cx=x(metric.get(p)), cy=y(p.scoring.score);
+        const t=scoreTier(p.scoring.score);
+        const label=`${p.harness} · ${p.model}`;
+        const flip = cx > mL + pw*0.62;
+        const lx = flip ? cx-9 : cx+9;
+        const anchor = flip ? "end" : "start";
+        return `<a href="#/bench/${esc(p.slug)}">
+          <circle class="dot ${t}" cx="${cx}" cy="${cy}" r="6"><title>${esc(label)} — ${p.scoring.score}/100 · ${esc(metric.point(metric.get(p)))}</title></circle>
+          <text class="dot-label" x="${lx}" y="${cy+3.5}" text-anchor="${anchor}">${esc(label)}</text>
+        </a>`;
+      }).join("");
+      return `<svg class="scatter" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="score versus ${metricKey} scatter chart">${g}${dots}</svg>`;
+    }
 
-      // --- scoring display ---
-      const scoreTier = (s) => (s >= 75 ? "good" : s >= 50 ? "warn" : "bad");
-      const tierWord = (s) => (s >= 75 ? "strong" : s >= 50 ? "mixed" : "weak");
-      // Short labels for the compact bars ("Base correctness" -> "Correctness").
-      const SHORT_CAT = { runs: "Runs", correctness: "Correctness", usability: "Usability", selfVerification: "Self-check", features: "Features" };
-
-      function scorePanel(b) {
-        const sc = b.scoring || {};
-        if (sc.voided)
-          return `<div class="score-num void">VOID</div><div class="score-label">integrity gate failed</div>`;
-        if (sc.status !== "graded" || sc.score == null)
-          return `<div class="score-pending">ungraded</div>`;
-        return `<div class="score-num ${scoreTier(sc.score)}">${sc.score}<span>/100</span></div>
-                <div class="score-label ${scoreTier(sc.score)}">${tierWord(sc.score)}</div>`;
+    async function load() {
+      if (DATA) return DATA;
+      try {
+        const r = await fetch(`${BASE}results/all.json`);
+        DATA = await r.json();
+      } catch (e) {
+        DATA = { generatedAt: "", count: 0, rubric: { categories: [], integrity: [] }, benches: [] };
       }
-      function categoryBars(b) {
-        const cs = (b.scoring || {}).categoryScores || {};
-        return ((DATA.rubric || {}).categories || [])
-          .map((cat) => {
-            const v = cs[cat.key];
-            const cls = v == null ? "na" : scoreTier(v);
-            return `<div class="cbar">
-                <span class="cbar-label">${SHORT_CAT[cat.key] || cat.label}</span>
-                <span class="cbar-track"><span class="cbar-fill ${cls}" style="width:${v == null ? 0 : v}%"></span></span>
-                <span class="cbar-val ${cls}">${v == null ? "—" : v}</span>
-              </div>`;
-          })
-          .join("");
-      }
-      function navScore(b) {
-        const sc = b.scoring || {};
-        if (sc.voided) return `<span class="nav-score void">VOID</span>`;
-        if (sc.status !== "graded" || sc.score == null) return `<span class="nav-score ungraded">—</span>`;
-        return `<span class="nav-score ${scoreTier(sc.score)}">${sc.score}</span>`;
-      }
+      return DATA;
+    }
 
-      function renderNav(activeSlug) {
-        const box = $("nav-benches");
-        if (!DATA.benches.length) {
-          box.innerHTML = `<div class="empty">No results yet.</div>`;
-          return;
-        }
-        box.innerHTML = DATA.benches
-          .map(
-            (b) => `<a class="item ${b.slug === activeSlug ? "active" : ""}"
-                 href="#/bench/${b.slug}">
-                <span class="item-row">${b.harness || "?"} · ${b.model || "?"}${navScore(b)}</span>
-                <span class="meta">${b.interface || "cli"} · ${b.effort || "?"} · ${(b.createdAt || "").slice(0, 10)}</span>
-              </a>`,
-          )
-          .join("");
-        // Toggle active state on the intro link.
-        document
-          .querySelector('[data-route="intro"]')
-          .classList.toggle("active", !activeSlug);
-      }
+    function rankedBenches(d) {
+      const sv = b => (b.scoring && !b.scoring.voided && b.scoring.score!=null && b.scoring.status==="graded") ? b.scoring.score : -1;
+      return [...d.benches].sort((a,b)=> sv(b)-sv(a));
+    }
+    function comboLabel(b) {
+      const ver = (b.harnessVersion && b.harnessVersion!=="unknown") ? ` <span class="ver">v${esc(b.harnessVersion)}</span>` : "";
+      return `${esc(b.harness)}${ver} · ${esc(b.model)}`;
+    }
+    function scoreDisplay(b) {
+      const s = b.scoring || {};
+      if (s.voided) return { txt: "VOID", cls: "void", val:null };
+      if (s.status!=="graded" || s.score==null) return { txt: "—", cls: "void", val:null };
+      return { txt: String(Math.round(s.score)), cls: scoreTier(s.score), val: s.score };
+    }
 
-      // --- homepage leaderboard (DeepSWE-style: stats · scatter · table) ---
-      const fmtCost = (c) => (c == null ? "—" : "$" + c.toFixed(2));
-      const fmtTime = (s) => (s == null ? "—" : s < 90 ? s + "s" : Math.round(s / 60) + "m");
-      const fmtTok = (n) => (n == null ? "—" : n >= 1000 ? +(n / 1000).toFixed(n < 10000 ? 1 : 0) + "k" : String(n));
+    function closeDrawer() { shell.classList.remove("nav-open"); }
+    function toggleDrawer() { shell.classList.toggle("nav-open"); }
+    hamburger.addEventListener("click", toggleDrawer);
+    scrim.addEventListener("click", closeDrawer);
+    ovLink.addEventListener("click", closeDrawer);
+    planLink.addEventListener("click", closeDrawer);
 
-      // X-axis metrics the scatter can plot against score. Each is inverted so
-      // that "better" (cheaper / faster / fewer tokens) sits on the RIGHT.
-      const SCATTER_METRICS = {
-        cost: { label: "cost per run (USD) — cheaper →", get: (b) => b.estimatedCostUsd, floor: 2, cap: 15, tick: (v) => "$" + (v % 1 ? v.toFixed(1) : v), point: fmtCost },
-        time: { label: "time per run — faster →", get: (b) => b.timeTakenSeconds, floor: 60, cap: 3000, step: 600, tick: (v) => fmtTime(Math.round(v)), point: (v) => fmtTime(Math.round(v)) },
-        tokens: { label: "output tokens — fewer →", get: (b) => (b.tokenUsage || {}).output, floor: 1000, tick: fmtTok, point: fmtTok },
-      };
-      let scatterMetric = "cost";
+    /* persistent rail — always rendered, highlights active view/bench */
+    function renderRail(d, view, activeSlug) {
+      const ranked = rankedBenches(d);
+      ovLink.classList.toggle("active", view==="home");
+      planLink.classList.toggle("active", view==="plan");
+      if (ranked.length===0) { railList.innerHTML = `<div style="padding:12px;color:var(--faint);font-size:12px">No runs.</div>`; return; }
+      railList.innerHTML = ranked.map(b=>{
+        const sd = scoreDisplay(b);
+        const dateStr = (b.createdAt||"").slice(0,10);
+        const warn = b.note ? `<span class="warn-ic" title="${esc(b.note)}">⚠</span>` : "";
+        return `<a class="nav-item ${b.slug===activeSlug?"active":""}" href="#/bench/${esc(b.slug)}" data-slug="${esc(b.slug)}">
+          <div class="nav-main">
+            <div class="nav-combo">${comboLabel(b)} ${warn}</div>
+            <div class="nav-sub">${esc(b.effort)} · ${esc(b.interface)} · ${esc(dateStr)}</div>
+          </div>
+          <span class="chip ${sd.cls}">${sd.txt}</span>
+        </a>`;
+      }).join("");
+      railList.querySelectorAll(".nav-item").forEach(a=> a.addEventListener("click", closeDrawer));
+    }
 
-      // Round up to a "nice" axis maximum (1/2/5 × 10ⁿ), at least `floor`.
-      function niceMax(v, floor) {
-        v = Math.max(v, floor || 1);
-        const pow = Math.pow(10, Math.floor(Math.log10(v)));
-        const n = v / pow;
-        const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
-        return step * pow;
-      }
+    function renderHome(d) {
+      const ranked = rankedBenches(d);
+      const rows = ranked.map((b,i)=>{
+        const sd = scoreDisplay(b);
+        const note = b.note ? `<div class="note-line">⚠ ${esc(b.note)}</div>` : "";
+        return `<tr data-slug="${esc(b.slug)}">
+          <td><span class="rank">${i+1}</span></td>
+          <td>
+            <div class="combo">${comboLabel(b)}</div>
+            <div class="csub">${esc(b.effort)} · ${esc(b.interface)}</div>
+            ${note}
+          </td>
+          <td class="r"><span class="scoreval ${sd.cls}">${sd.txt}</span></td>
+          <td class="r">${fmtCost(b.estimatedCostUsd)}</td>
+          <td class="r">${fmtTok(b.tokenUsage?.output)}</td>
+          <td class="r">${fmtTime(b.timeTakenSeconds)}</td>
+        </tr>`;
+      }).join("");
 
-      // A "nice" tick step (1/2/5 × 10ⁿ) that yields ~4 gridlines across `max`.
-      function axisStep(max) {
-        const target = max / 4;
-        const pow = Math.pow(10, Math.floor(Math.log10(target)));
-        const n = target / pow;
-        const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
-        return step * pow;
-      }
-
-      function buildScatter(benches, metricKey) {
-        const metric = SCATTER_METRICS[metricKey] || SCATTER_METRICS.cost;
-        const pts = benches.filter((b) => {
-          const s = b.scoring || {};
-          return s.status === "graded" && !s.voided && s.score != null && metric.get(b) != null;
-        });
-        if (!pts.length)
-          return `<div class="board-empty">No graded runs with this data yet.</div>`;
-        const W = 720, H = 460, mL = 44, mR = 18, mT = 16, mB = 42;
-        const pw = W - mL - mR, ph = H - mT - mB;
-        const maxVal = Math.max(...pts.map((p) => metric.get(p)), metric.floor);
-        // Hold a fixed cap until a run actually exceeds it; then auto-scale.
-        const capped = metric.cap != null && maxVal <= metric.cap;
-        const xMax = capped ? metric.cap : niceMax(maxVal, metric.floor);
-        // invert x so the "better" end sits on the RIGHT
-        const x = (c) => mL + pw * (1 - c / xMax);
-        const y = (s) => mT + ph * (1 - s / 100);
-        let g = "";
-        for (let s = 0; s <= 100; s += 25) {
-          const yy = y(s);
-          g += `<line class="grid" x1="${mL}" y1="${yy}" x2="${W - mR}" y2="${yy}"/>
-                <text class="axis" x="${mL - 8}" y="${yy + 3}" text-anchor="end">${s}</text>`;
-        }
-        // Honour a metric's explicit step while capped; otherwise pick a nice one.
-        const step = capped && metric.step ? metric.step : axisStep(xMax);
-        for (let c = 0; c <= xMax + 1e-9; c += step) {
-          const xx = x(c);
-          g += `<line class="grid" x1="${xx}" y1="${mT}" x2="${xx}" y2="${H - mB}"/>
-                <text class="axis" x="${xx}" y="${H - mB + 16}" text-anchor="middle">${metric.tick(c)}</text>`;
-        }
-        g += `<text class="axis-title" x="${mL + pw / 2}" y="${H - 4}" text-anchor="middle">${metric.label}</text>
-              <text class="axis-title" x="13" y="${mT + ph / 2}" text-anchor="middle" transform="rotate(-90 13 ${mT + ph / 2})">score</text>`;
-        const dots = pts
-          .map((p) => {
-            const cx = x(metric.get(p)), cy = y(p.scoring.score);
-            const t = scoreTier(p.scoring.score);
-            const label = `${p.harness} · ${p.model}`;
-            // flip the label to the dot's left when it sits near the right edge
-            const flip = cx > mL + pw * 0.62;
-            const lx = flip ? cx - 9 : cx + 9;
-            const anchor = flip ? "end" : "start";
-            return `<a href="#/bench/${p.slug}" class="dot-link">
-                <circle class="dot ${t}" cx="${cx}" cy="${cy}" r="6">
-                  <title>${label} — ${p.scoring.score}/100 · ${metric.point(metric.get(p))}</title>
-                </circle>
-                <text class="dot-label" x="${lx}" y="${cy + 3.5}" text-anchor="${anchor}">${label}</text>
-              </a>`;
-          })
-          .join("");
-        return `<svg class="scatter" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="score versus ${metricKey} scatter chart">${g}${dots}</svg>`;
-      }
-
-      function buildTable(benches) {
-        const val = (b) => {
-          const s = (b.scoring || {}).score;
-          return s == null ? -1 : s;
-        };
-        const rows = [...benches].sort((a, b) => val(b) - val(a));
-        const body = rows
-          .map((b, i) => {
-            const sc = b.scoring || {}, tu = b.tokenUsage || {};
-            const cell = sc.voided
-              ? `<span class="nav-score void">VOID</span>`
-              : sc.score == null
-                ? `<span class="t-muted">—</span>`
-                : `<span class="nav-score ${scoreTier(sc.score)}">${sc.score}</span>`;
-            const noteRow = b.note
-              ? `<tr class="note-row" data-href="#/bench/${b.slug}">
-                <td></td>
-                <td colspan="8" class="t-note">⚠ ${b.note}</td>
-              </tr>`
-              : "";
-            return `<tr data-href="#/bench/${b.slug}"${b.note ? ' class="has-note"' : ""}>
-                <td class="t-rank">${i + 1}</td>
-                <td class="t-harness">${b.harness || "?"}${b.harnessVersion && b.harnessVersion !== "unknown" ? ` <span class="t-muted">${b.harnessVersion}</span>` : ""}</td>
-                <td>${b.model || "?"}</td>
-                <td class="t-muted">${b.effort || "?"}</td>
-                <td class="t-muted">${b.interface || "cli"}</td>
-                <td class="t-score">${cell}</td>
-                <td class="t-num">${fmtCost(b.estimatedCostUsd)}</td>
-                <td class="t-num">${fmtNum(tu.output)}</td>
-                <td class="t-num">${fmtTime(b.timeTakenSeconds)}</td>
-              </tr>${noteRow}`;
-          })
-          .join("");
-        return `<div class="board-wrap"><table class="board">
-            <thead><tr>
-              <th></th><th>Harness</th><th>Model</th><th>Effort</th><th>Interface</th>
-              <th>Score</th><th>Cost</th><th>Output tokens</th><th>Time</th>
-            </tr></thead>
-            <tbody>${body}</tbody>
-          </table></div>`;
-      }
-
-      function renderLeaderboard() {
-        const box = $("leaderboard");
-        if (!box) return;
-        if (!DATA.benches.length) {
-          box.innerHTML = `<div class="empty">No results yet.</div>`;
-          return;
-        }
-        const toggle = Object.entries(SCATTER_METRICS)
-          .map(
-            ([key, m]) =>
-              `<button class="metric-btn ${key === scatterMetric ? "active" : ""}" data-metric="${key}">${
-                { cost: "Cost", time: "Time", tokens: "Output tokens" }[key]
-              }</button>`,
-          )
-          .join("");
-        box.innerHTML =
-          `<div class="board-card">
-             <div class="scatter-toggle"><span class="toggle-label">score vs</span><div class="metric-group">${toggle}</div></div>
-             <div id="scatter-host">${buildScatter(DATA.benches, scatterMetric)}</div>
-           </div>` +
-          buildTable(DATA.benches);
-        box.querySelectorAll("tr[data-href]").forEach((r) =>
-          r.addEventListener("click", () => {
-            location.hash = r.getAttribute("data-href");
-          }),
-        );
-        box.querySelectorAll("[data-metric]").forEach((btn) =>
-          btn.addEventListener("click", () => {
-            scatterMetric = btn.getAttribute("data-metric");
-            $("scatter-host").innerHTML = buildScatter(DATA.benches, scatterMetric);
-            box
-              .querySelectorAll("[data-metric]")
-              .forEach((x) => x.classList.toggle("active", x === btn));
-          }),
-        );
-      }
-
-      function renderBench(slug) {
-        const b = DATA.benches.find((x) => x.slug === slug);
-        $("view-intro").style.display = "none";
-        $("view-bench").style.display = "flex";
-        if (!b) {
-          $("bench-head").innerHTML = `<div class="title">Unknown result: ${slug}</div>`;
-          $("viewer").innerHTML = "";
-          return;
-        }
-
-        const tu = b.tokenUsage || {};
-        const fact = (label, val) => `<span class="fact">${label}<b>${val}</b></span>`;
-        $("bench-head").innerHTML = `
-          <button class="header-toggle" data-header-toggle title="Hide details">▲ hide</button>
-          <div class="bh-grid">
-            <div class="bh-main">
-              <div class="title">${b.slug}</div>
-              <div class="meta-strip">
-                ${fact("harness ", (b.harness || "?") + (b.harnessVersion && b.harnessVersion !== "unknown" ? " " + b.harnessVersion : ""))}
-                ${fact("interface ", b.interface || "cli")}
-                ${fact("model ", b.model || "?")}
-                ${fact("effort ", b.effort || "?")}
-                ${fact("run ", b.createdAt ? b.createdAt.replace("T", " ").replace("Z", " UTC") : "?")}
-              </div>
-              <div class="meta-strip">
-                ${fact("tokens ", fmtNum(tu.total))}
-                ${fact("cost ", b.estimatedCostUsd == null ? "—" : "$" + b.estimatedCostUsd)}
-                ${fact("time ", b.timeTakenSeconds == null ? "—" : b.timeTakenSeconds + "s")}
-              </div>
-              ${b.summary ? `<p class="bh-summary">${b.summary}</p>` : ""}
-              ${b.note ? `<p class="bh-note">⚠ ${b.note}</p>` : ""}
-              <div class="bench-actions">
-                ${b.hasNotes ? `<button class="btn-notes" data-notes="${b.slug}">📝 Notes</button>` : ""}
-                <div class="bench-links">
-                  ${b.hasDist ? `<a href="${BASE}results/${b.slug}/output/dist/index.html" target="_blank">open full page ↗</a>` : ""}
-                  ${b.hasRunlog ? `<a href="${BASE}results/${b.slug}/runlog.txt" target="_blank">run log ↗</a>` : ""}
-                  <a href="${BASE}results/${b.slug}/metadata.json" target="_blank">metadata ↗</a>
-                  ${sourceLink(b.slug) ? `<a href="${sourceLink(b.slug)}" target="_blank">source ↗</a>` : ""}
-                </div>
-              </div>
+      const cards = ranked.map((b,i)=>{
+        const sd = scoreDisplay(b);
+        const note = b.note ? `<div class="note-line" style="margin-top:8px">⚠ ${esc(b.note)}</div>` : "";
+        return `<a class="hcard" href="#/bench/${esc(b.slug)}">
+          <div class="ctop">
+            <span class="rank" style="color:var(--faint)">#${i+1}</span>
+            <div class="who">
+              <div class="combo">${comboLabel(b)}</div>
+              <div class="csub">${esc(b.effort)} · ${esc(b.interface)}</div>
             </div>
-            <aside class="bh-score">
-              <div class="score-panel">${scorePanel(b)}</div>
-              <div class="cbars">${categoryBars(b)}</div>
-              <button class="btn-grade" data-grade="${b.slug}">grade breakdown ▸</button>
-            </aside>
-          </div>`;
+            <span class="scoreval ${sd.cls}" style="font-size:18px">${sd.txt}</span>
+          </div>
+          ${note}
+          <div class="cstats">
+            <div class="s"><div class="l">Cost</div><div class="v">${fmtCost(b.estimatedCostUsd)}</div></div>
+            <div class="s"><div class="l">Out tok</div><div class="v">${fmtTok(b.tokenUsage?.output)}</div></div>
+            <div class="s"><div class="l">Time</div><div class="v">${fmtTime(b.timeTakenSeconds)}</div></div>
+          </div>
+        </a>`;
+      }).join("");
 
-        if (b.hasDist) {
-          $("viewer").innerHTML =
-            `<iframe src="${BASE}results/${b.slug}/output/dist/index.html" title="${b.slug} output"></iframe>`;
-        } else {
-          $("viewer").innerHTML =
-            `<div class="placeholder">No compiled <code>output/dist/</code> for this run yet.</div>`;
-        }
-        applyHeader();
-      }
+      const empty = ranked.length===0 ? `<div class="placeholder" style="border:1px solid var(--line);border-radius:8px;margin-top:14px">No results available.</div>` : "";
 
-      function showIntro() {
-        $("view-bench").style.display = "none";
-        $("view-intro").style.display = "block";
-        renderNav(null);
-        renderLeaderboard();
-      }
+      const hasGraded = ranked.some(b=> b.scoring?.status==="graded" && !b.scoring.voided && b.scoring.score!=null);
+      const viz = hasGraded ? `
+        <div class="section-title"><span>Score vs efficiency</span></div>
+        <div class="viz-card">
+          <div class="viz-toggle">
+            <span class="vlab">score vs</span>
+            <div class="seg" id="seg">${Object.keys(SCATTER_METRICS).map(k=>
+              `<button data-m="${k}" class="${k===scatterMetric?"on":""}">${METRIC_LABEL[k]}</button>`).join("")}</div>
+          </div>
+          <div id="scatter-host">${buildScatter(ranked, scatterMetric)}</div>
+        </div>` : "";
 
-      function route() {
-        const h = location.hash;
-        const m = h.match(/^#\/bench\/(.+)$/);
-        if (m) {
-          renderNav(m[1]);
-          renderBench(m[1]);
-        } else {
-          showIntro();
-        }
-      }
+      app.innerHTML = `
+        <header class="home-head">
+          <h1>Harness leaderboard</h1>
+          <div class="tag">1-shot harness + model results — a 3D solar-system build</div>
+          <p class="intro">The scores are a <b>rough instrument</b>: useful for spotting large variances between
+          harness + model combinations, not for splitting hairs. The more interesting part is the work itself —
+          <b>open a run</b> to see its live compiled app embedded and judge it for yourself.</p>
+        </header>
 
-      // --- grade dialog ---
-      const gradeDialog = $("grade-dialog");
-      function markChip(v) {
-        const cls = { pass: "mpass", good: "mgood", partial: "mpartial", poor: "mpoor", fail: "mfail" }[v] || "mna";
-        return `<span class="mark ${cls}">${v == null ? "—" : v}</span>`;
-      }
-      function openGrade(slug) {
-        const b = DATA.benches.find((x) => x.slug === slug);
-        if (!b) return;
-        const rubric = DATA.rubric || { categories: [], integrity: [] };
-        const grade = b.grade || {};
-        const sc = b.scoring || {};
-        const cs = sc.categoryScores || {};
-        let html = `<div class="grade-summary">Score <b>${
-          sc.voided ? "VOID" : sc.score == null ? "ungraded" : sc.score + " / 100"
-        }</b>${sc.voided ? ' <span class="mark mfail">integrity gate failed</span>' : ""}</div>`;
-        for (const cat of rubric.categories) {
-          const v = cs[cat.key];
-          html += `<h3>${cat.label}<span class="cat-pct ${v == null ? "" : scoreTier(v)}">${v == null ? "—" : v + "%"}</span></h3><table class="grade-table">`;
-          for (const c of cat.criteria) {
-            html += `<tr><td>${c.label}</td><td>${markChip((grade[cat.key] || {})[c.key])}</td></tr>`;
-          }
-          html += `</table>`;
-          // Free-form note describing what the harness actually did to self-verify.
-          if (cat.key === "selfVerification" && b.selfVerificationNotes) {
-            html += `<p class="grade-note">${b.selfVerificationNotes}</p>`;
-          }
-        }
-        html += `<h3>Integrity gate<span class="cat-pct ${sc.integrityPassed ? "good" : "bad"}">${sc.integrityPassed ? "passed" : "FAILED"}</span></h3><table class="grade-table">`;
-        for (const c of rubric.integrity) {
-          const v = (grade.integrity || {})[c.key];
-          const chip = v === true ? markChip("pass") : v === false ? markChip("fail") : markChip(null);
-          html += `<tr><td>${c.label}</td><td>${chip}</td></tr>`;
-        }
-        html += `</table>`;
-        $("grade-body").innerHTML = html;
-        $("grade-dialog-title").textContent = "Grade — " + slug;
-        gradeDialog.showModal();
-      }
-      document.addEventListener("click", (e) => {
-        const g = e.target.closest("[data-grade]");
-        if (g) openGrade(g.getAttribute("data-grade"));
-      });
-      $("grade-close").addEventListener("click", () => gradeDialog.close());
-      gradeDialog.addEventListener("click", (e) => {
-        if (e.target === gradeDialog) gradeDialog.close();
+        ${viz}
+
+        <div class="section-title"><span>Results</span><span>${ranked.length} runs · by score</span></div>
+        ${empty}
+        <div class="tbl-wrap">
+          <div class="tbl-scroll">
+            <table class="board">
+              <thead><tr>
+                <th style="width:42px">#</th><th>Harness · Model</th>
+                <th class="r">Score</th><th class="r">Cost</th><th class="r">Out tok</th><th class="r">Time</th>
+              </tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <div class="cards">${cards}</div>
+        </div>
+
+        <footer class="foot">
+          <span>${d.count} result(s) · ${esc((d.generatedAt||"").slice(0,10))}</span>
+          <a href="${REPO}" target="_blank" rel="noopener">github.com/mikevalstar/nasa-harness-bench ↗</a>
+        </footer>`;
+
+      app.querySelectorAll(".board tbody tr").forEach(tr=>{
+        tr.addEventListener("click", ()=>{ location.hash = `#/bench/${tr.dataset.slug}`; });
       });
 
-      // --- collapsible header ---
-      let headerHidden = localStorage.getItem("benchHeaderHidden") === "1";
-      function applyHeader() {
-        $("view-bench").classList.toggle("header-hidden", headerHidden);
-      }
-      function setHeaderHidden(v) {
-        headerHidden = v;
-        localStorage.setItem("benchHeaderHidden", v ? "1" : "0");
-        applyHeader();
-      }
-      document.addEventListener("click", (e) => {
-        if (e.target.closest("[data-header-toggle]")) setHeaderHidden(true);
-      });
-      $("header-restore").addEventListener("click", () => setHeaderHidden(false));
-
-      // --- notes dialog ---
-      const notesDialog = $("notes-dialog");
-      async function openNotes(slug) {
-        const body = $("notes-body");
-        $("notes-dialog-title").textContent = "Notes — " + slug;
-        body.innerHTML = `<p class="muted">Loading…</p>`;
-        notesDialog.showModal();
-        try {
-          const r = await fetch(`${BASE}results/${slug}/notes.md`);
-          if (!r.ok) throw new Error(String(r.status));
-          body.innerHTML = marked.parse(await r.text());
-        } catch {
-          body.innerHTML = `<p class="muted">Could not load notes.</p>`;
-        }
-      }
-      document.addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-notes]");
-        if (btn) openNotes(btn.getAttribute("data-notes"));
-      });
-      $("notes-close").addEventListener("click", () => notesDialog.close());
-      // Click on the backdrop (outside the dialog box) closes it.
-      notesDialog.addEventListener("click", (e) => {
-        if (e.target === notesDialog) notesDialog.close();
-      });
-
-      window.addEventListener("hashchange", route);
-
-      fetch(`${BASE}results/all.json`)
-        .then((r) => (r.ok ? r.json() : { benches: [] }))
-        .catch(() => ({ benches: [] }))
-        .then((d) => {
-          DATA = d && Array.isArray(d.benches) ? d : { benches: [] };
-          const count =
-            `${DATA.benches.length} result(s)` +
-            (DATA.generatedAt ? ` · ${DATA.generatedAt.slice(0, 10)}` : "");
-          $("nav-foot").innerHTML =
-            count +
-            (REPO_URL ? `<br><a href="${REPO_URL}" target="_blank">source on GitHub ↗</a>` : "");
-          route();
+      const seg = app.querySelector("#seg");
+      if (seg) seg.querySelectorAll("button").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          scatterMetric = btn.dataset.m;
+          app.querySelector("#scatter-host").innerHTML = buildScatter(ranked, scatterMetric);
+          seg.querySelectorAll("button").forEach(x=> x.classList.toggle("on", x===btn));
         });
-    </script>
-  </body>
+      });
+    }
+
+    function markFor(v) {
+      const m = (v==null) ? "na" : v;
+      const txt = (v==null) ? "—" : v;
+      return `<span class="mark ${m}">${txt}</span>`;
+    }
+    function gradeHtml(d, b) {
+      const grade = b.grade || {};
+      const cats = (d.rubric.categories||[]).map(c=>{
+        const g = grade[c.key] || {};
+        const crit = (c.criteria||[]).map(cr=>
+          `<div class="critrow"><span>${esc(cr.label)}</span>${markFor(g[cr.key])}</div>`
+        ).join("");
+        let sv = "";
+        if (c.key==="selfVerification" && b.selfVerificationNotes) {
+          sv = `<div class="svnotes">${esc(b.selfVerificationNotes)}</div>`;
+        }
+        return `<div class="gradecat"><h4>${esc(c.label)}</h4>${crit}${sv}</div>`;
+      }).join("");
+      const ig = grade.integrity || {};
+      const igRows = (d.rubric.integrity||[]).map(i=>{
+        const v = ig[i.key];
+        const cls = v===true ? "yes" : v===false ? "no" : "na";
+        const txt = v===true ? "Pass" : v===false ? "Fail" : "—";
+        return `<div class="critrow"><span>${esc(i.label)}</span><span class="mark ${cls}">${txt}</span></div>`;
+      }).join("");
+      return `${cats}<div class="gradecat"><h4>Integrity gate</h4>${igRows}</div>`;
+    }
+
+    function renderBench(d, slug) {
+      const b = d.benches.find(x=>x.slug===slug);
+      if (!b) {
+        app.innerHTML = `<div class="det-head"><h2>Unknown result</h2><div class="slug">No bench matches “${esc(slug)}”.</div></div>
+          <p class="summary"><a href="#/" style="color:var(--accent)">← Back to leaderboard</a></p>`;
+        return;
+      }
+      const sd = scoreDisplay(b);
+      const tu = b.tokenUsage || {};
+      const ver = (b.harnessVersion && b.harnessVersion!=="unknown") ? `<span class="ver"> v${esc(b.harnessVersion)}</span>` : "";
+      const distUrl = `${BASE}results/${b.slug}/output/dist/index.html`;
+
+      const idcells = [
+        ["Harness", esc(b.harness)+(b.harnessVersion&&b.harnessVersion!=="unknown"?` v${esc(b.harnessVersion)}`:"")],
+        ["Model", esc(b.model)],
+        ["Effort", esc(b.effort)],
+        ["Interface", esc(b.interface)],
+        ["Run", esc((b.createdAt||"").slice(0,10))],
+        ["Total tokens", fmtTok(tu.total)],
+        ["Cost", fmtCost(b.estimatedCostUsd)],
+        ["Time", fmtTime(b.timeTakenSeconds)],
+      ].map(([l,v])=>`<div class="cell"><div class="l">${l}</div><div class="v">${v}</div></div>`).join("");
+
+      const cats = (d.rubric.categories||[]).map(c=>{
+        const cs = b.scoring?.categoryScores?.[c.key];
+        const pct = cs==null ? 0 : Math.round(cs);
+        const tier = cs==null ? "" : scoreTier(cs);
+        return `<div class="catbar ${tier}">
+          <div class="row"><span>${esc(SHORT[c.key]||c.label)}</span><span class="pct">${cs==null?"—":pct}</span></div>
+          <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join("");
+
+      let scNumCls = sd.cls;
+      if (sd.txt==="VOID") scNumCls = "void";
+      else if (sd.txt==="—") scNumCls = "ungr";
+
+      let actions = "";
+      if (b.hasDist) actions += `<a class="tb-btn primary" href="${distUrl}" target="_blank" rel="noopener"><span class="ic">▸</span> Open full page <span class="ext">↗</span></a>`;
+      if (b.hasNotes) actions += `<button class="tb-btn" id="btn-notes"><span class="ic">✎</span> Notes</button>`;
+      actions += `<button class="tb-btn" id="btn-grade"><span class="ic">▦</span> Grade breakdown</button>`;
+
+      let extlinks = "";
+      if (b.hasRunlog) extlinks += `<a class="tb-link" href="${BASE}results/${b.slug}/runlog.txt" target="_blank" rel="noopener">Run log <span class="ext">↗</span></a>`;
+      extlinks += `<a class="tb-link" href="${BASE}results/${b.slug}/metadata.json" target="_blank" rel="noopener">Metadata <span class="ext">↗</span></a>`;
+      extlinks += `<a class="tb-link" href="${REPO}/tree/main/results/${b.slug}/output" target="_blank" rel="noopener">Source <span class="ext">↗</span></a>`;
+
+      let embed;
+      if (b.hasDist) {
+        if (isMobile()) {
+          embed = `<div class="embed">
+            <div class="mobileopen">
+              <p>Embedded preview is desktop-only.</p>
+              <a class="tb-btn primary" href="${distUrl}" target="_blank" rel="noopener"><span class="ic">▸</span> Open the app <span class="ext">↗</span></a>
+            </div></div>`;
+        } else {
+          embed = `<div class="embed desk">
+            <div class="bar"><span>Embedded app</span><span>dist/index.html</span></div>
+            <iframe src="${distUrl}" title="compiled app for ${esc(b.slug)}" loading="lazy"></iframe>
+          </div>`;
+        }
+      } else {
+        embed = `<div class="embed"><div class="placeholder">No compiled output yet.</div></div>`;
+      }
+
+      const summary = b.summary ? `<p class="summary">${esc(b.summary)}</p>` : "";
+      const note = b.note ? `<div class="det-note">⚠ ${esc(b.note)}</div>` : "";
+
+      app.innerHTML = `
+        <div class="det-head">
+          <h2>${esc(b.harness)}${ver} / ${esc(b.model)}</h2>
+        </div>
+        <div class="idrow">${idcells}</div>
+        ${summary}
+        ${note}
+
+        <div class="det-score">
+          <div class="sc-num ${scNumCls}">${sd.txt}${sd.val!=null?'<span class="sc-of">/100</span>':''}</div>
+          <div class="det-cats">${cats || '<div class="placeholder" style="padding:0;color:var(--faint)">No category scores.</div>'}</div>
+        </div>
+        <div class="toolbar">
+          <div class="tb-group">${actions}</div>
+          <div class="tb-group tb-ext">${extlinks}</div>
+        </div>
+        ${embed}
+
+        <dialog id="dlg-grade">
+          <div class="dhead"><span>Grade breakdown</span><button data-close>×</button></div>
+          <div class="dbody">${gradeHtml(d, b)}</div>
+        </dialog>
+        <dialog id="dlg-notes">
+          <div class="dhead"><span>Notes</span><button data-close>×</button></div>
+          <div class="dbody md" id="notes-body">Loading…</div>
+        </dialog>`;
+
+      app.querySelectorAll("dialog [data-close]").forEach(btn=>{
+        btn.addEventListener("click", ()=> btn.closest("dialog").close());
+      });
+      app.querySelectorAll("dialog").forEach(dlg=>{
+        dlg.addEventListener("click", e=>{ if (e.target===dlg) dlg.close(); });
+      });
+      const gb = app.querySelector("#btn-grade");
+      if (gb) gb.addEventListener("click", ()=> app.querySelector("#dlg-grade").showModal());
+      const nb = app.querySelector("#btn-notes");
+      if (nb) nb.addEventListener("click", async ()=>{
+        const dlg = app.querySelector("#dlg-notes");
+        dlg.showModal();
+        const body = app.querySelector("#notes-body");
+        try {
+          const r = await fetch(`${BASE}results/${b.slug}/notes.md`);
+          body.innerHTML = marked.parse(await r.text());
+        } catch (e) { body.textContent = "Could not load notes."; }
+      });
+    }
+
+    async function renderPlan() {
+      app.innerHTML = `<article class="plandoc" id="plan-body"><p style="color:var(--faint)">Loading the task…</p></article>`;
+      const body = document.getElementById("plan-body");
+      try {
+        const r = await fetch(`${BASE}PLAN.md`);
+        if (!r.ok) throw new Error(String(r.status));
+        body.innerHTML = marked.parse(await r.text());
+      } catch (e) {
+        body.innerHTML = `<p style="color:var(--muted)">Couldn't load the task description.
+          <a href="${REPO}/blob/main/bench/PLAN.md" target="_blank" rel="noopener">View PLAN.md on GitHub ↗</a></p>`;
+      }
+    }
+
+    async function route() {
+      const d = await load();
+      const h = location.hash || "#/";
+      const m = h.match(/^#\/bench\/(.+)$/);
+      const slug = m ? decodeURIComponent(m[1]) : null;
+      const isPlan = /^#\/plan\/?$/.test(h);
+      const view = slug ? "bench" : isPlan ? "plan" : "home";
+      renderRail(d, view, slug);
+      if (slug) renderBench(d, slug);
+      else if (isPlan) renderPlan();
+      else renderHome(d);
+      app.scrollTo?.(0,0);
+      window.scrollTo(0,0);
+    }
+
+    window.addEventListener("hashchange", route);
+    let wasMobile = isMobile();
+    window.addEventListener("resize", ()=>{
+      const now = isMobile();
+      if (now!==wasMobile) { wasMobile = now; if (/^#\/bench\//.test(location.hash)) route(); }
+    });
+    route();
+  </script>
+</body>
 </html>

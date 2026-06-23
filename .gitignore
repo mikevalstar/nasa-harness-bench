@@ -9,6 +9,9 @@ node_modules/
 # prebuild artifact: a symlink-resolved copy of results/ for the build
 public/results/
 
+# prebuild artifact: the canonical task prompt, copied from bench/PLAN.md
+public/PLAN.md
+
 # local run handoff notes (new-bench.sh → collect-result.sh); data lands in results/
 benches/
 

@@ -48,6 +48,13 @@ cpSync(RESULTS, DEST, {
     return slugsWithDist.has(slug); // only bake data for renderable runs
   },
 });
+// Expose the canonical task prompt (bench/PLAN.md) to the site so the "The task"
+// view can fetch it at ${BASE}PLAN.md.
+const PLAN_SRC = join(ROOT, "bench", "PLAN.md");
+if (existsSync(PLAN_SRC)) {
+  cpSync(PLAN_SRC, join(ROOT, "public", "PLAN.md"));
+}
+
 console.log(
   `Synced results/ -> public/results/ (data baked for ${slugsWithDist.size} renderable run(s)).`,
 );
