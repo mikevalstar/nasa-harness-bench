@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inner Solar System & NEO Observer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <!-- Note: We are bundled and self-contained, but standard browser sans/serif system fonts are used, and custom fonts are optional. we loaded standard Inter-like fallbacks. No external CDNs are needed -->
+  <script type="module" crossorigin src="./assets/index-89I23crh.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-D7vEKwKE.css">
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loader" class="loader-screen">
+    <div class="spinner"></div>
+    <div class="loader-text" id="loader-status">Initializing 3D Environment...</div>
+    <div class="loader-progress">
+      <div class="loader-bar" id="loader-bar"></div>
+    </div>
+  </div>
+
+  <!-- 3D Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- Header Overlay (Top Left) -->
+  <div class="overlay panel header-panel">
+    <h1>Inner Solar System</h1>
+    <div class="subtitle">Near-Earth Object (NEO) Observer</div>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-label">Planets</span>
+        <span class="stat-val" id="stat-planets">8</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">NEO Asteroids</span>
+        <span class="stat-val" id="stat-asteroids">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Active Comets</span>
+        <span class="stat-val" id="stat-comets">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Impact Monitored</span>
+        <span class="stat-val" id="stat-sentry">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar Overlay (Right Side) -->
+  <div class="overlay panel sidebar-panel" id="sidebar">
+    <div class="tab-buttons">
+      <button class="tab-btn active" data-tab="tab-search">Search & Filter</button>
+      <button class="tab-btn" data-tab="tab-objects">Object List (<span id="filtered-count">0</span>)</button>
+    </div>
+
+    <!-- Tab 1: Search and Filter Settings -->
+    <div class="tab-content active" id="tab-search">
+      
+      <!-- Search Input -->
+      <div class="form-group">
+        <label for="search">Find Object</label>
+        <div class="search-input-wrapper">
+          <input type="text" id="search" class="search-input" placeholder="Search by name, des, e.g. Eros, 433..." autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="form-group">
+        <label for="filter-hazard">Hazard Status</label>
+        <select id="filter-hazard" class="select-input">
+          <option value="all">All Objects</option>
+          <option value="pha">Potentially Hazardous (PHA) only</option>
+          <option value="non-pha">Non-Hazardous only</option>
+          <option value="sentry">Sentry Impact Risk only</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="filter-class">Orbit Class</label>
+        <select id="filter-class" class="select-input">
+          <option value="all">All Orbit Classes</option>
+          <option value="AMO">Amor Asteroids (AMO)</option>
+          <option value="APO">Apollo Asteroids (APO)</option>
+          <option value="ATE">Aten Asteroids (ATE)</option>
+          <option value="IEO">Interior-Earth Objects (IEO)</option>
+          <option value="comets">Comets only</option>
+        </select>
+      </div>
+
+      <!-- MOID Earth (Minimum Orbit Intersection Distance) -->
+      <div class="form-group slider-wrapper">
+        <div class="slider-header">
+          <label for="filter-moid">Max MOID to Earth</label>
+          <span class="slider-val" id="val-moid">1.0 AU</span>
+        </div>
+        <input type="range" id="filter-moid" min="0.0" max="1.0" step="0.01" value="1.0">
+      </div>
+
+      <!-- Size (Diameter or Absolute Magnitude) -->
+      <div class="form-group slider-wrapper">
+        <div class="slider-header">
+          <label for="filter-magnitude">Max Abs. Magnitude (H)</label>
+          <span class="slider-val" id="val-magnitude">30 (Smaller)</span>
+        </div>
+        <input type="range" id="filter-magnitude" min="10" max="30" step="0.5" value="30">
+      </div>
+
+      <!-- Sort Selection -->
+      <div class="form-group">
+        <label for="sort-by">Sort List By</label>
+        <select id="sort-by" class="select-input">
+          <option value="name">Name / Designation</option>
+          <option value="moid">MOID (Closest Orbit)</option>
+          <option value="size">Size (Diameter / Brightness)</option>
+          <option value="e">Eccentricity</option>
+          <option value="i">Inclination</option>
+        </select>
+      </div>
+
+      <!-- Display settings -->
+      <div class="form-group">
+        <label>Display Options</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="show-orbits" checked> Show Orbit Lines
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="show-labels" checked> Show Planet Labels
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="limit-asteroids" checked> Limit to 2000 points (Smooth FPS)
+          </label>
+        </div>
+      </div>
+
+      <div class="btn-group" style="margin-top: 8px;">
+        <button id="reset-filters" class="btn">Reset Filters</button>
+      </div>
+
+    </div>
+
+    <!-- Tab 2: Filtered Objects List -->
+    <div class="tab-content" id="tab-objects">
+      <div class="object-list" id="object-list-container">
+        <!-- Object items generated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Object Details Panel (Saves screen space, slides over sidebar) -->
+  <div class="overlay panel details-panel" id="details">
+    <div class="details-header">
+      <div class="details-title-wrap">
+        <h2 id="det-name">433 Eros</h2>
+        <div class="sub" id="det-class">Amor Asteroid (AMO)</div>
+      </div>
+      <button class="close-btn" id="det-close">&times;</button>
+    </div>
+
+    <div class="details-content">
+      <!-- Lock and Follow Button -->
+      <div class="btn-group" style="margin-bottom: 6px;">
+        <button id="btn-lock" class="btn"><span class="icon">👁</span> Lock & Follow Camera</button>
+        <button id="btn-share" class="btn"><span class="icon">🔗</span> Share Link</button>
+      </div>
+
+      <!-- Physical Properties -->
+      <div class="details-section">
+        <h3>Physical Properties</h3>
+        <div class="grid-props">
+          <span class="grid-prop-label">Est. Diameter:</span>
+          <span class="grid-prop-val" id="det-diameter">16.84 km</span>
+          
+          <span class="grid-prop-label">Abs. Magnitude (H):</span>
+          <span class="grid-prop-val" id="det-magnitude">10.40</span>
+          
+          <span class="grid-prop-label">Albedo:</span>
+          <span class="grid-prop-val" id="det-albedo">0.25</span>
+          
+          <span class="grid-prop-label">Rotation Period:</span>
+          <span class="grid-prop-val" id="det-rotation">5.27 h</span>
+          
+          <span class="grid-prop-label">Spectral Type:</span>
+          <span class="grid-prop-val" id="det-spectral">S (SMASSII)</span>
+
+          <span class="grid-prop-label">First Observed:</span>
+          <span class="grid-prop-val" id="det-observed">1893-10-29</span>
+        </div>
+      </div>
+
+      <!-- Orbital Elements -->
+      <div class="details-section">
+        <h3>Orbital Parameters</h3>
+        <div class="grid-props">
+          <span class="grid-prop-label">Semi-major Axis (a):</span>
+          <span class="grid-prop-val" id="det-a">1.458 AU</span>
+          
+          <span class="grid-prop-label">Eccentricity (e):</span>
+          <span class="grid-prop-val" id="det-e">0.2229</span>
+          
+          <span class="grid-prop-label">Inclination (i):</span>
+          <span class="grid-prop-val" id="det-i">10.83°</span>
+          
+          <span class="grid-prop-label">Perihelion (q):</span>
+          <span class="grid-prop-val" id="det-q">1.133 AU</span>
+          
+          <span class="grid-prop-label">Aphelion (ad):</span>
+          <span class="grid-prop-val" id="det-ad">1.780 AU</span>
+          
+          <span class="grid-prop-label">Orbital Period:</span>
+          <span class="grid-prop-val" id="det-period">643 days</span>
+
+          <span class="grid-prop-label">Earth MOID:</span>
+          <span class="grid-prop-val" id="det-moid" style="color: var(--accent-color); font-weight: bold;">0.149 AU</span>
+        </div>
+      </div>
+
+      <!-- Impact Risk section (Sentry) -->
+      <div class="details-section" id="sentry-risk-section" style="display: none;">
+        <h3>Sentry Impact Risk</h3>
+        <div class="risk-alert">
+          <div class="risk-title">⚠️ Risk Assessment Monitored</div>
+          <div class="grid-props" style="margin-top: 6px;">
+            <span class="grid-prop-label">Cumulative Prob:</span>
+            <span class="grid-prop-val" id="det-risk-prob" style="color: #f59e0b; font-weight: bold;">1 in 1,200,000</span>
+            
+            <span class="grid-prop-label">Torino Scale (Max):</span>
+            <span class="grid-prop-val" id="det-risk-torino">0</span>
+            
+            <span class="grid-prop-label">Palermo Scale (Cum):</span>
+            <span class="grid-prop-val" id="det-risk-palermo">-2.69</span>
+            
+            <span class="grid-prop-label">Impact Window:</span>
+            <span class="grid-prop-val" id="det-risk-window">2056-2113</span>
+
+            <span class="grid-prop-label">Potential Impacts:</span>
+            <span class="grid-prop-val" id="det-risk-impacts">4</span>
+
+            <span class="grid-prop-label">Velocity (v_inf):</span>
+            <span class="grid-prop-val" id="det-risk-vrel">23.76 km/s</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Close Approaches (Close approaches to Earth) -->
+      <div class="details-section">
+        <h3>Earth Close Approaches</h3>
+        <div class="ca-list" id="det-ca-list">
+          <!-- Close approaches generated dynamically -->
+          <div style="padding: 10px; color: var(--text-secondary); text-align: center; font-size: 0.75rem;">Loading data...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend Overlay (Bottom Left) -->
+  <div class="overlay panel legend-panel">
+    <div class="legend-title">Orbits and System Scale</div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #38bdf8;"></div>
+      <span>Planets / Active Selection</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #fca5a5;"></div>
+      <span>Asteroids (Standard NEOs)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #f43f5e;"></div>
+      <span>Potentially Hazardous (PHA)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #22c55e;"></div>
+      <span>Comets (Standard Orbits)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #eab308;"></div>
+      <span>Sentry Impact Risk Asteroids</span>
+    </div>
+    <div style="font-size: 0.65rem; color: var(--text-secondary); border-top: 1px solid var(--border-color); margin-top: 6px; padding-top: 6px;">
+      Scale: Distances are in Astronomical Units (1 AU ≈ 150,000,000 km). Sizes of Sun & planets are exaggerated for visual clarity.
+    </div>
+  </div>
+
+  <!-- Bottom Interactive Timeline (Play / Speed / Slider) -->
+  <div class="overlay panel bottom-panel">
+    
+    <!-- Left side Date display -->
+    <div class="time-left">
+      <div class="date-display" id="display-date">2026-Jun-23</div>
+      <div class="jd-display" id="display-jd">JD 2461215.00</div>
+    </div>
+
+    <!-- Playback buttons -->
+    <div class="playback-controls">
+      <button class="btn btn-icon" id="btn-prev-day" title="Step Back 1 Day">⏮</button>
+      <button class="btn btn-icon active" id="btn-play-pause" title="Play / Pause Simulation">⏸</button>
+      <button class="btn btn-icon" id="btn-next-day" title="Step Forward 1 Day">⏭</button>
+      <button class="btn" id="btn-today" title="Jump to Today">Today</button>
+    </div>
+
+    <!-- Speed Adjustment Slider -->
+    <div class="playback-controls" style="min-width: 140px;">
+      <div style="font-size: 0.75rem; color: var(--text-secondary); min-width: 40px; text-align: right;" id="display-speed">10 d/s</div>
+      <input type="range" id="sim-speed" min="-50" max="50" step="1" value="10" title="Adjust speed (negative for backwards time)">
+    </div>
+
+    <!-- Scrubber Slider -->
+    <div class="time-slider-wrapper">
+      <div class="time-labels">
+        <span>Year 2000</span>
+        <span>Timeline Scrubbing</span>
+        <span>Year 2050</span>
+      </div>
+      <input type="range" id="time-scrubber" min="2451545" max="2469807" value="2461215">
+    </div>
+
+  </div>
+
+</body>
+</html>
