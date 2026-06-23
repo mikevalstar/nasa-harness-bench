@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Raw benchmark data and embedded per-run output are served for the app to
+# fetch/iframe, not as search landing pages — keep them out of crawl budget.
+Disallow: /results/
+
+Sitemap: https://nasa-harness-bench.valstar.dev/sitemap.xml
