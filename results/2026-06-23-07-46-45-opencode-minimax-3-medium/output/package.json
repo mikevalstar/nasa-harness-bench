@@ -1,0 +1,21 @@
+{
+  "name": "inner-solar-system-3d",
+  "version": "1.0.0",
+  "description": "Interactive 3D visualization of the inner solar system and near-Earth asteroids",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prebuild": "node scripts/preprocess-data.mjs",
+    "build": "vite build && node scripts/copy-data.mjs",
+    "dev": "node scripts/preprocess-data.mjs && vite",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/three": "^0.169.0",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  }
+}

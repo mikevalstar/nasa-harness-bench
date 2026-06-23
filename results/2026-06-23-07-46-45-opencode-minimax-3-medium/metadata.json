@@ -1,0 +1,55 @@
+{
+  "slug": "2026-06-23-07-46-45-opencode-minimax-3-medium",
+  "harness": "opencode",
+  "harnessVersion": "1.17.9",
+  "model": "minimax-3",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-06-23T11:46:46Z",
+  "collectedAt": "2026-06-23T12:42:09Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-23-07-46-45-opencode-minimax-3-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": { "input": 294307, "output": 119129, "total": 413436 },
+  "estimatedCostUsd": 3.609732,
+  "timeTakenSeconds": 2796,
+  "tags": [],
+  "summary": "",
+
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "Built the site, served dist/ over a local HTTP server, and verified end-to-end with Playwright. The node `playwright` package was missing, so it fell back to the Python Playwright + chromium already on the machine — drove the page, hooked console/pageerror, confirmed 42,075 asteroids loaded (no page errors; only WebGL GPU-stall perf warnings), captured a screenshot, and read it back to confirm the render (Sun + inner planets, PHA/Sentry/comet overlays, time controls, filters, search).",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "good",
+      "orbitsCorrect": "partial",
+      "timeAnimation": "good"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "good",
+      "legible": "good",
+      "noUiIssues": "pass"
+    },
+    "selfVerification": { "consoleReview": "pass", "displayReview": "pass" },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "good",
+      "comets": "poor",
+      "impactRisk": "good",
+      "focusFollow": "good",
+      "deepLinks": "pass"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}
