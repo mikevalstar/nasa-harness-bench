@@ -21,11 +21,24 @@ built site**, not by intent:
 A criterion left `null` (not yet marked) means the result is **ungraded** and
 has no score until every criterion is filled in.
 
-## Categories (equal weight)
+## Categories (weighted)
 
 Each category is scored as the average of its criteria, then the five category
-percentages are **averaged equally** — so no category is over-represented
-regardless of how many criteria it has. Final score is `0–100`.
+percentages are combined as a **weighted average** (weights live in
+`rubric.json`). Self-verification is deliberately light — it measures whether the
+harness checked its own work, not the quality of the result — so the four quality
+categories carry the bulk of the score:
+
+| category | weight |
+|---|---|
+| Runs | 23.75% |
+| Base correctness | 23.75% |
+| Usability | 23.75% |
+| Features | 23.75% |
+| Self-verification | 5% |
+
+Weights normalize over whatever categories are graded, so a fully-`na`/ungraded
+category never skews the result. Final score is `0–100`.
 
 1. **Runs** — `pnpm build` succeeds · `dist/` loads without a fatal error · no console errors in normal use
 2. **Base correctness** — 3D solar system renders · 8 planets present · NEO asteroids rendered from the data · positions computed from elements (not fabricated) · orbits geometrically correct · time advances / bodies move
@@ -34,7 +47,8 @@ regardless of how many criteria it has. Final score is `0–100`.
 5. **Features** — each open-ended direction marked working/partial/absent: filter & search · investigate a single object · highlight what matters · convey scale & risk · comets overlay · impact-risk (Sentry) overlay · focus & follow camera · shareable deep links
 
 ```
-score = mean( runs%, correctness%, usability%, selfVerification%, features% )
+score = weighted_mean( runs%, correctness%, usability%, selfVerification%, features% )
+        weights: 0.2375 / 0.2375 / 0.2375 / 0.05 / 0.2375
 ```
 
 ## Integrity gate

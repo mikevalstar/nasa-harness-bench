@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T11:26:21.492Z",
+  "generatedAt": "2026-06-23T11:29:35.699Z",
   "count": 9,
   "rubric": {
     "scale": {
@@ -13,6 +13,7 @@
       {
         "key": "runs",
         "label": "Runs",
+        "weight": 0.2375,
         "criteria": [
           {
             "key": "builds",
@@ -31,6 +32,7 @@
       {
         "key": "correctness",
         "label": "Base correctness",
+        "weight": 0.2375,
         "criteria": [
           {
             "key": "solarSystem",
@@ -61,6 +63,7 @@
       {
         "key": "usability",
         "label": "Usability",
+        "weight": 0.2375,
         "criteria": [
           {
             "key": "camera",
@@ -83,6 +86,7 @@
       {
         "key": "selfVerification",
         "label": "Self-verification",
+        "weight": 0.05,
         "criteria": [
           {
             "key": "consoleReview",
@@ -97,6 +101,7 @@
       {
         "key": "features",
         "label": "Features",
+        "weight": 0.2375,
         "criteria": [
           {
             "key": "filterSearch",
@@ -222,7 +227,7 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 75,
+        "score": 90,
         "categoryScores": {
           "runs": 100,
           "correctness": 96,
@@ -310,7 +315,7 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 45,
+        "score": 53,
         "categoryScores": {
           "runs": 100,
           "correctness": 54,
@@ -396,7 +401,7 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 55,
+        "score": 65,
         "categoryScores": {
           "runs": 100,
           "correctness": 71,
@@ -482,7 +487,7 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 53,
+        "score": 63,
         "categoryScores": {
           "runs": 100,
           "correctness": 100,
@@ -566,7 +571,7 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 93,
+        "score": 91,
         "categoryScores": {
           "runs": 100,
           "correctness": 92,
@@ -648,7 +653,7 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 78,
+        "score": 74,
         "categoryScores": {
           "runs": 100,
           "correctness": 71,
@@ -732,7 +737,7 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 95,
+        "score": 94,
         "categoryScores": {
           "runs": 100,
           "correctness": 100,
@@ -817,7 +822,7 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 92,
+        "score": 91,
         "categoryScores": {
           "runs": 100,
           "correctness": 88,
@@ -902,7 +907,7 @@
       },
       "scoring": {
         "status": "graded",
-        "score": 89,
+        "score": 87,
         "categoryScores": {
           "runs": 92,
           "correctness": 96,

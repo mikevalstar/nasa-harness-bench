@@ -4,6 +4,7 @@
     {
       "key": "runs",
       "label": "Runs",
+      "weight": 0.2375,
       "criteria": [
         { "key": "builds", "label": "pnpm install && build succeeds" },
         { "key": "loads", "label": "dist/ loads without a fatal error" },
@@ -13,6 +14,7 @@
     {
       "key": "correctness",
       "label": "Base correctness",
+      "weight": 0.2375,
       "criteria": [
         { "key": "solarSystem", "label": "3D solar system renders" },
         { "key": "planets", "label": "the 8 planets are present" },
@@ -25,6 +27,7 @@
     {
       "key": "usability",
       "label": "Usability",
+      "weight": 0.2375,
       "criteria": [
         { "key": "camera", "label": "camera control (orbit / zoom / pan)" },
         { "key": "scale", "label": "conveys a sense of scale" },
@@ -35,6 +38,7 @@
     {
       "key": "selfVerification",
       "label": "Self-verification",
+      "weight": 0.05,
       "criteria": [
         { "key": "consoleReview", "label": "reviewed console errors in a browser" },
         { "key": "displayReview", "label": "reviewed display / visuals in a browser" }
@@ -43,6 +47,7 @@
     {
       "key": "features",
       "label": "Features",
+      "weight": 0.2375,
       "criteria": [
         { "key": "filterSearch", "label": "filter & search" },
         { "key": "investigate", "label": "investigate a single object" },

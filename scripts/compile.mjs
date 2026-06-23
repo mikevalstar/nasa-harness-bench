@@ -49,8 +49,19 @@ function scoreGrade(grade, cheated) {
   if (ungraded) {
     return { status: "ungraded", score: null, categoryScores, integrityPassed, voided: !integrityPassed };
   }
-  const cats = Object.values(categoryScores).filter((x) => x !== null);
-  const score = cats.length ? Math.round(cats.reduce((a, b) => a + b, 0) / cats.length) : null;
+  // Weighted average over graded categories. Each category carries an optional
+  // `weight` in the rubric (defaults to 1 = equal weight); we normalize by the
+  // weights actually present so a null/excluded category never skews the result.
+  let weightSum = 0;
+  let weighted = 0;
+  for (const cat of RUBRIC.categories) {
+    const s = categoryScores[cat.key];
+    if (s === null) continue;
+    const w = typeof cat.weight === "number" ? cat.weight : 1;
+    weighted += s * w;
+    weightSum += w;
+  }
+  const score = weightSum ? Math.round(weighted / weightSum) : null;
   return { status: "graded", score, categoryScores, integrityPassed, voided: !integrityPassed };
 }
 
