@@ -1,0 +1,18 @@
+{
+  "name": "solar-system-visualization",
+  "version": "1.0.0",
+  "description": "Interactive 3D solar system visualization",
+  "main": "dist/index.html",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite --port 3000"
+  },
+  "type": "module",
+  "files": ["dist", "src"],
+  "dependencies": {
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

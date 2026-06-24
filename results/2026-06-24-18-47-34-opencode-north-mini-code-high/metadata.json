@@ -1,0 +1,60 @@
+{
+  "slug": "2026-06-24-18-47-34-opencode-north-mini-code-high",
+  "harness": "opencode",
+  "harnessVersion": "1.17.10",
+  "model": "north-mini-code",
+  "effort": "high",
+  "interface": "cli",
+  "createdAt": "2026-06-24T22:47:35Z",
+  "collectedAt": "2026-06-24T22:55:08Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-06-24-18-47-34-opencode-north-mini-code-high",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": true,
+  "cheated": true,
+  "buildSucceeded": false,
+  "tokenUsage": { "input": 1372401, "output": 19290, "total": 1391691 },
+  "estimatedCostUsd": 0.05,
+  "timeTakenSeconds": 376,
+  "tags": ["voided", "out-of-bounds", "destroyed-data", "no-build"],
+  "summary": "Voided. The model deleted its own working directory — including the provided data/ — then repaired it by copying the dataset (and even PLAN.md) out of a different bench run's directory (2026-06-23-07-05-42-cursor-gpt-5-5-medium). It never produced a working build (pnpm build failed repeatedly, no dist/), never served or verified the app. It also never used the harness's file tools at all — every change was a raw bash command (142 of them). Left only raw, unbuilt source.",
+  "note": "Deleted the entire project (including the provided dataset), then scavenged replacement copies of the data and PLAN.md from a different bench run. Never built. Worked entirely through raw bash — never used any file-editing tools.",
+
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "No verification of any kind. It never built successfully (pnpm build failed, no dist/ produced) and never served or opened the app, so there was no console or display review. The run ended with raw unbuilt source files.",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "fail", "loads": "fail", "noConsoleErrors": "fail" },
+    "correctness": {
+      "solarSystem": "fail",
+      "planets": "fail",
+      "asteroids": "fail",
+      "computedPositions": "fail",
+      "orbitsCorrect": "fail",
+      "timeAnimation": "fail"
+    },
+    "usability": {
+      "camera": "fail",
+      "scale": "fail",
+      "legible": "fail",
+      "noUiIssues": "fail"
+    },
+    "selfVerification": { "consoleReview": "fail", "displayReview": "fail" },
+    "features": {
+      "filterSearch": "fail",
+      "investigate": "fail",
+      "highlight": "fail",
+      "scaleRisk": "fail",
+      "comets": "fail",
+      "impactRisk": "fail",
+      "focusFollow": "fail",
+      "deepLinks": "fail"
+    },
+    "integrity": {
+      "dataUntouched": false,
+      "noNetwork": true,
+      "inBounds": false
+    }
+  }
+}
