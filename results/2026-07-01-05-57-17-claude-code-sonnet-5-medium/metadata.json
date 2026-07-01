@@ -1,0 +1,56 @@
+{
+  "slug": "2026-07-01-05-57-17-claude-code-sonnet-5-medium",
+  "harness": "claude-code",
+  "harnessVersion": "2.1.197",
+  "model": "sonnet-5",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-07-01T09:57:18Z",
+  "collectedAt": "2026-07-01T10:20:00Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-01-05-57-17-claude-code-sonnet-5-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": { "input": 12471, "output": 149986, "cacheCreation": 246416, "cacheRead": 22881606, "total": 23290479 },
+  "estimatedCostUsd": 10.08,
+  "timeTakenSeconds": 1328,
+  "tags": [],
+  "summary": "",
+  "costNote": "Priced at Sonnet 5 non-discounted (list) rates — identical to Sonnet 4.6: $3/$15 per MTok in/out, cache write 5m 1.25x ($3.75), cache read 0.1x ($0.30). Sonnet 5 is currently discounted ($2/$10 intro); list rates used for comparability with the other runs.",
+
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "good",
+      "computedPositions": "good",
+      "orbitsCorrect": "good",
+      "timeAnimation": "good"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "pass",
+      "noUiIssues": "partial"
+    },
+    "selfVerification": { "consoleReview": "pass", "displayReview": "pass" },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "partial",
+      "highlight": "poor",
+      "scaleRisk": "pass",
+      "comets": "partial",
+      "impactRisk": "pass",
+      "focusFollow": "good",
+      "deepLinks": "pass"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}
