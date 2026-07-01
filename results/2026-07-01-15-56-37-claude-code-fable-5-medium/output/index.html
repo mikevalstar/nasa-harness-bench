@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEO Explorer — Inner Solar System &amp; Near-Earth Asteroids</title>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-wrap"></div>
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <div id="loading-msg">Loading…</div>
+    </div>
+
+    <header id="topbar">
+      <div id="brand">
+        <h1>NEO Explorer</h1>
+        <span id="obj-count"></span>
+      </div>
+      <div id="search-wrap">
+        <input id="search" type="text" placeholder="Search asteroids &amp; comets… (e.g. Apophis, Bennu, 1P)" autocomplete="off" spellcheck="false" />
+        <div id="search-results" hidden></div>
+      </div>
+      <div id="top-actions">
+        <button id="btn-filters" class="tab-btn" title="Filter asteroids">Filters</button>
+        <button id="btn-approaches" class="tab-btn" title="Close approaches near current date">Approaches</button>
+        <button id="btn-risk" class="tab-btn" title="CNEOS Sentry impact-risk list">Risk</button>
+        <button id="btn-share" title="Copy a link to this exact view">Share view</button>
+        <button id="btn-help" title="Help">?</button>
+      </div>
+    </header>
+
+    <aside id="left-panel" hidden>
+      <div id="filters-pane" class="pane">
+        <div class="pane-head"><h2>Filters</h2><button class="close" data-close="left">×</button></div>
+        <div class="pane-body">
+          <div id="filter-count" class="hint"></div>
+          <label class="row check"><input type="checkbox" id="f-pha" /> Potentially hazardous (PHA) only</label>
+          <label class="row check"><input type="checkbox" id="f-sentry" /> Sentry-monitored (impact risk) only</label>
+          <label class="row check"><input type="checkbox" id="f-named" /> Named asteroids only</label>
+          <div class="row">
+            <div class="lbl">Orbit class</div>
+            <div id="f-classes" class="chips"></div>
+          </div>
+          <div class="row">
+            <div class="lbl">Max absolute magnitude H ≤ <b id="f-h-val"></b> <span class="hint" id="f-h-hint"></span></div>
+            <input type="range" id="f-h" min="10" max="34" step="0.5" value="34" />
+          </div>
+          <div class="row">
+            <div class="lbl">Earth MOID ≤ <b id="f-moid-val"></b></div>
+            <input type="range" id="f-moid" min="-3.3" max="0" step="0.05" value="0" />
+          </div>
+          <button id="f-reset" class="ghost">Reset filters</button>
+        </div>
+      </div>
+      <div id="approaches-pane" class="pane" hidden>
+        <div class="pane-head"><h2>Close approaches</h2><button class="close" data-close="left">×</button></div>
+        <div class="pane-body">
+          <div class="hint">Earth approaches within ±15 days of the current date. Gold rings mark them in the scene; click to inspect.</div>
+          <div id="approach-list"></div>
+        </div>
+      </div>
+      <div id="risk-pane" class="pane" hidden>
+        <div class="pane-head"><h2>Impact risk (Sentry)</h2><button class="close" data-close="left">×</button></div>
+        <div class="pane-body">
+          <div class="hint">Objects on the CNEOS Sentry risk list, ranked by cumulative Palermo scale. Click to inspect.</div>
+          <div id="risk-list"></div>
+        </div>
+      </div>
+    </aside>
+
+    <aside id="detail-panel" hidden>
+      <div class="pane">
+        <div class="pane-head">
+          <h2 id="d-name">—</h2>
+          <button class="close" id="d-close">×</button>
+        </div>
+        <div class="pane-body">
+          <div id="d-chips" class="chips"></div>
+          <div id="d-live" class="live-row"></div>
+          <div class="btn-row">
+            <button id="d-follow">Focus &amp; follow</button>
+            <button id="d-link" class="ghost" title="Copy a link to this object">Copy link</button>
+          </div>
+          <div id="d-sentry"></div>
+          <h3>Physical</h3>
+          <table id="d-phys"></table>
+          <h3>Orbit</h3>
+          <table id="d-orbit"></table>
+          <h3 id="d-ca-head">Close approaches to Earth</h3>
+          <div class="hint" id="d-ca-hint">Click a row to jump time to that approach.</div>
+          <div id="d-ca"></div>
+        </div>
+      </div>
+    </aside>
+
+    <div id="legend">
+      <div><span class="dot" style="background:#8c9ec7"></span> NEO</div>
+      <div><span class="dot" style="background:#ff9433"></span> Potentially hazardous</div>
+      <div><span class="dot" style="background:#ff4038"></span> Sentry risk list</div>
+      <div><span class="dot" style="background:#5cd8e8"></span> Comet</div>
+      <div class="legend-note">dot size ∝ brightness (H)</div>
+    </div>
+
+    <div id="view-opts">
+      <label><input type="checkbox" id="v-comets" checked /> Comets</label>
+      <label><input type="checkbox" id="v-labels" checked /> Labels</label>
+    </div>
+
+    <footer id="timebar">
+      <button id="t-play" class="big" title="Play / pause (space)">▶</button>
+      <div id="t-date-wrap">
+        <div id="t-date">—</div>
+        <input type="datetime-local" id="t-picker" />
+      </div>
+      <button id="t-now" title="Jump to the present">Now</button>
+      <div id="t-speed-wrap">
+        <button id="t-rev" title="Reverse direction">⇄</button>
+        <input type="range" id="t-speed" min="0" max="100" step="1" value="55" />
+        <div id="t-speed-val">—</div>
+      </div>
+      <input type="range" id="t-scrub" min="0" max="1" step="0.0001" title="Scrub 1900–2100" />
+    </footer>
+
+    <div id="tooltip" hidden></div>
+
+    <div id="help" hidden>
+      <div class="pane">
+        <div class="pane-head"><h2>NEO Explorer</h2><button class="close" id="help-close">×</button></div>
+        <div class="pane-body">
+          <p>An interactive map of the inner solar system and all ~42,000 known near-Earth objects, positioned by propagating each body's real orbital elements (NASA/JPL data) for the current simulation time.</p>
+          <ul>
+            <li><b>Drag</b> to orbit, <b>scroll</b> to zoom, <b>right-drag</b> to pan.</li>
+            <li><b>Click</b> any dot or planet to inspect it; <b>Focus &amp; follow</b> locks the camera to it.</li>
+            <li><b>Space</b> plays/pauses time; the bottom slider scrubs 1900–2100.</li>
+            <li><b>Filters</b> narrows the swarm; <b>Approaches</b> lists Earth flybys near the current date; <b>Risk</b> shows the Sentry impact-risk list.</li>
+            <li><b>Share view</b> copies a URL that restores this exact time, camera and selection.</li>
+          </ul>
+          <p class="hint">Planet and Sun sizes are exaggerated (~500×) to be visible at solar-system scale; all positions and orbits are to scale in au. Ring labels on the ecliptic mark 1–5 au.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

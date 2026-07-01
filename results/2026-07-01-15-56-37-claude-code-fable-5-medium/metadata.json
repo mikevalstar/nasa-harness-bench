@@ -1,0 +1,56 @@
+{
+  "slug": "2026-07-01-15-56-37-claude-code-fable-5-medium",
+  "harness": "claude-code",
+  "harnessVersion": "2.1.197",
+  "model": "fable-5",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-07-01T19:56:39Z",
+  "collectedAt": "2026-07-01T20:15:34Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-01-15-56-37-claude-code-fable-5-medium",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": { "input": 8435, "output": 192640, "cacheCreation": 290984, "cacheRead": 8185220, "total": 8677279 },
+  "estimatedCostUsd": 21.54,
+  "timeTakenSeconds": 1084,
+  "tags": [],
+  "summary": "",
+  "costNote": "Priced at Claude Fable 5 list rates: $10/$50 per MTok in/out, cache write 5m 1.25x ($12.50), cache read 0.1x ($1.00). No intro discount applies to Fable 5. Cost is dominated by cache reads (8.19M tok = $8.19) and output (193K tok = $9.63). Model stayed on claude-fable-5 for all 96 assistant turns — no fallback/drop to Opus observed in the session log.",
+
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "pass — genuine browser review. It built dist/, served it on 127.0.0.1:8931, and drove headless Chrome via a hand-written Chrome DevTools Protocol driver (scratchpad/cdp.mjs) that subscribes to Runtime.consoleAPICalled (error/warning) and Runtime.exceptionThrown, so console errors were actually captured — reported zero. It took screenshots and interacted with the DOM (search 'bennu', click detail, apply PHA filter, read obj-count/filter-count), and cross-checked numeric orbital output (Earth perihelion@J2000 / aphelion@Jul-1, Apophis 2029 approach 0.10 LD, Bennu Sentry 1-in-1749, Halley 35.2 au, a hyperbolic comet at its catalog perihelion). Both console and display review = pass.",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "good",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "pass",
+      "noUiIssues": "good"
+    },
+    "selfVerification": { "consoleReview": "pass", "displayReview": "pass" },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "good",
+      "highlight": "pass",
+      "scaleRisk": "pass",
+      "comets": "partial",
+      "impactRisk": "pass",
+      "focusFollow": "good",
+      "deepLinks": "pass"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}
