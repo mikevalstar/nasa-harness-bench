@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-01T21:08:42.790Z",
-  "count": 14,
+  "generatedAt": "2026-07-08T22:34:11.426Z",
+  "count": 16,
   "rubric": {
     "scale": {
       "pass": 1,
@@ -154,6 +154,186 @@
     ]
   },
   "benches": [
+    {
+      "slug": "2026-07-08-18-02-32-cursor-gemini-2-5-flash-none",
+      "harness": "cursor",
+      "harnessVersion": "3.10.20",
+      "model": "gemini-2-5-flash",
+      "effort": "none",
+      "interface": "agent-window",
+      "createdAt": "2026-07-08T22:02:34Z",
+      "collectedAt": "2026-07-08T22:14:18Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-08-18-02-32-cursor-gemini-2-5-flash-none",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": true,
+      "cheated": false,
+      "buildSucceeded": false,
+      "_buildNote": "The delivered `pnpm build` (tsc -b && vite build) FAILS: `tsc -b` throws 8 type errors (broken import 'three/examples/jsm/controls/OrbitControls', ma?: number|undefined not assignable to number ×3, a missing arg, unused vars), so vite build never runs and no dist/ is produced. The app CAN be coerced to build with `vite build` alone (bypassing the tsc gate) — that succeeds and produces a loadable dist/. So buildSucceeded=false (as delivered) but the app is not far from buildable. The nested layout is unusual: the actual Vite project is output/src/ (a 'temp_vite_project' scaffold) with the app at src/src/App.tsx.",
+      "tokenUsage": {
+        "input": 6124280,
+        "output": 71792,
+        "cached": 5628007,
+        "cacheWrite": 0,
+        "total": 6196072
+      },
+      "_tokenUsageNote": "Measured from the Cursor backend usage page (not stored in Cursor's local DB). Cursor reports: fresh input 496,273 + cache read 5,628,007 + output 71,792 = 6,196,072 total (cache write 0). Following the other Cursor runs' convention, 'input' here is all-in (fresh 496,273 + cache reads 5,628,007 = 6,124,280) and 'cached' is the cache-read portion. The very high cache-read volume (5.6M) relative to only +806 net lines reflects the 45-command scaffolding thrash re-sending context.",
+      "estimatedCostUsd": 0.5,
+      "_estimatedCostNote": "Computed from the measured tokens above at Gemini 2.5 Flash published list pricing (2026): $0.30/M input, $2.50/M output, $0.03/M cached input — all rates published, so this is effectively exact. fresh 496,273 @ $0.30/M = $0.149 + cache 5,628,007 @ $0.03/M = $0.169 + output 71,792 @ $2.50/M = $0.179 => ~$0.497, rounded to $0.50.",
+      "_timeTakenNote": "From recovered Cursor session telemetry: 2026-07-08T22:03:xx -> wall 492s.",
+      "timeTakenSeconds": 492,
+      "tags": [
+        "no-build"
+      ],
+      "summary": "",
+      "note": "Did not compile — needed manual intervention to get it running.",
+      "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+      "selfVerificationNotes": "fail/fail. The run log's terminal history ends with `pnpm dev` / `pnpm run dev` — it started the Vite dev server but there is no evidence it ever looked at the result: no browser automation, no screenshots, no console capture, no curl, no DOM inspection (Cursor's agent-window shows only shell + file tools here). Crucially it NEVER ran `pnpm build`, so it never discovered that its own production build is broken (8 tsc errors), and `vite dev` doesn't type-check so the errors stayed hidden. No console review and no display review.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile. NOTE: runs.loads, runs.noConsoleErrors, all correctness render checks (solarSystem/planets/asteroids/timeAnimation) and all usability.* are left null for Mike's visual pass on the coerced dist. builds, computed-positions, orbitsCorrect (math), self-verification, integrity and features are graded from code/build/log.",
+      "grade": {
+        "runs": {
+          "builds": "fail",
+          "loads": "fail",
+          "noConsoleErrors": "fail"
+        },
+        "correctness": {
+          "solarSystem": "poor",
+          "planets": "poor",
+          "asteroids": "poor",
+          "computedPositions": "partial",
+          "orbitsCorrect": "fail",
+          "timeAnimation": "fail"
+        },
+        "usability": {
+          "camera": "partial",
+          "scale": "partial",
+          "legible": "poor",
+          "noUiIssues": "poor"
+        },
+        "selfVerification": {
+          "consoleReview": "fail",
+          "displayReview": "fail"
+        },
+        "features": {
+          "filterSearch": "poor",
+          "investigate": "partial",
+          "highlight": "poor",
+          "scaleRisk": "poor",
+          "comets": "poor",
+          "impactRisk": "partial",
+          "focusFollow": "partial",
+          "deepLinks": "partial"
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "scoring": {
+        "status": "graded",
+        "score": 23,
+        "categoryScores": {
+          "runs": 0,
+          "correctness": 21,
+          "usability": 38,
+          "selfVerification": 0,
+          "features": 38
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
+    {
+      "slug": "2026-07-08-17-37-08-cursor-cursor-grok-4-5-high",
+      "harness": "cursor",
+      "harnessVersion": "3.10.20",
+      "model": "cursor-grok-4.5",
+      "effort": "high",
+      "interface": "agent-window",
+      "createdAt": "2026-07-08T21:37:10Z",
+      "collectedAt": "2026-07-08T21:52:47Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-08-17-37-08-cursor-cursor-grok-4-5-high",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": false,
+      "cheated": false,
+      "buildSucceeded": true,
+      "tokenUsage": {
+        "input": 1600338,
+        "output": 51083,
+        "cached": 1490944,
+        "cacheWrite": 0,
+        "total": 1651421
+      },
+      "_tokenUsageNote": "Measured from the Cursor backend usage page (not stored in Cursor's local DB). Cursor reports: fresh input 109,394 + cache read 1,490,944 + output 51,083 = 1,651,421 total (cache write 0). Following the other Cursor runs' convention, 'input' here is all-in (fresh 109,394 + cache reads 1,490,944 = 1,600,338) and 'cached' is the cache-read portion.",
+      "estimatedCostUsd": 1.27,
+      "_estimatedCostNote": "Computed from the measured tokens above at Grok 4.5 list pricing (launched 2026-07-08): $2.00/M input, $6.00/M output (xAI announcement + OpenRouter). fresh 109,394 @ $2.00/M = $0.22 + output 51,083 @ $6.00/M = $0.31 are exact. xAI does not publish a Grok 4.5 cached-input rate, so cache reads 1,490,944 are priced at an assumed $0.50/M (25% of input, matching the Grok 4 family; Grok 4.3's cached rate is $0.20/M ≈ 16%) = $0.75. Total ≈ $1.27. Sensitivity: at $0.40/M cache → $1.12; at $0.75/M → $1.64.",
+      "_timeTakenNote": "From the recovered Cursor session telemetry (extract-session-cursor.mjs): 2026-07-08T21:38:00Z -> 21:45:55Z.",
+      "timeTakenSeconds": 476,
+      "tags": [],
+      "summary": "",
+      "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+      "selfVerificationNotes": "fail/fail on browser review, but it did MORE than a bare build check. From the run log: it repeatedly ran `tsc --noEmit` and `pnpm build`; ran a Node script computing Earth's position at J2000 (verifying r~0.983 au) and every planet's r vs a; verified the asteroid .bin byte-alignment (sentry offset); and served dist/ with `vite preview` then curl'd `/` and `/data/manifest.json` (checking HTTP 200 + payload). It also ran `git status --short data/` and `test ! -w data/asteroids.json` to confirm data/ was untouched. BUT it never launched a real browser: no headless Chrome/Playwright, no console-error capture, no screenshots, no DOM interaction. curl of the HTML shell does not execute the React/WebGL app, so neither console errors nor the rendered display were ever reviewed. consoleReview = fail, displayReview = fail.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile. Usability marks were filled by Mike's visual pass; everything else graded from code, build, headless-browser console capture, and the run log.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": "pass",
+          "noConsoleErrors": "pass"
+        },
+        "correctness": {
+          "solarSystem": "pass",
+          "planets": "pass",
+          "asteroids": "pass",
+          "computedPositions": "pass",
+          "orbitsCorrect": "good",
+          "timeAnimation": "pass"
+        },
+        "usability": {
+          "camera": "good",
+          "scale": "good",
+          "legible": "pass",
+          "noUiIssues": "partial"
+        },
+        "selfVerification": {
+          "consoleReview": "fail",
+          "displayReview": "fail"
+        },
+        "features": {
+          "filterSearch": "pass",
+          "investigate": "pass",
+          "highlight": "good",
+          "scaleRisk": "good",
+          "comets": "good",
+          "impactRisk": "pass",
+          "focusFollow": "good",
+          "deepLinks": "pass"
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "scoring": {
+        "status": "graded",
+        "score": 85,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": 96,
+          "usability": 75,
+          "selfVerification": 0,
+          "features": 88
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
     {
       "slug": "2026-07-01-15-56-37-claude-code-fable-5-medium",
       "harness": "claude-code",

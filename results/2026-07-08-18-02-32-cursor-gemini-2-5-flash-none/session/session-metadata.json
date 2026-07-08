@@ -1,0 +1,99 @@
+{
+  "extractedAt": "2026-07-08T22:14:18.072Z",
+  "composerId": "c3bccd78-4f8d-4ff7-998b-07162938c1a2",
+  "cursorChatName": "Implementation of PLAN.md",
+  "model": "gemini-2.5-flash",
+  "effort": null,
+  "span": {
+    "start": "2026-07-08T22:03:00.598Z",
+    "end": "2026-07-08T22:11:12.380Z",
+    "wallSeconds": 492
+  },
+  "messages": {
+    "user": 1,
+    "assistant": 1,
+    "thinking": 0
+  },
+  "tokenUsage": null,
+  "contextWindowFinal": {
+    "totalUsedTokens": 110791,
+    "maxTokens": 200000,
+    "note": "Final context-window size at end of run — NOT cumulative input/output usage."
+  },
+  "linesChanged": {
+    "added": 806,
+    "removed": 220
+  },
+  "filesChangedCount": 5,
+  "tools": {
+    "read_file_v2": 12,
+    "todo_write": 28,
+    "run_terminal_command_v2": 45,
+    "edit_file_v2": 30,
+    "delete_file": 12
+  },
+  "filesEdited": [
+    "src/src/App.tsx",
+    "src/src/index.css",
+    "src/src/utils/orbital-mechanics.ts",
+    "scripts/preprocess-asteroids.ts",
+    "tsconfig.scripts.json",
+    "scripts/preprocess-asteroids.js",
+    "scripts/preprocess-comets.js",
+    "scripts/preprocess-comets.ts",
+    "scripts/preprocess-data.js",
+    "scripts/preprocess-sentry.js",
+    "scripts/preprocess-data.ts"
+  ],
+  "shellCommands": [
+    "pnpm create vite . --template react-ts",
+    "pnpm create vite . --template react-ts",
+    "pnpm create vite . --template react-ts",
+    "pnpm create vite . --template react-ts --force",
+    "ls -F",
+    "pnpm create vite . --template react-ts",
+    "mkdir src",
+    "mkdir temp_vite_project",
+    "pnpm create vite temp_vite_project --template react-ts",
+    "mv temp_vite_project/* src/",
+    "mv temp_vite_project/.* src/",
+    "mv temp_vite_project/.* src/",
+    "rm -rf temp_vite_project",
+    "pnpm install",
+    "ls -la src",
+    "pnpm install",
+    "pnpm add three @types/three",
+    "mkdir scripts",
+    "pnpm add -D typescript ts-node",
+    "ts-node scripts/preprocess-asteroids.ts",
+    "pnpm exec ts-node scripts/preprocess-asteroids.ts",
+    "pnpm exec ts-node --project ./tsconfig.json scripts/preprocess-asteroids.ts",
+    "pnpm exec tsc --project ./tsconfig.json scripts/preprocess-asteroids.ts",
+    "pnpm exec tsc --project tsconfig.scripts.json",
+    "pnpm exec tsc --project tsconfig.scripts.json",
+    "pnpm exec node scripts/preprocess-asteroids.js",
+    "pnpm add three-orbitcontrols",
+    "pnpm install",
+    "pnpm remove three-orbitcontrols",
+    "pnpm add three-addons",
+    "node scripts/preprocess-comets.js",
+    "mkdir dist-scripts",
+    "pnpm exec tsc scripts/preprocess-comets.ts --outDir dist-scripts",
+    "pnpm exec tsc --project tsconfig.scripts.json",
+    "pnpm exec tsc --project tsconfig.scripts.json",
+    "rm -rf dist-scripts",
+    "node scripts/preprocess-data.js",
+    "node scripts/preprocess-sentry.js",
+    "pnpm exec tsc --project tsconfig.scripts.json",
+    "pnpm exec tsc --project tsconfig.scripts.json",
+    "pnpm exec tsc --project tsconfig.scripts.json",
+    "pnpm exec tsc scripts/preprocess-data.ts",
+    "node scripts/preprocess-data.js",
+    "pnpm dev",
+    "pnpm run dev"
+  ],
+  "files": {
+    "raw": "session/cursor-composer.json",
+    "transcript": "session/transcript.md"
+  }
+}

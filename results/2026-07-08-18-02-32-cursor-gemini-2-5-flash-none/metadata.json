@@ -1,0 +1,60 @@
+{
+  "slug": "2026-07-08-18-02-32-cursor-gemini-2-5-flash-none",
+  "harness": "cursor",
+  "harnessVersion": "3.10.20",
+  "model": "gemini-2-5-flash",
+  "effort": "none",
+  "interface": "agent-window",
+  "createdAt": "2026-07-08T22:02:34Z",
+  "collectedAt": "2026-07-08T22:14:18Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-08-18-02-32-cursor-gemini-2-5-flash-none",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": true,
+  "cheated": false,
+  "buildSucceeded": false,
+  "_buildNote": "The delivered `pnpm build` (tsc -b && vite build) FAILS: `tsc -b` throws 8 type errors (broken import 'three/examples/jsm/controls/OrbitControls', ma?: number|undefined not assignable to number ×3, a missing arg, unused vars), so vite build never runs and no dist/ is produced. The app CAN be coerced to build with `vite build` alone (bypassing the tsc gate) — that succeeds and produces a loadable dist/. So buildSucceeded=false (as delivered) but the app is not far from buildable. The nested layout is unusual: the actual Vite project is output/src/ (a 'temp_vite_project' scaffold) with the app at src/src/App.tsx.",
+  "tokenUsage": { "input": 6124280, "output": 71792, "cached": 5628007, "cacheWrite": 0, "total": 6196072 },
+  "_tokenUsageNote": "Measured from the Cursor backend usage page (not stored in Cursor's local DB). Cursor reports: fresh input 496,273 + cache read 5,628,007 + output 71,792 = 6,196,072 total (cache write 0). Following the other Cursor runs' convention, 'input' here is all-in (fresh 496,273 + cache reads 5,628,007 = 6,124,280) and 'cached' is the cache-read portion. The very high cache-read volume (5.6M) relative to only +806 net lines reflects the 45-command scaffolding thrash re-sending context.",
+  "estimatedCostUsd": 0.5,
+  "_estimatedCostNote": "Computed from the measured tokens above at Gemini 2.5 Flash published list pricing (2026): $0.30/M input, $2.50/M output, $0.03/M cached input — all rates published, so this is effectively exact. fresh 496,273 @ $0.30/M = $0.149 + cache 5,628,007 @ $0.03/M = $0.169 + output 71,792 @ $2.50/M = $0.179 => ~$0.497, rounded to $0.50.",
+  "_timeTakenNote": "From recovered Cursor session telemetry: 2026-07-08T22:03:xx -> wall 492s.",
+  "timeTakenSeconds": 492,
+  "tags": ["no-build"],
+  "summary": "",
+  "note": "Did not compile — needed manual intervention to get it running.",
+
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "fail/fail. The run log's terminal history ends with `pnpm dev` / `pnpm run dev` — it started the Vite dev server but there is no evidence it ever looked at the result: no browser automation, no screenshots, no console capture, no curl, no DOM inspection (Cursor's agent-window shows only shell + file tools here). Crucially it NEVER ran `pnpm build`, so it never discovered that its own production build is broken (8 tsc errors), and `vite dev` doesn't type-check so the errors stayed hidden. No console review and no display review.",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile. NOTE: runs.loads, runs.noConsoleErrors, all correctness render checks (solarSystem/planets/asteroids/timeAnimation) and all usability.* are left null for Mike's visual pass on the coerced dist. builds, computed-positions, orbitsCorrect (math), self-verification, integrity and features are graded from code/build/log.",
+  "grade": {
+    "runs": { "builds": "fail", "loads": "fail", "noConsoleErrors": "fail" },
+    "correctness": {
+      "solarSystem": "poor",
+      "planets": "poor",
+      "asteroids": "poor",
+      "computedPositions": "partial",
+      "orbitsCorrect": "fail",
+      "timeAnimation": "fail"
+    },
+    "usability": {
+      "camera": "partial",
+      "scale": "partial",
+      "legible": "poor",
+      "noUiIssues": "poor"
+    },
+    "selfVerification": { "consoleReview": "fail", "displayReview": "fail" },
+    "features": {
+      "filterSearch": "poor",
+      "investigate": "partial",
+      "highlight": "poor",
+      "scaleRisk": "poor",
+      "comets": "poor",
+      "impactRisk": "partial",
+      "focusFollow": "partial",
+      "deepLinks": "partial"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}

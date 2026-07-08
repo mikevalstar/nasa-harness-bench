@@ -1,0 +1,58 @@
+{
+  "slug": "2026-07-08-17-37-08-cursor-cursor-grok-4-5-high",
+  "harness": "cursor",
+  "harnessVersion": "3.10.20",
+  "model": "cursor-grok-4.5",
+  "effort": "high",
+  "interface": "agent-window",
+  "createdAt": "2026-07-08T21:37:10Z",
+  "collectedAt": "2026-07-08T21:52:47Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-08-17-37-08-cursor-cursor-grok-4-5-high",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": { "input": 1600338, "output": 51083, "cached": 1490944, "cacheWrite": 0, "total": 1651421 },
+  "_tokenUsageNote": "Measured from the Cursor backend usage page (not stored in Cursor's local DB). Cursor reports: fresh input 109,394 + cache read 1,490,944 + output 51,083 = 1,651,421 total (cache write 0). Following the other Cursor runs' convention, 'input' here is all-in (fresh 109,394 + cache reads 1,490,944 = 1,600,338) and 'cached' is the cache-read portion.",
+  "estimatedCostUsd": 1.27,
+  "_estimatedCostNote": "Computed from the measured tokens above at Grok 4.5 list pricing (launched 2026-07-08): $2.00/M input, $6.00/M output (xAI announcement + OpenRouter). fresh 109,394 @ $2.00/M = $0.22 + output 51,083 @ $6.00/M = $0.31 are exact. xAI does not publish a Grok 4.5 cached-input rate, so cache reads 1,490,944 are priced at an assumed $0.50/M (25% of input, matching the Grok 4 family; Grok 4.3's cached rate is $0.20/M ≈ 16%) = $0.75. Total ≈ $1.27. Sensitivity: at $0.40/M cache → $1.12; at $0.75/M → $1.64.",
+  "_timeTakenNote": "From the recovered Cursor session telemetry (extract-session-cursor.mjs): 2026-07-08T21:38:00Z -> 21:45:55Z.",
+  "timeTakenSeconds": 476,
+  "tags": [],
+  "summary": "",
+
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "fail/fail on browser review, but it did MORE than a bare build check. From the run log: it repeatedly ran `tsc --noEmit` and `pnpm build`; ran a Node script computing Earth's position at J2000 (verifying r~0.983 au) and every planet's r vs a; verified the asteroid .bin byte-alignment (sentry offset); and served dist/ with `vite preview` then curl'd `/` and `/data/manifest.json` (checking HTTP 200 + payload). It also ran `git status --short data/` and `test ! -w data/asteroids.json` to confirm data/ was untouched. BUT it never launched a real browser: no headless Chrome/Playwright, no console-error capture, no screenshots, no DOM interaction. curl of the HTML shell does not execute the React/WebGL app, so neither console errors nor the rendered display were ever reviewed. consoleReview = fail, displayReview = fail.",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile. Usability marks were filled by Mike's visual pass; everything else graded from code, build, headless-browser console capture, and the run log.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "good",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "good",
+      "scale": "good",
+      "legible": "pass",
+      "noUiIssues": "partial"
+    },
+    "selfVerification": { "consoleReview": "fail", "displayReview": "fail" },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "pass",
+      "highlight": "good",
+      "scaleRisk": "good",
+      "comets": "good",
+      "impactRisk": "pass",
+      "focusFollow": "good",
+      "deepLinks": "pass"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}

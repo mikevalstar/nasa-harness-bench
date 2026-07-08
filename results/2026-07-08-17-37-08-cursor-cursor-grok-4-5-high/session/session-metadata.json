@@ -1,0 +1,92 @@
+{
+  "extractedAt": "2026-07-08T21:52:47.342Z",
+  "composerId": "7c1f72d8-e76c-4229-91ec-e572473f7c02",
+  "cursorChatName": "Implement solar system viz",
+  "model": "grok-4.5",
+  "effort": "high",
+  "span": {
+    "start": "2026-07-08T21:38:00.203Z",
+    "end": "2026-07-08T21:45:55.792Z",
+    "wallSeconds": 476
+  },
+  "messages": {
+    "user": 1,
+    "assistant": 12,
+    "thinking": 13
+  },
+  "tokenUsage": null,
+  "contextWindowFinal": {
+    "totalUsedTokens": 84226,
+    "maxTokens": 256000,
+    "note": "Final context-window size at end of run — NOT cumulative input/output usage."
+  },
+  "linesChanged": {
+    "added": 3536,
+    "removed": 0
+  },
+  "filesChangedCount": 30,
+  "tools": {
+    "get_mcp_tools": 2,
+    "read_file_v2": 8,
+    "glob_file_search": 1,
+    "mcp-cursor-app-control-rename_chat": 1,
+    "run_terminal_command_v2": 16,
+    "todo_write": 2,
+    "edit_file_v2": 48
+  },
+  "filesEdited": [
+    "package.json",
+    "tsconfig.json",
+    "tsconfig.node.json",
+    "vite.config.ts",
+    "index.html",
+    "scripts/preprocess.mjs",
+    "src/vite-env.d.ts",
+    "src/ astro/constants.ts",
+    "src/astro/kepler.ts",
+    "src/data/types.ts",
+    "src/data/load.ts",
+    "src/state/url.ts",
+    "src/state/store.tsx",
+    "src/scene/Sun.tsx",
+    "src/scene/Planets.tsx",
+    "src/scene/AsteroidField.tsx",
+    "src/scene/CometField.tsx",
+    "src/scene/OrbitTrail.tsx",
+    "src/scene/CameraRig.tsx",
+    "src/scene/Scene.tsx",
+    "src/ui/TimeControls.tsx",
+    "src/ui/FilterPanel.tsx",
+    "src/ui/DetailPanel.tsx",
+    "src/ui/Legend.tsx",
+    "src/ui/Hud.tsx",
+    "src/App.tsx",
+    "src/main.tsx",
+    "src/styles.css",
+    ".gitignore",
+    "README.md",
+    "src/scene/ScaleRings.tsx"
+  ],
+  "shellCommands": [
+    "wc -c data/*.json && head -c 2000 data/asteroids.json && echo \"---\" && head -c 1500 data/comets.json && echo \"---\" && head -c 1500 data/sentry.json && echo \"---\" && head -c 1500 data/close-approaches.json && echo \"---\" && python3 -c \"\nimport json\nfor f in ['asteroids','comets','sentry','close-approaches','planets']:\n    with open(f'data/{f}.json') as fh:\n        d=json.load(fh)\n    if isinstance(d, list):\n        print(f, 'list', len(d), 'keys', list(d[0].keys()) if d else None)\n        if d: print(' sample', {k:d[0][k] for k in list(d[0].keys())[:20]})\n    elif isinstance(d, dict):\n        print(f, 'dict keys', list(d.keys())[:20])\n        for k,v in list(d.items())[:2]:\n            if isinstance(v, list):\n                print(' ',k,'list',len(v), 'item0 keys', list(v[0].keys()) if v and isinstance(v[0],dict) else type(v[0]))\n            elif isinstance(v, dict):\n                print(' ',k,'dict keys', list(v.keys())[:15])\n            else:\n                print(' ',k,type(v).__name__, str(v)[:80])\n\"\n",
+    "python3 -c \"\nimport json\nasts=json.load(open('data/asteroids.json'))\ncoms=json.load(open('data/comets.json'))\nprint('asteroids e>=1', sum(1 for a in asts if (a.get('e') or 0)>=1))\nprint('asteroids missing n', sum(1 for a in asts if a.get('n') is None))\nprint('asteroids missing a', sum(1 for a in asts if a.get('a') is None))\nprint('pha', sum(1 for a in asts if a.get('pha')))\nprint('classes', {c:sum(1 for a in asts if a.get('class')==c) for c in sorted(set(a.get('class') for a in asts))})\nprint('comets e>=1', sum(1 for a in coms if (a.get('e') or 0)>=1))\nprint('comets e>0.98', sum(1 for a in coms if (a.get('e') or 0)>0.98))\nprint('comets missing tp', sum(1 for a in coms if a.get('tp') is None))\nprint('comets missing a when e<1', sum(1 for a in coms if (a.get('e') or 0)<1 and a.get('a') is None))\n# diameter stats\nds=[a['diameter'] for a in asts if a.get('diameter')]\nprint('diameter known', len(ds), 'max', max(ds), 'median', sorted(ds)[len(ds)//2])\n\"\n",
+    "python3 -c \"\nimport json\ncoms=json.load(open('data/comets.json'))\nhyp=[a for a in coms if (a.get('e') or 0)>=1]\nprint('sample hyp', hyp[0])\nprint('a values', set(type(a.get('a')).__name__ for a in hyp))\nprint('a null', sum(1 for a in hyp if a.get('a') is None))\nprint('a neg', sum(1 for a in hyp if a.get('a') is not None and a['a']<0))\nprint('a pos', sum(1 for a in hyp if a.get('a') is not None and a['a']>0))\nprint('n null', sum(1 for a in hyp if a.get('n') is None))\nprint('e==1', sum(1 for a in hyp if a.get('e')==1))\nprint('e>1 samples a,e,q,n,tp', [(a['a'],a['e'],a['q'],a['n'],a['tp']) for a in hyp[:5]])\npar=[a for a in coms if abs((a.get('e') or 0)-1)<1e-6]\nprint('exact parabolic', len(par))\n\"\n",
+    "ls -la src/ && ls -la \"src/ astro/\" 2>/dev/null; mkdir -p src/astro && mv \"src/ astro/constants.ts\" src/astro/constants.ts && rmdir \"src/ astro\" 2>/dev/null; ls -la src/astro/",
+    "pnpm install && node scripts/preprocess.mjs && pnpm exec tsc --noEmit 2>&1",
+    "pnpm approve-builds 2>&1 || true; ls node_modules/.pnpm/esbuild* 2>/dev/null | head -5; # try to enable esbuild\n# Check if we can configure onlyBuiltDependencies\nnode -e \"const p=require('./package.json'); p.pnpm={onlyBuiltDependencies:['esbuild']}; require('fs').writeFileSync('package.json', JSON.stringify(p,null,2)+'\\n')\"\npnpm install 2>&1\npnpm exec tsc --noEmit 2>&1\n",
+    "kill 27330 2>/dev/null; sleep 0.5; cat package.json",
+    "pnpm install && pnpm exec tsc --noEmit 2>&1",
+    "pnpm exec tsc --noEmit 2>&1 && pnpm build 2>&1",
+    "ls -la dist/data | head -30 && du -sh dist dist/data public/data && pnpm exec tsc --noEmit 2>&1",
+    "node --input-type=module -e \"\nimport { readFileSync } from 'fs';\nconst planets = JSON.parse(readFileSync('public/data/planets.json','utf8'));\n// inline minimal kepler\nconst GM=0.0002959122082855911, TWO_PI=Math.PI*2;\nfunction wrap(a){let x=a%TWO_PI; if(x>Math.PI)x-=TWO_PI; if(x<-Math.PI)x+=TWO_PI; return x;}\nfunction solveE(M,e){const m=wrap(M); let E=e<0.8?m:Math.PI; for(let i=0;i<12;i++){const f=E-e*Math.sin(E)-m; const fp=1-e*Math.cos(E); const d=f/fp; E-=d; if(Math.abs(d)<1e-12)break;} return E;}\nfunction pos(el,jd){const n=el.n; const M=el.ma+n*(jd-el.epoch); const E=solveE(M,el.e); const xOrb=el.a*(Math.cos(E)-el.e); const yOrb=el.a*Math.sqrt(1-el.e*el.e)*Math.sin(E); const cosO=Math.cos(el.om),sinO=Math.sin(el.om),cosI=Math.cos(el.i),sinI=Math.sin(el.i),cosW=Math.cos(el.w),sinW=Math.sin(el.w); const px=cosW*xOrb-sinW*yOrb, py=sinW*xOrb+cosW*yOrb; return {x:cosO*px-sinO*cosI*py, y:sinO*px+cosO*cosI*py, z:sinI*py};}\nconst earth=planets.find(p=>p.name==='Earth');\nconst jd0=2451545;\nconst p0=pos(earth,jd0);\nconst r0=Math.hypot(p0.x,p0.y,p0.z);\nconsole.log('Earth at J2000', p0, 'r=', r0);\nconst jd=2461200.5;\nfor (const p of planets) {\n  const v=pos(p,jd); const r=Math.hypot(v.x,v.y,v.z);\n  console.log(p.name.padEnd(8), 'r=', r.toFixed(4), 'a=', p.a.toFixed(4), 'ok', Math.abs(r-p.a)<p.a*p.e*1.5+0.05);\n}\n\"\n",
+    "# Lazy-load approaches: trim initial payload by not requiring full approaches at boot.\n# Verify asteroid bin alignment\nnode -e \"\nconst fs=require('fs');\nconst meta=JSON.parse(fs.readFileSync('public/data/asteroids.meta.json'));\nconst buf=fs.readFileSync('public/data/asteroids.bin');\nconsole.log(meta);\nconsole.log('sentry offset % 2', meta.byteOffsets.sentry % 2);\nconsole.log('sentry offset % 4', meta.byteOffsets.sentry % 4);\nconst f=new Float32Array(buf.buffer, buf.byteOffset+meta.byteOffsets.floats, meta.count*meta.floatStride);\nconsole.log('first a,e', f[0], f[1]);\nconst s=new Uint16Array(buf.buffer, buf.byteOffset+meta.byteOffsets.sentry, meta.count);\nconsole.log('sentry idx0', s[0], 'max', Math.max(...Array.from(s.filter(x=>x!==0xffff)).slice(0,100)));\n\"\n",
+    "node scripts/preprocess.mjs && node -e \"\nconst fs=require('fs');\nconst meta=JSON.parse(fs.readFileSync('public/data/asteroids.meta.json'));\nconst buf=fs.readFileSync('public/data/asteroids.bin');\nconsole.log(meta.byteOffsets);\nconsole.log('sentry%2', meta.byteOffsets.sentry%2, 'sentry%4', meta.byteOffsets.sentry%4);\nconst s=new Uint16Array(buf.buffer, buf.byteOffset+meta.byteOffsets.sentry, meta.count);\nlet none=0,has=0; for(let i=0;i<meta.count;i++){ if(s[i]===0xffff)none++; else has++; }\nconsole.log('sentry none', none, 'has', has);\n\"\n",
+    "pnpm build 2>&1",
+    "# Ensure data/ untouched\ngit status --short data/ 2>/dev/null || ls data/\n# Clean unused imports in preprocess\ngrep -n \"existsSync\\|cpSync\" scripts/preprocess.mjs\n# Quick smoke: serve dist and curl index + data\npnpm exec vite preview --host 127.0.0.1 --port 4173 &\nsleep 1\ncurl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:4173/\necho\ncurl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:4173/data/manifest.json\necho\ncurl -s http://127.0.0.1:4173/data/manifest.json | head -c 200\necho\nkill %1 2>/dev/null || true\n",
+    "pkill -f \"vite preview\" 2>/dev/null || true; ls -la dist/data/manifest.json dist/index.html; test ! -w data/asteroids.json || echo \"data still present (read-only by convention)\"\n# verify relative base in built index\nhead -c 500 dist/index.html; echo; rg -n \"href=|src=\" dist/index.html\n"
+  ],
+  "files": {
+    "raw": "session/cursor-composer.json",
+    "transcript": "session/transcript.md"
+  }
+}
