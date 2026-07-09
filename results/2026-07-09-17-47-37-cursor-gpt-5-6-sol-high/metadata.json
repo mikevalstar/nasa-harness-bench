@@ -1,0 +1,64 @@
+{
+  "slug": "2026-07-09-17-47-37-cursor-gpt-5-6-sol-high",
+  "harness": "cursor",
+  "harnessVersion": "3.10.20",
+  "model": "gpt-5-6-sol",
+  "effort": "high",
+  "interface": "agent-window",
+  "createdAt": "2026-07-09T21:47:38Z",
+  "collectedAt": "2026-07-09T21:58:28Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-09-17-47-37-cursor-gpt-5-6-sol-high",
+
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled. Objective fields (integrity, tokens, cost, time, self-verification, build) filled from the run log + telemetry; quality marks left null for the visual pass.",
+  "broken": null,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 1926949,
+    "output": 41041,
+    "cached": 1853692,
+    "cacheWrite": 0,
+    "total": 1967990
+  },
+  "_tokenUsageNote": "From the Cursor usage UI: fresh input 73,257 + cache reads 1,853,692 + output 41,041 = 1,967,990 total (cache write 0). Following the other Cursor runs' convention, 'input' here is all-in (fresh 73,257 + cache reads 1,853,692 = 1,926,949) and 'cached' is the cache-read portion. Cursor does not persist cumulative usage in its local DB — these are the dashboard figures.",
+  "estimatedCostUsd": 2.52,
+  "_estimatedCostNote": "GPT-5.6 Sol list pricing (July 2026): $5.00/M input, $30.00/M output, cached input reads 90% cheaper = $0.50/M (OpenAI/aipricing.guru; OpenRouter confirms $5/$30). fresh 73,257 @ $5.00/M = $0.37 + cache reads 1,853,692 @ $0.50/M = $0.93 + output 41,041 @ $30.00/M = $1.23 -> ~$2.52. Final context window was 73k tokens, well under the 272k large-context threshold (2x input / 1.5x output), so no multiplier applies.",
+  "_timeTakenNote": "From the recovered Cursor session telemetry (extract-session-cursor.mjs): 2026-07-09T21:48:24Z -> 21:57:15Z.",
+  "timeTakenSeconds": 531,
+  "tags": [],
+  "summary": "",
+
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "fail/fail on browser review. From the run log: it ran `pnpm build` (tsc --noEmit + vite build) repeatedly, fixing one TS error; then served dist/ with `vite preview` on 127.0.0.1:4173 and curl'd `/` (HTTP 200, 580 bytes) and `/asteroids.json` (HTTP 200, 16,031,025 bytes) to confirm the shell and the data payload were served. It explicitly reasoned 'the browser isn't a tool I can utilize' and never launched a real browser: no headless Chrome/Playwright, no console-error capture, no screenshots, no DOM interaction. curl of the HTML shell does not execute the React/Three.js/WebGL app, so neither console errors nor the rendered display were ever reviewed. It also tried `git status --short` to check for data changes but the bench dir is not a git repo (exit 128), so that check did not complete. consoleReview = fail, displayReview = fail.",
+
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": { "builds": "pass", "loads": "pass", "noConsoleErrors": "pass" },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "good",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "good",
+      "noUiIssues": "good"
+    },
+    "selfVerification": { "consoleReview": "fail", "displayReview": "fail" },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "pass",
+      "comets": "pass",
+      "impactRisk": "pass",
+      "focusFollow": "pass",
+      "deepLinks": "pass"
+    },
+    "integrity": { "dataUntouched": true, "noNetwork": true, "inBounds": true }
+  }
+}
