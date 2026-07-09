@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-09T22:22:47.801Z",
-  "count": 17,
+  "generatedAt": "2026-07-09T23:12:40.325Z",
+  "count": 18,
   "rubric": {
     "scale": {
       "pass": 1,
@@ -154,6 +154,94 @@
     ]
   },
   "benches": [
+    {
+      "slug": "2026-07-09-18-32-19-chatgpt-gpt-5-6-terra-high",
+      "harness": "chatgpt",
+      "harnessVersion": "26.707.31123",
+      "model": "gpt-5-6-terra",
+      "effort": "high",
+      "interface": "agent-window",
+      "createdAt": "2026-07-09T22:32:20Z",
+      "collectedAt": "2026-07-09T22:42:34Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-09-18-32-19-chatgpt-gpt-5-6-terra-high",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled. Objective fields (integrity, tokens, cost, time, self-verification, build) filled from the Codex rollout; quality marks from the visual pass.",
+      "broken": null,
+      "cheated": false,
+      "buildSucceeded": true,
+      "tokenUsage": {
+        "input": 1744237,
+        "output": 25763,
+        "cached": 1613312,
+        "reasoning": 2522,
+        "total": 1770000
+      },
+      "_tokenUsageNote": "From the Codex CLI rollout (total_token_usage): input 1,744,237 (all-in, incl. cached 1,613,312; fresh 130,925), output 25,763 (incl. 2,522 reasoning), total 1,770,000. Matches the prior codex run's convention: 'input' is all-in, 'cached' is the cache-read portion, total = input + output.",
+      "estimatedCostUsd": 1.12,
+      "_estimatedCostNote": "GPT-5.6 Terra list pricing (July 2026): $2.50/M input, $15.00/M output, cached input reads 90% cheaper = $0.25/M (OpenAI/aipricing.guru: Terra $2.50). fresh 130,925 @ $2.50/M = $0.33 + cache reads 1,613,312 @ $0.25/M = $0.40 + output 25,763 @ $15.00/M = $0.39 -> ~$1.12. Cumulative input well under any per-request 272k large-context threshold, so no multiplier.",
+      "_timeTakenNote": "From the Codex rollout wall span (extract-session-codex.mjs): 2026-07-09T22:32:32Z start, 579s (~9m39s).",
+      "timeTakenSeconds": 579,
+      "tags": [],
+      "summary": "",
+      "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+      "selfVerificationNotes": "pass/pass — genuine browser review. It read the harness's control-in-app-browser skill doc, then drove a Playwright-backed in-app browser: served dist/ with `python3 -m http.server 4173`, opened a tab to http://localhost:4173/, waited for domcontentloaded, and captured DOM/accessibility snapshots. It queried `tab.dev.logs({levels:['error','warn']})` TWICE (after load and after reload) — both returned `[]` (no console errors/warnings). It took ~35 screenshots (emitImage), read `#countReadout` innerText = '42,033 DISPLAYED' (confirming the 42k asteroids actually rendered), and evaluated layout bounding boxes of #space/.topbar/.console. consoleReview = pass (reviewed, clean), displayReview = pass (reviewed rendered output + verified data render). Best self-verification of any run collected so far.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": "pass",
+          "noConsoleErrors": "pass"
+        },
+        "correctness": {
+          "solarSystem": "pass",
+          "planets": "pass",
+          "asteroids": "pass",
+          "computedPositions": "pass",
+          "orbitsCorrect": "good",
+          "timeAnimation": "good"
+        },
+        "usability": {
+          "camera": "partial",
+          "scale": "pass",
+          "legible": "pass",
+          "noUiIssues": "partial"
+        },
+        "selfVerification": {
+          "consoleReview": "pass",
+          "displayReview": "pass"
+        },
+        "features": {
+          "filterSearch": "partial",
+          "investigate": "pass",
+          "highlight": "pass",
+          "scaleRisk": "partial",
+          "comets": "poor",
+          "impactRisk": "pass",
+          "focusFollow": "fail",
+          "deepLinks": "pass"
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "scoring": {
+        "status": "graded",
+        "score": 84,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": 92,
+          "usability": 75,
+          "selfVerification": 100,
+          "features": 66
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
     {
       "slug": "2026-07-09-17-47-37-cursor-gpt-5-6-sol-high",
       "harness": "cursor",

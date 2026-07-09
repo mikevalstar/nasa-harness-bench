@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07101d" />
+    <title>Orbitarium — Near-Earth Space</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <canvas id="space" aria-label="Interactive 3D solar system visualization"></canvas>
+    <div class="grain"></div>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Orbitarium home"><span class="brand-dot"></span>ORBITARIUM <small>NEAR-EARTH SPACE</small></a>
+      <div class="readout"><span>SIMULATION TIME</span><strong id="dateReadout">Loading orbit catalog…</strong></div>
+      <button class="icon-button" id="helpBtn" title="Controls and legend" aria-label="Controls and legend">?</button>
+    </header>
+
+    <aside class="panel controls" aria-label="Explorer controls">
+      <div class="panel-title"><span>CATALOG EXPLORER</span><b id="countReadout">—</b></div>
+      <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search designation or name" autocomplete="off" /></label>
+      <div class="filter-row">
+        <button class="chip active" data-filter="all">All NEOs</button>
+        <button class="chip" data-filter="pha">Hazardous</button>
+        <button class="chip" data-filter="risk">Sentry watch</button>
+      </div>
+      <label class="range-label">MAXIMUM ORBIT EXTENT <output id="extentValue">6 au</output></label>
+      <input id="extent" type="range" min="2" max="20" value="6" step="1" />
+      <label class="toggle"><input id="orbitsToggle" type="checkbox" checked /><i></i> Selected orbit traces</label>
+      <label class="toggle"><input id="cometsToggle" type="checkbox" /><i></i> Include comets</label>
+      <div class="legend">
+        <span><i class="legend-dot neo"></i>NEOs</span><span><i class="legend-dot pha"></i>Potentially hazardous</span><span><i class="legend-dot risk"></i>Sentry monitored</span>
+      </div>
+    </aside>
+
+    <section class="timebar" aria-label="Time controls">
+      <button id="playBtn" class="play" aria-label="Play simulation">▶</button>
+      <button id="backBtn" class="step" title="Previous month">‹</button>
+      <input id="timeline" type="range" min="2415020" max="2524593" value="2461200" step="1" aria-label="Simulation date" />
+      <button id="forwardBtn" class="step" title="Next month">›</button>
+      <select id="speed" aria-label="Simulation speed"><option value="1">1×</option><option value="10">10×</option><option value="60" selected>60×</option><option value="365">1 yr/s</option><option value="3650">10 yr/s</option></select>
+      <button id="todayBtn" class="today">TODAY</button>
+    </section>
+
+    <div class="hud-bottom"><span><kbd>DRAG</kbd> orbit camera</span><span><kbd>SCROLL</kbd> zoom</span><span><kbd>CLICK</kbd> inspect object</span></div>
+    <div id="selection" class="selection hidden" aria-live="polite"></div>
+    <div id="toast" class="toast">Loading catalog…</div>
+
+    <dialog id="helpDialog"><button class="close" data-close>×</button><h2>Navigate the inner solar system</h2><p>Every point is calculated from its published heliocentric orbital elements at the displayed time. Drag to rotate the J2000 ecliptic view, scroll to zoom, and click a bright point to inspect it.</p><p>Planets and the Sun are enlarged for readability. NEO markers are not physical-size scale; their color communicates catalog status.</p><div class="key"><b>Amber</b> potentially hazardous &nbsp; <b>Pale blue</b> catalog NEO &nbsp; <b>Magenta</b> Sentry monitored &nbsp; <b>Mint</b> comet</div></dialog>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
