@@ -534,8 +534,12 @@ const base = import.meta.env.BASE_URL;
             letter-spacing: 0.06em;
         }
         .scatter .dot {
-            transition: r 0.12s ease;
+            transition:
+                r 0.12s ease,
+                stroke 0.12s ease;
             cursor: pointer;
+            stroke: var(--surface);
+            stroke-width: 1.5;
         }
         .scatter .dot.good {
             fill: var(--good);
@@ -546,8 +550,17 @@ const base = import.meta.env.BASE_URL;
         .scatter .dot.bad {
             fill: var(--bad);
         }
-        .scatter a:hover .dot {
+        .scatter a:hover .dot,
+        .scatter a.hl .dot {
             r: 8;
+            stroke: var(--ink);
+            stroke-width: 2;
+        }
+        .scatter .lead {
+            stroke: var(--faint);
+            stroke-width: 1;
+            opacity: 0.55;
+            pointer-events: none;
         }
         .scatter .dot-label {
             fill: var(--muted);
@@ -555,8 +568,41 @@ const base = import.meta.env.BASE_URL;
             font-family: ui-monospace, monospace;
             pointer-events: none;
         }
-        .scatter a:hover .dot-label {
+        .scatter a:hover .dot-label,
+        .scatter a.hl .dot-label {
             fill: var(--ink);
+        }
+        .scatter-tip {
+            position: fixed;
+            z-index: 60;
+            pointer-events: none;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 6px 9px;
+            font-size: 11px;
+            line-height: 1.35;
+            color: var(--ink);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+            white-space: nowrap;
+            transform: translate(-50%, calc(-100% - 13px));
+            opacity: 0;
+            transition: opacity 0.1s ease;
+        }
+        .scatter-tip.show {
+            opacity: 1;
+        }
+        .scatter-tip .tt-name {
+            font-weight: 600;
+        }
+        .scatter-tip .tt-meta {
+            margin-top: 2px;
+            color: var(--muted);
+            font-family: ui-monospace, monospace;
+        }
+        .scatter-tip .tt-meta b {
+            color: var(--ink);
+            font-weight: 600;
         }
         .viz-empty {
             padding: 30px;
@@ -1335,22 +1381,115 @@ const base = import.meta.env.BASE_URL;
                 g += `<line class="grid" x1="${xx}" y1="${mT}" x2="${xx}" y2="${H - mB}"/><text class="axis" x="${xx}" y="${H - mB + 16}" text-anchor="middle">${metric.tick(c)}</text>`;
             }
             g += `<text class="axis-title" x="${mL + pw / 2}" y="${H - 4}" text-anchor="middle">${esc(metric.label)}</text><text class="axis-title" x="13" y="${mT + ph / 2}" text-anchor="middle" transform="rotate(-90 13 ${mT + ph / 2})">score</text>`;
-            const dots = pts
-                .map((p) => {
-                    const cx = x(metric.get(p)),
-                        cy = y(p.scoring.score);
+
+            // Pixel coords per point, plus the "better" value used for the frontier.
+            const co = pts.map((p) => ({
+                p,
+                cx: x(metric.get(p)),
+                cy: y(p.scoring.score),
+                v: metric.get(p),
+                s: p.scoring.score,
+            }));
+            // Pareto frontier: a run is on it if no other run has a score at least
+            // as high AND a cost/time at least as good (lower), with one strictly
+            // better — i.e. the best-achievable envelope. These are worth naming.
+            const onFrontier = (c) =>
+                !co.some(
+                    (o) =>
+                        o !== c &&
+                        o.s >= c.s &&
+                        o.v <= c.v &&
+                        (o.s > c.s || o.v < c.v),
+                );
+            co.forEach((c) => {
+                c.fr = onFrontier(c);
+                c.flip = c.cx > mL + pw * 0.62;
+            });
+            // Choose which points get a static label greedily by priority (frontier
+            // first, then higher score), keeping any two labelled dots ≥ MINDOT px
+            // apart. So a dense cluster shows only its strongest point's name and an
+            // isolated point always gets one; everything else is revealed on hover.
+            const MINDOT = 54;
+            const placed = [];
+            co.slice()
+                .sort((a, b) => b.fr - a.fr || b.s - a.s)
+                .forEach((c) => {
+                    if (
+                        placed.every(
+                            (o) =>
+                                Math.hypot(o.cx - c.cx, o.cy - c.cy) >= MINDOT,
+                        )
+                    ) {
+                        c.labeled = true;
+                        placed.push(c);
+                    }
+                });
+            // De-collide the chosen labels: per side, keep ≥12px vertical gap.
+            for (const side of [true, false]) {
+                const arr = co
+                    .filter((c) => c.labeled && c.flip === side)
+                    .sort((a, b) => a.cy - b.cy);
+                let prev = -1e9;
+                for (const c of arr) {
+                    c.ly = Math.max(c.cy + 3.2, prev + 12);
+                    prev = c.ly;
+                }
+            }
+            const dots = co
+                .map((c) => {
+                    const p = c.p;
                     const t = scoreTier(p.scoring.score);
                     const label = `${p.harness} · ${p.model}`;
-                    const flip = cx > mL + pw * 0.62;
-                    const lx = flip ? cx - 9 : cx + 9;
-                    const anchor = flip ? "end" : "start";
-                    return `<a href="#/bench/${esc(p.slug)}">
-          <circle class="dot ${t}" cx="${cx}" cy="${cy}" r="6"><title>${esc(label)} — ${p.scoring.score}/100 · ${esc(metric.point(metric.get(p)))}</title></circle>
-          <text class="dot-label" x="${lx}" y="${cy + 3.5}" text-anchor="${anchor}">${esc(label)}</text>
+                    const valStr = metric.point(metric.get(p));
+                    const lx = c.flip ? c.cx - 10 : c.cx + 10;
+                    const anchor = c.flip ? "end" : "start";
+                    let labelSvg = "";
+                    if (c.labeled) {
+                        // leader line only when the label was nudged off its dot
+                        const lead =
+                            Math.abs(c.ly - (c.cy + 3.2)) > 7
+                                ? `<line class="lead" x1="${c.cx.toFixed(1)}" y1="${c.cy.toFixed(1)}" x2="${(c.flip ? lx + 2 : lx - 2).toFixed(1)}" y2="${(c.ly - 3).toFixed(1)}"/>`
+                                : "";
+                        labelSvg = `${lead}<text class="dot-label" x="${lx.toFixed(1)}" y="${c.ly.toFixed(1)}" text-anchor="${anchor}">${esc(label)}</text>`;
+                    }
+                    return `<a href="#/bench/${esc(p.slug)}" class="dot-a" data-name="${esc(label)}" data-score="${p.scoring.score}" data-metric="${esc(valStr)}" data-mlabel="${esc(METRIC_LABEL[metricKey])}" aria-label="${esc(label)}, score ${p.scoring.score} of 100, ${esc(METRIC_LABEL[metricKey])} ${esc(valStr)}">
+          <circle class="dot ${t}" cx="${c.cx}" cy="${c.cy}" r="${c.fr ? 6.5 : 5.5}"></circle>${labelSvg}
         </a>`;
                 })
                 .join("");
             return `<svg class="scatter" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="score versus ${metricKey} scatter chart">${g}${dots}</svg>`;
+        }
+
+        // Hover layer for the scatter: a styled tooltip + raise-to-front so a dot in
+        // a dense cluster becomes readable even when it carries no static label.
+        function wireScatter(host) {
+            if (!host) return;
+            let tip = document.getElementById("scatter-tip");
+            if (!tip) {
+                tip = document.createElement("div");
+                tip.id = "scatter-tip";
+                tip.className = "scatter-tip";
+                document.body.appendChild(tip);
+            }
+            const hide = () => tip.classList.remove("show");
+            host.querySelectorAll(".dot-a").forEach((a) => {
+                const show = (e) => {
+                    tip.innerHTML = `<div class="tt-name">${a.dataset.name}</div><div class="tt-meta">score <b>${a.dataset.score}</b> · ${a.dataset.mlabel} <b>${a.dataset.metric}</b></div>`;
+                    tip.style.left = e.clientX + "px";
+                    tip.style.top = e.clientY + "px";
+                    tip.classList.add("show");
+                };
+                a.addEventListener("pointerenter", (e) => {
+                    a.classList.add("hl");
+                    a.parentNode.appendChild(a); // raise above overlapping dots
+                    show(e);
+                });
+                a.addEventListener("pointermove", show);
+                a.addEventListener("pointerleave", () => {
+                    a.classList.remove("hl");
+                    hide();
+                });
+            });
         }
 
         async function load() {
@@ -1556,13 +1695,15 @@ const base = import.meta.env.BASE_URL;
                 seg.querySelectorAll("button").forEach((btn) => {
                     btn.addEventListener("click", () => {
                         scatterMetric = btn.dataset.m;
-                        app.querySelector("#scatter-host").innerHTML =
-                            buildScatter(ranked, scatterMetric);
+                        const host = app.querySelector("#scatter-host");
+                        host.innerHTML = buildScatter(ranked, scatterMetric);
+                        wireScatter(host);
                         seg.querySelectorAll("button").forEach((x) =>
                             x.classList.toggle("on", x === btn),
                         );
                     });
                 });
+            wireScatter(app.querySelector("#scatter-host"));
         }
 
         function markFor(v) {
