@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Near-Earth Space — Inner Solar System Explorer</title>
+    <meta
+      name="description"
+      content="Interactive 3D view of the inner solar system and ~42,000 near-Earth objects, propagated from their orbital elements."
+    />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="view"></canvas>
+      <div id="labels"></div>
+
+      <div id="loader">
+        <div class="loader-inner">
+          <div class="loader-title">Near-Earth Space</div>
+          <div class="loader-sub" id="loader-sub">loading orbital elements…</div>
+          <div class="loader-bar"><div class="loader-bar-fill" id="loader-bar"></div></div>
+        </div>
+      </div>
+
+      <header id="topbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <div>
+            <div class="brand-title">Near-Earth Space</div>
+            <div class="brand-sub" id="brand-sub">—</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn" id="btn-share" title="Copy a link to this exact view">Share view</button>
+          <button class="btn" id="btn-help" title="About / keyboard shortcuts">?</button>
+        </div>
+      </header>
+
+      <!-- ------------------------------------------------------- left rail -->
+      <aside id="left" class="panel">
+        <div class="panel-scroll">
+          <section class="sec">
+            <h2>Search</h2>
+            <input id="search" type="search" placeholder="Name or designation, e.g. Apophis" autocomplete="off" />
+            <div id="search-results" class="results"></div>
+          </section>
+
+          <section class="sec">
+            <h2>
+              Filter asteroids
+              <button class="link-btn" id="btn-reset-filters">reset</button>
+            </h2>
+            <div class="count-line"><b id="visible-count">—</b> <span id="visible-total"></span></div>
+
+            <label class="row"><input type="checkbox" id="f-pha" /> <span>Potentially hazardous only</span></label>
+            <label class="row"><input type="checkbox" id="f-sentry" /> <span>On the Sentry risk list only</span></label>
+            <label class="row"><input type="checkbox" id="f-named" /> <span>Named objects only</span></label>
+            <label class="row"><input type="checkbox" id="f-approach" /> <span>Has a logged close approach</span></label>
+
+            <div class="sub">Orbit class</div>
+            <div id="f-class" class="chips"></div>
+
+            <div class="sub">Diameter <span class="hint" id="f-diam-label"></span></div>
+            <div class="dual"><input type="range" id="f-diam-min" min="0" max="100" value="0" /></div>
+
+            <div class="sub">Earth MOID <span class="hint" id="f-moid-label"></span></div>
+            <div class="dual"><input type="range" id="f-moid-max" min="0" max="100" value="100" /></div>
+
+            <div class="sub">Semi-major axis <span class="hint" id="f-a-label"></span></div>
+            <div class="dual"><input type="range" id="f-a-max" min="0" max="100" value="100" /></div>
+          </section>
+
+          <section class="sec">
+            <h2>Display</h2>
+            <div class="sub">Colour asteroids by</div>
+            <select id="color-mode">
+              <option value="hazard">Hazard (PHA / Sentry)</option>
+              <option value="class">Orbit class</option>
+              <option value="size">Size</option>
+              <option value="moid">Earth MOID</option>
+            </select>
+            <div id="legend" class="legend"></div>
+
+            <label class="row"><input type="checkbox" id="d-comets" /> <span>Show comets</span></label>
+            <label class="row"><input type="checkbox" id="d-orbits" checked /> <span>Planet orbits</span></label>
+            <label class="row"><input type="checkbox" id="d-labels" checked /> <span>Labels</span></label>
+            <label class="row"><input type="checkbox" id="d-ecliptic" /> <span>Ecliptic grid</span></label>
+
+            <div class="sub">Asteroid point size <span class="hint" id="d-psize-label"></span></div>
+            <input type="range" id="d-psize" min="20" max="300" value="100" />
+
+            <div class="sub">Body size exaggeration <span class="hint" id="d-bscale-label"></span></div>
+            <input type="range" id="d-bscale" min="0" max="100" value="63" />
+          </section>
+
+          <section class="sec">
+            <h2>Highlights</h2>
+            <div class="tabs">
+              <button class="tab is-active" data-hl="approach">Close approaches</button>
+              <button class="tab" data-hl="risk">Impact risk</button>
+              <button class="tab" data-hl="big">Largest</button>
+            </div>
+            <div id="highlight-list" class="results tall"></div>
+          </section>
+        </div>
+      </aside>
+
+      <!-- ------------------------------------------------------ right rail -->
+      <aside id="right" class="panel hidden">
+        <button class="close-btn" id="detail-close" title="Close">×</button>
+        <div class="panel-scroll" id="detail"></div>
+      </aside>
+
+      <!-- --------------------------------------------------------- time bar -->
+      <footer id="timebar">
+        <div class="tb-row">
+          <button class="btn icon" id="btn-step-back" title="Step back">‹‹</button>
+          <button class="btn play" id="btn-play" title="Play / pause (space)">▶</button>
+          <button class="btn icon" id="btn-step-fwd" title="Step forward">››</button>
+
+          <div class="tb-date">
+            <input id="date-input" type="date" min="1900-01-01" max="2199-12-31" />
+            <button class="btn small" id="btn-now">Now</button>
+          </div>
+
+          <div class="tb-speed">
+            <label for="speed">Rate</label>
+            <input type="range" id="speed" min="-100" max="100" value="30" />
+            <span class="mono" id="speed-label">—</span>
+          </div>
+
+          <div class="tb-follow">
+            <label class="row compact"><input type="checkbox" id="f-follow" /> <span>Follow selection</span></label>
+          </div>
+        </div>
+        <div class="tb-row">
+          <span class="mono small dim" id="scrub-min"></span>
+          <input type="range" id="scrub" class="scrub" min="0" max="1000" value="0" />
+          <span class="mono small dim" id="scrub-max"></span>
+        </div>
+      </footer>
+
+      <div id="hover" class="hover hidden"></div>
+
+      <div id="modal" class="modal hidden">
+        <div class="modal-box">
+          <button class="close-btn" id="modal-close">×</button>
+          <div id="modal-body"></div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

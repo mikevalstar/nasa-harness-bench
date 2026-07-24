@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-09T23:12:40.325Z",
-  "count": 18,
+  "generatedAt": "2026-07-24T22:25:43.513Z",
+  "count": 19,
   "rubric": {
     "scale": {
       "pass": 1,
@@ -154,6 +154,92 @@
     ]
   },
   "benches": [
+    {
+      "slug": "2026-07-24-17-02-44-claude-code-opus-5-medium",
+      "harness": "claude-code",
+      "harnessVersion": "2.1.219",
+      "model": "opus-5",
+      "effort": "medium",
+      "interface": "cli",
+      "createdAt": "2026-07-24T21:02:46Z",
+      "collectedAt": "2026-07-24T21:27:19Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-24-17-02-44-claude-code-opus-5-medium",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": null,
+      "cheated": false,
+      "buildSucceeded": true,
+      "tokenUsage": {
+        "input": 6951,
+        "output": 209871,
+        "cacheCreation": 285694,
+        "cacheRead": 14186224,
+        "total": 14688740
+      },
+      "estimatedCostUsd": 15.23,
+      "timeTakenSeconds": 1412,
+      "tags": [],
+      "summary": "",
+      "costNote": "Priced at Claude Opus 5 list rates, the same as the other Opus models: $5/$25 per MTok in/out, cache write at the 1-hour TTL 2x ($10), cache read 0.1x ($0.50). Breakdown: input $0.03 + output $5.25 + cache write $2.86 + cache read $7.09 = $15.23. Dominated by cache reads (14.19M tok) and output (210K tok). Model stayed on claude-opus-5 for all 124 assistant turns — no fallback observed in the session log.",
+      "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+      "selfVerificationNotes": "Genuine browser review, iterated on. It wrote a static server to the session scratchpad (serve.mjs, deliberately serving the site from a deep sub-path and inside an iframe to test relative-URL resolution), built dist/, and drove headless Chrome (--headless=new, SwiftShader) against it. Six screenshots across different app states — default view, PHA filter + MOID colouring, comets overlay with a selected comet, deep-link URL with follow-cam, a search for 'apophis' — each read back and acted on: it re-tuned glow sprites, body-scale default and label density from what it saw, and decoded a screenshot's PNG pixels in Node to measure how much of the frame was actually lit. It also dumped the DOM and asserted on live values (visible-count, brand line, result rows, LD column), and did independent numeric checks of its own math (Earth heliocentric distance/longitude for 2026-07-24, Apophis). DISPLAY review: pass. CONSOLE review is weaker: it grepped Chrome's stderr (chrome.log) for ERROR/SEVERE/shader/webgl/uncaught and found only browser-process noise (GPU ReadPixels stalls, crashpad, GCM) — but Chrome was launched without --enable-logging=stderr and without a CDP listener, so page-level console.error / uncaught exceptions would not reliably have appeared in that channel. It checked, but through a channel that could not have proven the point.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": "pass",
+          "noConsoleErrors": "pass"
+        },
+        "correctness": {
+          "solarSystem": "pass",
+          "planets": "pass",
+          "asteroids": "pass",
+          "computedPositions": "pass",
+          "orbitsCorrect": "pass",
+          "timeAnimation": "pass"
+        },
+        "usability": {
+          "camera": "pass",
+          "scale": "good",
+          "legible": "pass",
+          "noUiIssues": "good"
+        },
+        "selfVerification": {
+          "consoleReview": "partial",
+          "displayReview": "pass"
+        },
+        "features": {
+          "filterSearch": "pass",
+          "investigate": "pass",
+          "highlight": "pass",
+          "scaleRisk": "pass",
+          "comets": "good",
+          "impactRisk": "pass",
+          "focusFollow": "pass",
+          "deepLinks": "pass"
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "scoring": {
+        "status": "graded",
+        "score": 95,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": 100,
+          "usability": 88,
+          "selfVerification": 75,
+          "features": 97
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
     {
       "slug": "2026-07-09-18-32-19-chatgpt-gpt-5-6-terra-high",
       "harness": "chatgpt",

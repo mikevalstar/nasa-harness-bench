@@ -8,6 +8,7 @@
 //   - <sessionId>.jsonl       raw session log(s), copied verbatim
 //   - transcript.md           readable extracted text (prompts, thinking, tools)
 //   - session-metadata.json   aggregated telemetry (tokens, time, tools, web use)
+// and a plaintext results/<slug>/runlog.txt run log.
 //
 // Non-destructive: it does NOT modify the result's metadata.json. The key
 // numbers are printed so they can be merged into metadata.json by hand.
@@ -79,7 +80,10 @@ let version = null, gitBranch = null, cwd = null, sessionId = null;
 const trunc = (s, n = 1500) =>
   typeof s === "string" && s.length > n ? s.slice(0, n) + `\n…[truncated ${s.length - n} chars]` : s;
 
-const lines = []; // transcript
+const lines = []; // transcript.md
+const log = [];   // runlog.txt
+const indent = (s, pad = "  ") => String(s).split("\n").map((l) => pad + l).join("\n");
+
 for (const r of records) {
   if (r.timestamp) {
     if (!firstTs || r.timestamp < firstTs) firstTs = r.timestamp;
@@ -92,13 +96,18 @@ for (const r of records) {
     const c = r.message?.content;
     if (typeof c === "string") {
       lines.push(`\n---\n\n## 👤 User\n\n${trunc(c, 4000)}`);
+      log.push(`[USER]\n${trunc(c, 4000)}\n`);
     } else if (Array.isArray(c)) {
       for (const b of c) {
-        if (b.type === "tool_result") {
+        if (b.type === "text") {
+          lines.push(`\n---\n\n## 👤 User\n\n${trunc(b.text, 4000)}`);
+          log.push(`[USER]\n${trunc(b.text, 4000)}\n`);
+        } else if (b.type === "tool_result") {
           const txt = Array.isArray(b.content)
-            ? b.content.map((x) => x.text || "").join("\n")
+            ? b.content.map((x) => x.text || `<${x.type}>`).join("\n")
             : (b.content ?? "");
           lines.push(`\n*tool result* ${b.is_error ? "⚠️ (error)" : ""}\n\n\`\`\`\n${trunc(txt)}\n\`\`\``);
+          log.push(`  [RESULT]${b.is_error ? " (error)" : ""}\n${indent(trunc(txt))}\n`);
         }
       }
     }
@@ -116,8 +125,10 @@ for (const r of records) {
     for (const b of m.content || []) {
       if (b.type === "thinking") {
         lines.push(`\n### 💭 Thinking\n\n> ${trunc(b.thinking, 4000).replace(/\n/g, "\n> ")}`);
+        log.push(`[THINKING]\n${trunc(b.thinking, 4000)}\n`);
       } else if (b.type === "text") {
         lines.push(`\n### 🤖 Assistant\n\n${b.text}`);
+        log.push(`[ASSISTANT]\n${b.text}\n`);
       } else if (b.type === "tool_use") {
         tools[b.name] = (tools[b.name] || 0) + 1;
         if (b.name === "Bash" && b.input?.command) bashCommands.push(b.input.command);
@@ -128,6 +139,15 @@ for (const r of records) {
           else web.fetchRequests++;
         }
         lines.push(`\n### 🔧 Tool: \`${b.name}\`\n\n\`\`\`json\n${trunc(JSON.stringify(b.input, null, 2))}\n\`\`\``);
+
+        const inp = b.input || {};
+        let head = `[TOOL: ${b.name}]`;
+        if (b.name === "Bash" && inp.command) head += `\n  $ ${trunc(inp.command, 1200)}`;
+        else if (inp.file_path) head += `\n  file: ${inp.file_path}`;
+        else if (inp.pattern) head += `\n  pattern: ${inp.pattern}${inp.path ? `  path: ${inp.path}` : ""}`;
+        else if (inp.query) head += `\n  query: ${inp.query}`;
+        else head += `\n${indent(trunc(JSON.stringify(inp, null, 1), 600))}`;
+        log.push(head);
       }
     }
   }
@@ -170,11 +190,26 @@ const header = `# Session transcript — ${slug}
 `;
 writeFileSync(join(outDir, "transcript.md"), header + lines.join("\n") + "\n");
 
+// --- runlog.txt ---------------------------------------------------------------
+const rHeader = `NASA Harness Bench — run log
+${slug}
+Session ${sessionId} · Claude Code ${version} · ${[...models].join(", ")}
+${firstTs} → ${lastTs} (${durationSeconds}s) · ${userMsgs} user / ${assistantMsgs} assistant turns
+Tokens: input ${tokens.input_tokens.toLocaleString()} · output ${tokens.output_tokens.toLocaleString()} · cache create ${tokens.cache_creation_input_tokens.toLocaleString()} · cache read ${tokens.cache_read_input_tokens.toLocaleString()}
+(Extracted from the Claude Code session JSONL. Long tool inputs/results truncated.
+ Thinking blocks are blank when the model does not return summarized reasoning.)
+
+${"=".repeat(40)}
+
+`;
+writeFileSync(join(resultDir, "runlog.txt"), rHeader + log.join("\n") + "\n");
+
 // --- report -------------------------------------------------------------------
 console.log("\nWrote results/%s/session/", slug);
 console.log("  - %s (raw)", jsonls.join(", "));
 console.log("  - transcript.md");
 console.log("  - session-metadata.json");
+console.log("Wrote results/%s/runlog.txt", slug);
 console.log("\n=== Telemetry (paste objective fields into metadata.json) ===");
 console.log("  timeTakenSeconds:", durationSeconds);
 console.log("  tokenUsage:", JSON.stringify({ input: tokens.input_tokens, output: tokens.output_tokens, total }));

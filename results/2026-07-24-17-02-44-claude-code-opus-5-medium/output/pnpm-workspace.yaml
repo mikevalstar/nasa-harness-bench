@@ -1,0 +1,3 @@
+# esbuild (vite's bundler) needs its postinstall to unpack the platform binary.
+allowBuilds:
+  esbuild: true
