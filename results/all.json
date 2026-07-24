@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-24T22:25:43.513Z",
+  "generatedAt": "2026-07-24T22:28:59.176Z",
   "count": 19,
   "rubric": {
     "scale": {
@@ -165,7 +165,7 @@
       "collectedAt": "2026-07-24T21:27:19Z",
       "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-24-17-02-44-claude-code-opus-5-medium",
       "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
-      "broken": null,
+      "broken": false,
       "cheated": false,
       "buildSucceeded": true,
       "tokenUsage": {

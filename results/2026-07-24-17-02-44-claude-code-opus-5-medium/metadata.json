@@ -10,7 +10,7 @@
   "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-24-17-02-44-claude-code-opus-5-medium",
 
   "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
-  "broken": null,
+  "broken": false,
   "cheated": false,
   "buildSucceeded": true,
   "tokenUsage": { "input": 6951, "output": 209871, "cacheCreation": 285694, "cacheRead": 14186224, "total": 14688740 },
