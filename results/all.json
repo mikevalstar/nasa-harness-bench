@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-24T22:28:59.176Z",
-  "count": 19,
+  "generatedAt": "2026-07-24T23:33:41.740Z",
+  "count": 20,
   "rubric": {
     "scale": {
       "pass": 1,
@@ -154,6 +154,93 @@
     ]
   },
   "benches": [
+    {
+      "slug": "2026-07-24-18-34-27-opencode-kimi-k3-high",
+      "harness": "opencode",
+      "harnessVersion": "1.18.5",
+      "model": "kimi-k3",
+      "effort": "high",
+      "interface": "cli",
+      "createdAt": "2026-07-24T22:34:29Z",
+      "collectedAt": "2026-07-24T23:08:03Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-07-24-18-34-27-opencode-kimi-k3-medium",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": false,
+      "cheated": false,
+      "buildSucceeded": true,
+      "tokenUsage": {
+        "input": 183243,
+        "output": 40500,
+        "reasoning": 19911,
+        "cacheRead": 3808612,
+        "cacheWrite": 0,
+        "total": 223743
+      },
+      "estimatedCostUsd": 2.598478,
+      "timeTakenSeconds": 1937,
+      "tags": [],
+      "summary": "",
+      "costNote": "Cost is opencode's own per-message accounting from the OpenRouter provider (openrouter/moonshotai/kimi-k3, variant 'high'), summed across the session — not a list-price recomputation, since the buckets and rates are the provider's. $2.598478. Matches the operator's reported $2.60. tokenUsage.total is input+output as recorded; the 3.81M cache-read tokens are reported separately and are already reflected in the provider's cost. Session span 1937s; the operator's stopwatch read 32m36s (1956s), the ~19s difference being setup before the first message.",
+      "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+      "selfVerificationNotes": "Strongest self-verification of any run so far, and the only one with a correctly-wired console check. It added puppeteer-core and wrote scripts/smoke.mjs: serves dist/ over HTTP from a nested sub-path (to catch absolute-URL breakage), launches real Chrome via puppeteer, and registers page.on('console'), page.on('pageerror') and page.on('requestfailed') listeners before navigating — so page-level errors were genuinely captured, not inferred from browser stderr. The script then drives the UI: searches 'Apophis' and clicks the hit, toggles the comet layer and risk colouring, measures FPS over 3s via requestAnimationFrame (60.3), clicks follow-camera, loads the approaches panel and asserts on row count (12), reads location.hash, then re-opens that hash URL in a fresh page and asserts the selection was restored ('restored selection: 99942 Apophis'). It took screenshots at each stage and read them back repeatedly, iterating on what it saw. It found and fixed a real console error surfaced this way (a favicon 404 → requestfailed), re-ran, and got 'NO CONSOLE ERRORS'. It also cross-checked its own propagation against JPL Horizons via webfetch (Apophis at the 2029 encounter, 0.0058 au disagreement) and correctly attributed the residual to dataset element rounding plus two-body propagation. Both console and display review: pass. Note it deletes the smoke-*.png screenshots at the end, so they are not in the collected output.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": "pass",
+          "noConsoleErrors": "pass"
+        },
+        "correctness": {
+          "solarSystem": "pass",
+          "planets": "pass",
+          "asteroids": "pass",
+          "computedPositions": "pass",
+          "orbitsCorrect": "partial",
+          "timeAnimation": "pass"
+        },
+        "usability": {
+          "camera": "pass",
+          "scale": "pass",
+          "legible": "pass",
+          "noUiIssues": "good"
+        },
+        "selfVerification": {
+          "consoleReview": "pass",
+          "displayReview": "pass"
+        },
+        "features": {
+          "filterSearch": "pass",
+          "investigate": "pass",
+          "highlight": "pass",
+          "scaleRisk": "pass",
+          "comets": "partial",
+          "impactRisk": "pass",
+          "focusFollow": "pass",
+          "deepLinks": "pass"
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "scoring": {
+        "status": "graded",
+        "score": 95,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": 92,
+          "usability": 94,
+          "selfVerification": 100,
+          "features": 94
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
     {
       "slug": "2026-07-24-17-02-44-claude-code-opus-5-medium",
       "harness": "claude-code",

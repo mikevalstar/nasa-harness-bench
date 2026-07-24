@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEO System — near-Earth asteroid explorer</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='3' fill='%23ffdf80'/%3E%3Ccircle cx='13' cy='5' r='1.2' fill='%234cc9f0'/%3E%3C/svg%3E" />
+    <script type="module" crossorigin src="./assets/index-BUOTGBXS.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DQQ_k7YY.css">
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+    <div id="labels"></div>
+
+    <header id="topbar" class="hidden-ui">
+      <div class="brand">NEO<span>SYSTEM</span></div>
+      <div id="clock">
+        <div id="date-display">—</div>
+        <div id="jd-display">—</div>
+      </div>
+      <div id="time-controls">
+        <button id="btn-rev" class="tbtn" title="reverse time direction">&#10226;</button>
+        <button id="btn-play" class="tbtn" title="play / pause (space)">&#10074;&#10074;</button>
+        <select id="speed" title="time speed">
+          <option value="0.0417">1 hour / s</option>
+          <option value="1" selected>1 day / s</option>
+          <option value="7">1 week / s</option>
+          <option value="30.4">1 month / s</option>
+          <option value="365.25">1 year / s</option>
+        </select>
+        <input id="date-input" type="date" title="jump to date" />
+        <button id="btn-now" class="tbtn" title="jump to today">Now</button>
+      </div>
+    </header>
+
+    <aside id="sidebar" class="hidden-ui">
+      <div class="panel">
+        <input id="search" type="search" placeholder="Search asteroid, comet, planet…" autocomplete="off" />
+        <div id="search-results"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Filter</h3>
+        <div id="class-filters" class="checks"></div>
+        <label class="check"><input type="checkbox" id="f-pha" /> <span class="sw pha"></span>Potentially hazardous only</label>
+        <label class="check"><input type="checkbox" id="f-sentry" /> <span class="sw sentry"></span>Impact-risk (Sentry) only</label>
+        <label class="slider-row">Min diameter <span id="f-diam-val">0 km</span>
+          <input type="range" id="f-diam" min="0" max="100" value="0" />
+        </label>
+      </div>
+
+      <div class="panel">
+        <h3>Color by</h3>
+        <div id="color-modes" class="seg">
+          <button data-mode="class" class="on">Orbit class</button>
+          <button data-mode="risk">Risk</button>
+          <button data-mode="size">Size</button>
+        </div>
+        <div id="legend"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Layers</h3>
+        <label class="check"><input type="checkbox" id="l-comets" /> Comets (~4,000)</label>
+        <label class="check"><input type="checkbox" id="l-orbits" checked /> Planet orbits</label>
+        <label class="check"><input type="checkbox" id="l-labels" checked /> Planet labels</label>
+        <label class="slider-row">Body size <span id="size-val">1.0&times;</span>
+          <input type="range" id="size-scale" min="20" max="300" value="100" />
+        </label>
+      </div>
+
+      <div class="panel" id="approaches-panel">
+        <h3>Upcoming close approaches <button id="approaches-load" class="mini">load</button></h3>
+        <div id="approaches"><p class="dim">Closest Earth passes after the current date.</p></div>
+      </div>
+    </aside>
+
+    <section id="detail" class="hidden hidden-ui">
+      <button id="detail-close" title="close">&times;</button>
+      <div id="detail-body"></div>
+    </section>
+
+    <div id="hud" class="hidden-ui">
+      <span id="stats"></span>
+      <span id="hint">drag&nbsp;=&nbsp;orbit &middot; scroll&nbsp;=&nbsp;zoom &middot; click&nbsp;=&nbsp;inspect</span>
+    </div>
+
+    <div id="loading">
+      <div class="load-box">
+        <div class="brand big">NEO<span>SYSTEM</span></div>
+        <div class="load-bar"><div id="load-fill"></div></div>
+        <div id="load-msg">loading…</div>
+      </div>
+    </div>
+
+  </body>
+</html>
