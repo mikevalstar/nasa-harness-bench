@@ -59,6 +59,19 @@ One extractor per harness; all take the result slug and are non-destructive
 | Copilot CLI | `node scripts/extract-session-copilot.mjs <slug>` |
 | opencode | `node scripts/extract-session-opencode.mjs <slug>` |
 | MiniMax Code | `node scripts/extract-session-minimax.mjs <slug>` |
+| Muse Code | `node scripts/extract-session-muse.mjs <slug>` |
+
+Muse persists no cost, so its extractor recomputes one from list price — the
+rates live in the `PRICING` constant at the top of the script and must be updated
+per model under test. **Treat that recomputation as a lower bound and prefer
+muse's own dev-console figure:** on the first muse run it came out ~39% low
+($0.518 vs $0.72), apparently because the log reports `cache_write_tokens: 0` on
+every call even though the prefix is plainly being cached. When the two disagree,
+put the console number in `estimatedCostUsd` and keep the recomputation in
+`recomputedCostUsd` so the gap stays on the record. It also folds in the internal "reminder observer" helper
+agents muse spawns on its own (`subagent/*/session.jsonl`); they are harness
+overhead but real billed tokens, and `session-metadata.json` breaks them out
+under `tokenUsageBreakdown`.
 
 Each writes `results/<slug>/session/` — the raw log, a readable `transcript.md`,
 and `session-metadata.json` with the aggregated numbers. Copy from

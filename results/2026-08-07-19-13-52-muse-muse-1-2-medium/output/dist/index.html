@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Inner Solar System — NEOs</title>
+  <script type="module" crossorigin src="./assets/index-DLzj44oI.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CKVsQ-UI.css">
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <h1>Inner Solar System</h1>
+    <span class="sub">Sun + 8 planets + ~42k NEOs — J2000 ecliptic • AU • propagated from epoch</span>
+    <div class="spacer"></div>
+    <button id="btn-reset">Reset view</button>
+    <button id="btn-share">Copy link</button>
+  </div>
+  <div id="main">
+    <div id="left">
+      <div class="panel">
+        <h2>Search & filter</h2>
+        <input id="q" placeholder="Search designation / name (e.g. Apophis, 433)" />
+        <div style="height:6px"></div>
+        <div class="row">
+          <select id="f-class"><option value="">All orbit classes</option><option value="APO">APO Apollo</option><option value="AMO">AMO Amor</option><option value="ATE">ATE Aten</option><option value="IEO">IEO Interior</option></select>
+          <select id="f-sort"><option value="dist">Sort: distance now</option><option value="pha">PHA first</option><option value="diam">Largest</option><option value="moid">MOID</option><option value="H">Brightest (H)</option></select>
+        </div>
+        <div class="pillbar">
+          <button class="pill" data-toggle="pha">PHA only</button>
+          <button class="pill" data-toggle="risk">Sentry risk</button>
+          <button class="pill" data-toggle="large">D &gt; 1 km</button>
+          <button class="pill" data-toggle="close">Close &lt; 0.05 AU</button>
+          <button class="pill" data-toggle="upcoming">Approach ≤30d</button>
+        </div>
+        <div style="height:8px"></div>
+        <div class="row">
+          <label class="check"><input type="checkbox" id="chk-comets" checked> Comets</label>
+          <label class="check"><input type="checkbox" id="chk-phaHL" checked> Highlight PHA</label>
+          <label class="check"><input type="checkbox" id="chk-riskHL" checked> Highlight risk</label>
+        </div>
+        <div class="stats" id="stats"></div>
+        <div class="legend" style="margin-top:6px">
+          <span><i class="dot" style="background:#ff6b6b"></i>PHA</span>
+          <span><i class="dot" style="background:#ffcc6b"></i>Risk</span>
+          <span><i class="dot" style="background:#6bcBff"></i>Comet</span>
+          <span><i class="dot" style="background:#8a9bff"></i>Apollo</span>
+          <span><i class="dot" style="background:#6bff9a"></i>Amor</span>
+          <span><i class="dot" style="background:#ff8aff"></i>Aten</span>
+        </div>
+      </div>
+      <div id="list"></div>
+      <div class="panel" style="font-size:10px;color:#6e839f">Scale exaggerated for visibility. AU units. Positions from Kepler propagation. Data in <code>data/</code>.</div>
+    </div>
+    <div id="center">
+      <canvas id="canvas"></canvas>
+      <div id="hud"></div>
+      <div id="tooltip"></div>
+    </div>
+    <div id="right">
+      <div class="panel" style="border-bottom:1px solid #142036;display:flex;gap:8px;align-items:center">
+        <button id="btn-focus" style="flex:1">Focus & follow: OFF</button>
+        <button id="btn-orbit">Show orbit</button>
+      </div>
+      <div id="detail"><div style="color:#8aa0c2;font-size:12px;padding:20px 0;text-align:center">Select an object to inspect.<br/>Click a point or pick from the list.</div></div>
+    </div>
+  </div>
+  <div id="timebar">
+    <div class="row2">
+      <button id="btn-play">▶ Play</button>
+      <button id="btn-rev">◀ Rev</button>
+      <select id="speed"><option value="0.25">0.25 d/s</option><option value="1" selected>1 d/s</option><option value="7">7 d/s</option><option value="30">30 d/s</option><option value="100">100 d/s</option><option value="365">365 d/s</option><option value="1000">1000 d/s</option></select>
+      <span class="timeLabel mono" id="timeLabel"></span>
+      <input id="date" type="date" style="max-width:160px" />
+      <button id="btn-now">Now</button>
+    </div>
+    <div class="row2">
+      <span class="mono" style="font-size:11px;color:#8aa0c2">Time</span>
+      <input id="scrub" type="range" min="2415020" max="2488070" step="0.5" />
+      <span class="mono" style="font-size:11px;color:#8aa0c2" id="jdLabel"></span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

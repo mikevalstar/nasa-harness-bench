@@ -1,0 +1,34 @@
+{
+  "retrievedAt": "2026-06-19T19:25:23.892Z",
+  "epochNote": "Orbital elements share a common epoch (Julian date) per the SBDB snapshot.",
+  "sources": [
+    {
+      "file": "asteroids.json",
+      "api": "NASA/JPL SBDB Query API",
+      "url": "https://ssd-api.jpl.nasa.gov/sbdb_query.api?sb-group=neo&fields=full_name%2Cpdes%2Cname%2Cspkid%2Cneo%2Cpha%2Cclass%2Ca%2Ce%2Ci%2Com%2Cw%2Cma%2Cepoch%2Cq%2Cad%2Cper%2Cn%2Ctp%2Cmoid%2CH%2CG%2Cdiameter%2Calbedo%2Crot_per%2Cspec_B%2Cspec_T%2Cfirst_obs",
+      "count": 42075
+    },
+    {
+      "file": "close-approaches.json",
+      "api": "NASA/JPL CAD API",
+      "url": "https://ssd-api.jpl.nasa.gov/cad.api?neo=true&sort=date&dist-max=0.05&date-min=1900-01-01&date-max=2200-01-01",
+      "count": 50749
+    },
+    {
+      "file": "comets.json",
+      "api": "NASA/JPL SBDB Query API",
+      "url": "https://ssd-api.jpl.nasa.gov/sbdb_query.api?sb-kind=c&fields=full_name%2Cpdes%2Ce%2Ca%2Cq%2Ci%2Com%2Cw%2Cma%2Ctp%2Cper%2Cn%2Cepoch%2Cclass%2CM1%2Cdiameter",
+      "count": 4068
+    },
+    {
+      "file": "sentry.json",
+      "api": "NASA/JPL CNEOS Sentry API",
+      "url": "https://ssd-api.jpl.nasa.gov/sentry.api",
+      "count": 2156
+    },
+    {
+      "file": "planets.json",
+      "source": "Static J2000 mean orbital elements (see build-planets.mjs)"
+    }
+  ]
+}

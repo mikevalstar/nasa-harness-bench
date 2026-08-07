@@ -1,0 +1,75 @@
+{
+  "slug": "2026-08-07-19-13-52-muse-muse-1-2-medium",
+  "harness": "muse",
+  "harnessVersion": "0.1.0",
+  "model": "muse-spark-1.2",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-08-07T23:13:54Z",
+  "collectedAt": "2026-08-07T23:18:15Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-08-07-19-13-52-muse-muse-1-2-medium",
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 1544089,
+    "output": 37900,
+    "reasoning": 16051,
+    "cacheRead": 1429785,
+    "cacheWrite": 0,
+    "total": 1581989
+  },
+  "estimatedCostUsd": 0.72,
+  "timeTakenSeconds": 178,
+  "tags": [],
+  "summary": "",
+  "costNote": "$0.72 is muse's own dev-console figure for this run and is the authoritative number. It does NOT match a list-price recomputation from the session log, which comes to $0.518423 (kept as `recomputedCostUsd`) so the discrepancy stays visible rather than being papered over. The recomputation, at the operator-supplied rates $1.25/Mtok input, $0.15/Mtok cached input, $4.25/Mtok output: muse reports `input_tokens` INCLUSIVE of the cached prefix, so billable uncached input = 1,544,089 - 1,429,785 = 114,304, giving 114,304x1.25 + 1,429,785x0.15 + 37,900x4.25 (per Mtok) = $0.142880 + $0.214468 + $0.161075 = $0.518423. The ~$0.20 gap (console is ~39% higher) is NOT explained by the logged usage, and is NOT spillover from other sessions: the only two other muse sessions that day (c299df26, f0a3260e) made zero model calls and ran in a different workspace. The leading candidate is a cache-WRITE charge the log does not surface - every `model_completed` record reports `cache_write_tokens: 0` even though the prefix is demonstrably cached and re-read on the very next call, and billing the 114,304 newly-cached tokens at a 1.25x write premium would close most, but not all, of the gap. That is a hypothesis, not a finding. Totals include the 13 internal 'reminder observer' helper agents muse spawns on its own (13 model calls, 209,947 in / 12,980 out) alongside the 31 main-agent calls (1,334,142 in / 24,920 out) — they are harness overhead but real billed tokens. tokenUsage.total is input+output as recorded. timeTakenSeconds is muse's own session uptime_ms (177,849 ms), which matches the log span exactly. NOTE: the bench note records the model as `muse-1-2`, but the session log's `run.model.configured` reports the model id as `muse-spark-1.2` (provider `meta`, profile `tbh`, harness build 427a430436).",
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "No browser review at all. The run is 178 seconds end to end, 31 main-agent model calls, 30 tool calls total (bash×16, write_file×9, read_file×3, edit_file×2) — it wrote the whole app essentially in one pass and never opened it. Verification was limited to (a) `pnpm install` + `pnpm build` succeeding and inspecting the emitted `dist/` (`ls -lh dist/`, `head` of `dist/index.html`, grepping the bundle for `data/`), and (b) one genuinely useful numeric sanity check: a `node -e` harness that imports `src/orbit.js` and prints Earth's computed position at J2000, an asteroid position, and a hyperbolic comet at `tp` and `tp+100` — i.e. it did exercise the propagation math for the elliptical and hyperbolic branches outside the browser. It also grepped `src/` and `index.html` for `http://`/`cdn`/`font` to confirm no external assets. But there is no headless browser, no screenshot, no console-error capture, and no interaction with the running page, so nothing about rendering, layout, framerate, or runtime console errors was ever checked. Its own final message claims only 'Build verified via `pnpm build`' — it does not overclaim a visual review. consoleReview: fail (no attempt). displayReview: fail (no attempt).",
+  "integrityNotes": "Clean. `git status bench/data` is empty — the dataset was never modified; the only writes under `data/` are `dist/data/` produced by its own `scripts/copy-data.mjs` at build time. All 12 files it wrote or edited are inside the bench dir (package.json, vite.config.js, index.html, src/main.js, src/orbit.js, src/style.css, scripts/copy-data.mjs, pnpm-workspace.yaml, README.md); nothing outside it was read or written. Exactly one network approval was requested and granted, `https registry.npmjs.org:443`, for `pnpm install` (three + vite) — no data fetching, no web search (muse's web_search_mode was 'client' but no search tool was ever called).",
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": {
+      "builds": "pass",
+      "loads": "pass",
+      "noConsoleErrors": "pass"
+    },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "good",
+      "computedPositions": "pass",
+      "orbitsCorrect": "partial",
+      "timeAnimation": "poor"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "partial",
+      "noUiIssues": "poor"
+    },
+    "selfVerification": {
+      "consoleReview": "fail",
+      "displayReview": "fail"
+    },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "good",
+      "comets": "partial",
+      "impactRisk": "good",
+      "focusFollow": "partial",
+      "deepLinks": "pass"
+    },
+    "integrity": {
+      "dataUntouched": true,
+      "noNetwork": true,
+      "inBounds": true
+    }
+  },
+  "recomputedCostUsd": 0.518423,
+  "mathNotes": "INDEPENDENTLY VERIFIED - the propagation math is correct. (1) src/orbit.js was checked against a from-scratch reimplementation using a different formulation (closed-form perifocal x=a(cosE-e), y=a*sqrt(1-e^2)*sinE plus three sequential rotations, versus muse's true-anomaly route and fused rotation matrix): max disagreement 1.2e-14 AU over 5,000 asteroids x 3 epochs, and <=7e-15 AU for all 8 planets - i.e. identical to floating point. The Rz(om)Rx(i)Rz(w) matrix is correct. (2) All three conic branches satisfy the perihelion identity r(tp)=q to 3.5e-16 relative (parabolic n=1821, hyperbolic n=485). (3) Zero non-finite positions across all 42,075 asteroids. (4) Against the dataset's own ground truth in close-approaches.json (50,749 events reconstructed as |r_asteroid - r_Earth|): for events within 400 days of the object's element epoch, median error 0.000316 AU (~47,000 km), p90 0.00075 AU; the best matches reproduce the published distance to 1e-8 AU. Errors grow to ~1 AU only for approaches decades from the element epoch, which is the expected behaviour of unperturbed two-body propagation, not a defect. (5) Apophis 2029-04-13: computed 0.006388 AU vs actual 0.000254 AU, a 0.0061 AU miss at a 1,040-day (2.8 yr) extrapolation - essentially the same 0.0058 AU disagreement the opencode/kimi-k3 run independently found when it cross-checked against JPL Horizons, so the two runs corroborate each other.  NOT MUSE'S FAULT - dataset limits: the ~0.41 deg Earth longitude offset at the 2026 equinoxes/solstices is inherent to planets.json (static J2000 mean elements with no secular rates); the independent implementation reproduces it to 4 decimal places and it grows linearly with distance from J2000 (+0.007 deg at 2000, -0.406 deg at 2026, -0.786 deg at 2050). Likewise the 291/3000 asteroids that appear to breach [q,ad] are purely rounding in the stored q/ad columns (e.g. 433 Eros ad_stored=1.78 vs a(1+e)=1.7830); against derived q/ad there are 0/3000 violations.  REAL DEFECT, relevant to orbitsCorrect: sampleOrbit() draws 128 points uniform in MEAN anomaly, i.e. uniform in TIME, so vertices bunch at aphelion and thin out at perihelion. Max gap between consecutive polyline vertices, as a multiple of perihelion distance q: 0.07x for e<0.2, but 1.08x median (3.98x worst) for e in [0.8,0.95) and 6.43x median (60x worst) for e in [0.95,0.999). High-eccentricity orbit lines therefore visibly cut the corner at perihelion instead of drawing the sharp turn. Affects 7,446 asteroids at e>=0.6 (17.7%), 782 at e>=0.8 (1.9%), and most of the comet overlay, roughly half of which is near-parabolic. Note the bodies themselves stay on their lines: nearest polyline vertex to the propagated position is 0.008-0.017 AU for Earth/Mars/Eros/Apophis, consistent with plain 128-point discretisation.  Following the brief, not a mistake: 13.2% of elliptic comets land >5% off q at their own tp because the stored `n` is rounded and gets multiplied by tens of thousands of days for long-period orbits (median error 2.9e-3 for period >= 20 yr vs 1.3e-4 under 20 yr). Propagating those from `tp` would fix it, but muse used ma/n for e<1 exactly as data/README.md instructs.  Cosmetic: a dead, malformed `nu` expression at src/orbit.js:63 containing `(1 + 0 ? 1 : 1)` - never used; the correct `nu2` on line 65 is what feeds the result.",
+  "cometNotes": "COMET MATH - verified per conic branch. Two of three branches are correct; the hyperbolic solver has a real, reproducible convergence bug.  PARABOLIC (1,821 comets, e stored as exactly 1.0) - CORRECT. muse implements Barker's equation with Newton on D^3/3 + D = W, W = sqrt(mu/(2q^3))*(t-tp), r = q(1+D^2), nu = 2*atan(D). Checked against the exact Cardano closed form D = cbrt(3W/2 + sqrt(9W^2/4+1)) + cbrt(3W/2 - sqrt(9W^2/4+1)) over all 1,821 comets at 7 time offsets spanning tp +/- 3000 days: max relative error 8.1e-9. r(tp)=q holds to 3.5e-16. This branch is fine, and it is the single largest comet group.  ELLIPTIC (1,762 comets) - CORRECT formulation, matching the independent reimplementation to 1.2e-14. The only degradation is the stored `n` being rounded and multiplied by tens of thousands of days on long-period orbits, so 13.2% land >5% off q at their own tp (median 2.9e-3 for period >= 20 yr vs 1.3e-4 under 20 yr). Propagating from tp would avoid it, but data/README.md tells implementers to use tp only for e >= 1, so muse followed the brief.  HYPERBOLIC (485 comets) - FORMULATION CORRECT, SOLVER DIVERGES near e=1. The equations are right: absA = q/(e-1), n_h = sqrt(mu/absA^3), Mh = n_h*(t-tp), r = absA*(e*coshH - 1), nu = 2*atan(sqrt((e+1)/(e-1))*tanh(H/2)); the conic identity r = q(1+e)/(1+e*cos nu) closes to 3.4e-8. The bug is in solveKeplerHyperbolic (src/orbit.js:32). Newton is used on f(H) = e*sinh(H) - H - Mh with f'(H) = e*cosh(H) - 1. As e -> 1 and H -> 0 that derivative goes to ZERO, and the initial guess H0 = asinh(Mh/e) lands exactly in the flat spot, so the first step divides by a near-zero derivative and launches H into the tens; the loop then crawls back by only ~1 per iteration and hits its 30-iteration cap far from the root.  Worked example, comet 1895 W1 (e=1.0001, q=0.192 au, 47,713 days past perihelion): absA=1920 au, Mh=9.76e-3, H0=9.755e-3. First Newton step jumps to H=66.11, then 65.11, 64.11, 63.11 ... and stops at H=37.11 after 30 iterations with residual 6.5e+15. Correct H is 0.3868. muse therefore places the comet at r = 1.25e+19 au instead of 145.6 au.  BLAST RADIUS: 14 of 485 hyperbolic comets (2.9% of hyperbolic, 0.3% of all 4,068 comets) are grossly misplaced at the current date - all of them in the near-parabolic band e = 1.0001 to 1.0003. It is time-dependent and gets worse as the user scrubs forward: 9 broken at jd 2451545, 14 at jd 2461259 (now), 25 at jd 2480000. Radial errors range from 5.2e+4 au up to 1.25e+19 au against true values of 52-180 au. Positions go into a Float32Array, so 1.25e+19 is finite (no NaN, nothing crashes) but the comet Points geometry's computeBoundingSphere() returns a radius of ~1.3e+19 au, i.e. the comet cloud's reported bounds exceed the inner solar system by ~18 orders of magnitude. Nothing is culled and no error is thrown, so this fails silently - which is exactly the class of defect a browser check would have surfaced and this run never did one.  The other two branches are structurally immune to this: the elliptic solver has f' = 1 - e*cosE >= 1-e > 0, and Barker has f' = D^2 + 1 >= 1. Only the hyperbolic branch has a vanishing derivative, and only near e=1.  NOT A BUG, worth knowing when judging the overlay visually: only 38% of comets (1,528/4,068) are within 30 au of the Sun at the current date. Comets genuinely are that spread out - median heliocentric distance right now is 46 au for the parabolic set, 37 au hyperbolic, 9.4 au elliptic. A correct implementation still puts most of the comet overlay far outside the planetary region.  SEPARATE RENDERING DEFECT: sampleOrbit() draws e>=1 orbits only over tp +/- min(2000, max(400, 500*sqrt(q))) days and then discards any sample beyond 60 au. Because most comets are nowhere near perihelion right now, the drawn arc sits near the Sun while the comet's dot is far away: median gap from the body to the nearest vertex of its own orbit line is 137 au for parabolic comets and 31 au for hyperbolic, with 500/500 parabolic and 429/485 hyperbolic more than 1 au off their own line. Selecting a comet therefore draws a short arc near the Sun that visibly does not pass through the selected object."
+}

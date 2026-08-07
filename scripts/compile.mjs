@@ -18,10 +18,16 @@ function isDir(p) {
 
 const MARK = RUBRIC.scale; // pass:1 good:0.75 partial:0.5 poor:0.25 fail:0
 
+// Grading is done by hand in JSON, so a typo (a quoted boolean, a misspelled
+// mark) can silently drop a result to "ungraded" or VOID it. Collect complaints
+// and print them at the end so they are not lost in the per-result output.
+const warnings = [];
+const warn = (msg) => warnings.push(msg);
+
 // Score a result's `grade` object against the rubric. Deterministic — the score
 // is never hand-typed. Returns { score, categoryScores, integrityPassed,
 // voided, status } where status is "graded" | "ungraded".
-function scoreGrade(grade, cheated) {
+function scoreGrade(grade, cheated, slug = "?") {
   const g = grade || {};
   const categoryScores = {};
   let ungraded = false;
@@ -32,18 +38,36 @@ function scoreGrade(grade, cheated) {
     for (const c of cat.criteria) {
       const v = marks[c.key];
       if (v === "na") continue; // excluded from the average
-      if (!(v in MARK)) { ungraded = true; continue; } // null/missing → ungraded
+      if (!(v in MARK)) {
+        // null/missing → genuinely ungraded, which is expected and quiet.
+        // Anything else is a typo that would silently drop the whole result to
+        // "ungraded" with no score — say so rather than swallowing it.
+        if (v !== null && v !== undefined) {
+          warn(`${slug}: grade.${cat.key}.${c.key} = ${JSON.stringify(v)} is not a valid mark `
+            + `(${Object.keys(MARK).join(" | ")} | na) — result will read as ungraded`);
+        }
+        ungraded = true;
+        continue;
+      }
       vals.push(MARK[v]);
     }
     categoryScores[cat.key] =
       vals.length === 0 ? null : Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 100);
   }
 
-  // Integrity gate.
+  // Integrity gate. These must be real booleans: the string "true" is truthy in
+  // JS but fails the strict check below, which would silently VOID the run.
   const integ = g.integrity || {};
   let integrityPassed = cheated !== true;
   for (const c of RUBRIC.integrity) {
-    if (integ[c.key] !== true) integrityPassed = false;
+    const v = integ[c.key];
+    if (typeof v === "string" && (v === "true" || v === "false")) {
+      warn(`${slug}: grade.integrity.${c.key} is the STRING ${JSON.stringify(v)}, not a boolean `
+        + `— this voids the run. Change it to ${v} (no quotes).`);
+    } else if (v !== true && v !== false && v != null) {
+      warn(`${slug}: grade.integrity.${c.key} = ${JSON.stringify(v)} is not a boolean`);
+    }
+    if (v !== true) integrityPassed = false;
   }
 
   if (ungraded) {
@@ -84,7 +108,7 @@ for (const name of readdirSync(RESULTS).sort()) {
   benches.push({
     ...meta,
     // Deterministic score computed from meta.grade against the rubric.
-    scoring: scoreGrade(meta.grade, meta.cheated),
+    scoring: scoreGrade(meta.grade, meta.cheated, meta.slug || name),
     // Derived flags the site uses without having to probe the filesystem.
     hasDist: existsSync(join(dir, "output", "dist", "index.html")),
     hasNotes: existsSync(join(dir, "notes.md")),
@@ -103,3 +127,8 @@ const out = {
 };
 writeFileSync(join(RESULTS, "all.json"), JSON.stringify(out, null, 2) + "\n");
 console.log(`Wrote results/all.json with ${benches.length} bench(es).`);
+
+if (warnings.length) {
+  console.warn(`\n${warnings.length} grading problem(s) found:`);
+  for (const w of warnings) console.warn(`  ! ${w}`);
+}
