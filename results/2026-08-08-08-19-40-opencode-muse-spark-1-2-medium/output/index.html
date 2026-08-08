@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inner Solar System — NEO Atlas</title>
+<link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="c"></canvas>
+  <header id="header">
+    <div id="title">
+      <h1>NEO ATLAS</h1>
+      <p>Inner Solar System &amp; 42k Near-Earth Objects</p>
+    </div>
+    <div id="header-stats">
+      <span id="date-display">—</span>
+      <span id="jd-display">JD —</span>
+    </div>
+  </header>
+
+  <div id="left-panel">
+    <div class="panel-section">
+      <h3>Time</h3>
+      <div class="time-row">
+        <button id="btn-play" title="Play/Pause">▶</button>
+        <button id="btn-rewind">◀◀</button>
+        <button id="btn-forward">▶▶</button>
+        <select id="speed-select">
+          <option value="0.1">0.1 d/s</option>
+          <option value="1">1 d/s</option>
+          <option value="5" selected>5 d/s</option>
+          <option value="20">20 d/s</option>
+          <option value="100">100 d/s</option>
+          <option value="500">500 d/s</option>
+        </select>
+      </div>
+      <input type="range" id="time-slider" min="-1825" max="1825" value="0" step="1">
+      <div class="row gap">
+        <input type="date" id="date-input">
+        <button id="btn-now">Now</button>
+        <button id="btn-reset">J2000</button>
+      </div>
+      <div class="small">Drag slider: ±5 years from now · Speed & scrub update positions in real time</div>
+    </div>
+
+    <div class="panel-section">
+      <h3>Search & Filter <span id="visible-count" class="badge"></span></h3>
+      <input type="text" id="search" placeholder="Search designation or name (e.g. Apophis, Eros, 433)">
+      <div class="row">
+        <select id="filter-class">
+          <option value="">All classes</option>
+          <option value="ATE">Aten (ATE)</option>
+          <option value="APO">Apollo (APO)</option>
+          <option value="AMO">Amor (AMO)</option>
+          <option value="IEO">Atira (IEO)</option>
+        </select>
+        <select id="filter-size">
+          <option value="">Any size</option>
+          <option value="140">≥140 m (city-killer)</option>
+          <option value="1000">≥1 km (global)</option>
+          <option value="50">≥50 m</option>
+        </select>
+      </div>
+      <div class="row toggles">
+        <label><input type="checkbox" id="filter-pha"> PHA only</label>
+        <label><input type="checkbox" id="filter-sentry"> Sentry risk only</label>
+        <label><input type="checkbox" id="toggle-hazard" checked> Highlight PHAs</label>
+      </div>
+      <div class="row toggles">
+        <label><input type="checkbox" id="toggle-approaches" checked> Upcoming approaches (30 d)</label>
+        <label><input type="checkbox" id="toggle-comets"> Show comets</label>
+      </div>
+      <div class="row">
+        <label>Max Earth dist <span id="dist-val">5.0 au</span></label>
+        <input type="range" id="filter-dist" min="0.1" max="5" step="0.1" value="5">
+      </div>
+      <div class="row">
+        <input type="text" id="jump-des" placeholder="Jump to designation…">
+        <button id="btn-jump">Go</button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h3>Display</h3>
+      <div class="row toggles">
+        <label><input type="checkbox" id="toggle-orbits" checked> Planet orbits</label>
+        <label><input type="checkbox" id="toggle-selected-orbit" checked> Selected orbit</label>
+        <label><input type="checkbox" id="toggle-follow"> Follow selected</label>
+        <label><input type="checkbox" id="toggle-scale" checked> Scale risk by size</label>
+      </div>
+      <div class="row toggles">
+        <label><input type="checkbox" id="toggle-grid" checked> Ecliptic grid</label>
+        <label><input type="checkbox" id="toggle-stars" checked> Stars</label>
+      </div>
+      <div class="legend">
+        <span class="dot" style="background:#ff3b30"></span> PHA
+        <span class="dot" style="background:#ffcc00"></span> Upcoming CA
+        <span class="dot" style="background:#ff6b35"></span> Sentry
+        <span class="dot" style="background:#4fc3f7"></span> Comet
+        <span class="dot" style="background:#9e9e9e"></span> Other NEO
+      </div>
+    </div>
+
+    <div class="panel-section" id="results-section">
+      <h3>Results <span id="results-count"></span></h3>
+      <div id="results-list"></div>
+    </div>
+  </div>
+
+  <div id="right-panel" class="hidden">
+    <button id="btn-close-detail" class="close">×</button>
+    <div id="detail"></div>
+  </div>
+
+  <div id="bottom-bar">
+    <div id="scale-note">1 au ≈ 8 light-minutes · Ecliptic J2000 · Positions from osculating elements · Not to scale for sizes</div>
+    <div class="row">
+      <span id="perf">—</span>
+      <button id="btn-share">Copy link</button>
+      <button id="btn-help">?</button>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <div id="help-overlay" class="hidden">
+    <div class="help-card">
+      <h2>How to explore</h2>
+      <ul>
+        <li><b>Drag</b> to orbit, <b>scroll</b> to zoom, <b>right-drag</b> to pan.</li>
+        <li><b>Click</b> any asteroid/comet/planet to inspect; click Follow to track it through time.</li>
+        <li><b>Time</b>: play, scrub, or pick a date. Bodies move on their true elliptical orbits (Kepler).</li>
+        <li><b>Filters</b> dim everything else — PHAs in red, upcoming close approaches in gold, Sentry risks in orange.</li>
+        <li>Data from JPL SBDB / CNEOS, snapshot via <code>data/</code>. Sun radius 696 000 km.</li>
+      </ul>
+      <button id="btn-help-close">Close</button>
+    </div>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <div id="loading-text">Loading 42k orbits…</div>
+    <div id="loading-sub">Computing Kepler • building scene</div>
+  </div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
