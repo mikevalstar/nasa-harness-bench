@@ -1,0 +1,82 @@
+{
+  "slug": "2026-08-12-19-08-48-cursor-grok-4-6-medium",
+  "harness": "cursor",
+  "harnessVersion": "2026.08.11",
+  "model": "grok-4-6",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-08-12T23:08:49Z",
+  "collectedAt": "2026-08-12T23:15:48Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-08-12-19-08-48-cursor-grok-4-6-medium",
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 84873,
+    "output": 32327,
+    "cacheWrite": 0,
+    "cacheRead": 456704,
+    "total": 573904
+  },
+  "estimatedCostUsd": 0.59,
+  "timeTakenSeconds": 338,
+  "tags": [
+    "shader-error",
+    "asteroids-invisible",
+    "no-self-verification",
+    "comet-math"
+  ],
+  "summary": "Fast, polished, feature-complete UI (search, filters, rich detail panel, Sentry data, follow camera, deep links) on top of correct asteroid/planet math — but the asteroid point ShaderMaterial declares attribute vec3 color while also setting vertexColors:true, so three.js injects a second declaration, the shader fails to compile on every load, and the 42k-object cloud (and the comet overlay, which clones the same material) is effectively invisible: black-on-black in a real browser, absent in headless Chrome. Never opened a browser to notice.",
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "fail/fail — no attempt, not a channel technicality. The full 44-tool-call log contains no browser of any kind: no Playwright/Puppeteer, no headless Chrome, no vite preview or any server, no curl, no screenshot, no DOM dump, no console capture, and no numeric self-check of its own output. Post-build verification was exactly three calls: Read dist/index.html, Glob dist/**/*, and `ls -lh dist/data` — file-existence checks that never execute the app. It did fix a real build failure (top-level await vs the es2020 target) and rebuilt to exit 0, but that is a compile check, not a review of the running page. The run finished in 338 s, so this was not a budget exhaustion. consoleReview = fail, displayReview = fail.",
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": {
+      "builds": "pass",
+      "loads": "pass",
+      "noConsoleErrors": "fail"
+    },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "poor",
+      "computedPositions": "pass",
+      "orbitsCorrect": "good",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "good",
+      "legible": "partial",
+      "noUiIssues": "good"
+    },
+    "selfVerification": {
+      "consoleReview": "fail",
+      "displayReview": "fail"
+    },
+    "features": {
+      "filterSearch": "good",
+      "investigate": "pass",
+      "highlight": "poor",
+      "scaleRisk": "partial",
+      "comets": "fail",
+      "impactRisk": "good",
+      "focusFollow": "pass",
+      "deepLinks": "pass"
+    },
+    "integrity": {
+      "dataUntouched": true,
+      "noNetwork": true,
+      "inBounds": true
+    }
+  },
+  "contextWindowFinal": {
+    "totalUsedTokens": 58938,
+    "maxTokens": 256000,
+    "note": "Final context-window size at end of run — NOT cumulative usage."
+  },
+  "costNote": "Cursor CLI persists no usage locally (verified exhaustively: all 206 blobs in ~/.cursor/chats/<ws>/<agent>/store.db, the agent-transcripts JSONL, ~/.cursor/ai-tracking/ai-code-tracking.db, and cli-config.json). Figures below are UI-sourced, read off the Cursor usage dashboard by hand. Priced at xAI Grok 4.6 public list rates: $2.00/MTok input, $6.00/MTok output, $0.50/MTok cached input (cache write not billed separately / reported as 0). Breakdown: input 84,873 = $0.170 + cache read 456,704 = $0.228 + output 32,327 = $0.194 -> $0.59. Cache read is the largest single bucket (80% of tokens, 39% of cost); output dominates per-token. Grok 4.6 has a long-context band at >=200K tokens that doubles rates to $4/$12; it does NOT apply here - peak context was 58,938 tokens (see contextWindowFinal). Rate table validated by recomputing the 2026-07-08 cursor grok-4.5 run from its recorded buckets: $1.2708 vs its recorded $1.27. NOTE a schema difference: that older row's tokenUsage.input is INCLUSIVE of cached tokens (total = input + output), whereas this row uses four disjoint buckets summing to total, per AUTO_EVAL section 2. Do not compare the two rows field-by-field.",
+  "note": "Asteroid/comet point shader fails to compile (attribute vec3 color redefinition) — the NEO cloud is black-on-black / not drawn. Console error on every load.",
+  "appReviewNotes": "Graded in the built app by Claude on 2026-09-01: served the committed dist, drove it over CDP with console capture (Runtime.enable before navigate), 12 screenshots. WORKS: loads (loader clears, 41,968 of 42,075 shown); planets + orbits + labels for all 8 planets; play advances JD (7 d/s); mouse drag and wheel change the camera (verified via the cx/cy/cz hash); search apophis -> one result -> detail panel with elements, MOID, H/diameter, full close-approach list; Follow button + banner + camera moves; PHA filter 2,541 and Sentry filter 2,156 match the data; MOID slider filters; cold-load deep link restores jd, selection, pha, comets, follow and camera. BROKEN: THREE.WebGLProgram shader error on every load (VALIDATE_STATUS false, ERROR 0:73 color redefinition) from the asteroid ShaderMaterial (viz.js:203 attribute vec3 color + vertexColors:true at :226); the comet Points clone that material (viz.js:253), so neither layer renders as designed. Operator observation in a real browser: asteroids are black on the black background. Picking still works against the invisible points (a drag selected 2016 TY10). Comet overlay toggle therefore shows nothing, on top of the branch defects in mathNotes. Minor: Earth label can sit under the right panel; a white rectangular artifact appeared at the panel edge in one headless frame (unverified on a GPU)."
+}

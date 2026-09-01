@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEO Atlas — Inner Solar System</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="c"></canvas>
+      <div id="labels"></div>
+
+      <header class="topbar">
+        <div class="brand">
+          <span class="mark"></span>
+          <div>
+            <h1>NEO Atlas</h1>
+            <p>Inner solar system · near-Earth objects</p>
+          </div>
+        </div>
+        <div class="clock">
+          <label class="sr">Date</label>
+          <input type="datetime-local" id="date-input" step="1" />
+          <span id="jd-readout" class="mono"></span>
+        </div>
+        <div class="transport">
+          <button id="btn-rew" title="Rewind">«</button>
+          <button id="btn-play" title="Play / pause" class="primary">Play</button>
+          <button id="btn-ff" title="Faster">»</button>
+          <label class="speed">
+            <span>Rate</span>
+            <select id="speed">
+              <option value="0.04167">1 h / s</option>
+              <option value="1">1 d / s</option>
+              <option value="7" selected>7 d / s</option>
+              <option value="30">30 d / s</option>
+              <option value="365.25">1 yr / s</option>
+              <option value="3652.5">10 yr / s</option>
+            </select>
+          </label>
+          <button id="btn-now">Now</button>
+        </div>
+      </header>
+
+      <aside class="panel left">
+        <section>
+          <h2>Search</h2>
+          <input id="search" type="search" placeholder="Name or designation…" autocomplete="off" />
+          <ul id="search-results" class="results"></ul>
+        </section>
+        <section>
+          <h2>Show</h2>
+          <label class="check"><input type="checkbox" id="show-asteroids" checked /> Asteroids</label>
+          <label class="check"><input type="checkbox" id="show-comets" /> Comets</label>
+          <label class="check"><input type="checkbox" id="show-orbits" checked /> Planet orbits</label>
+          <label class="check"><input type="checkbox" id="show-labels" checked /> Labels</label>
+        </section>
+        <section>
+          <h2>Filter asteroids</h2>
+          <label class="check"><input type="checkbox" id="only-pha" /> Potentially hazardous only</label>
+          <label class="check"><input type="checkbox" id="only-sentry" /> Sentry impact-risk only</label>
+          <label class="check"><input type="checkbox" id="only-sized" /> Known diameter only</label>
+          <div class="chips" id="class-chips"></div>
+          <label class="range">
+            <span>Max Earth MOID <em id="moid-label">0.50 au</em></span>
+            <input type="range" id="moid" min="0.01" max="0.5" step="0.01" value="0.5" />
+          </label>
+        </section>
+        <section>
+          <h2>Legend</h2>
+          <ul class="legend">
+            <li><i class="swatch neo"></i> Near-Earth asteroid</li>
+            <li><i class="swatch pha"></i> Potentially hazardous</li>
+            <li><i class="swatch sentry"></i> Sentry risk object</li>
+            <li><i class="swatch comet"></i> Comet</li>
+          </ul>
+          <p class="hint">Point size encodes estimated diameter. Planet sizes are exaggerated; distances are to scale (1 unit = 1 au).</p>
+        </section>
+      </aside>
+
+      <aside class="panel right" id="detail">
+        <p class="empty">Select an object to inspect its orbit, physical properties, close approaches, and impact-risk data.</p>
+      </aside>
+
+      <div class="hud">
+        <div id="stats" class="mono"></div>
+        <div id="follow-banner" hidden></div>
+      </div>
+
+      <footer class="timeline">
+        <input type="range" id="scrub" min="0" max="1000" value="500" />
+        <div class="tl-labels">
+          <span id="tl-start"></span>
+          <span>scrub ±50 years around the current date</span>
+          <span id="tl-end"></span>
+        </div>
+      </footer>
+
+      <div id="loader">
+        <div class="loader-card">
+          <div class="spinner"></div>
+          <p id="loader-text">Loading orbital catalog…</p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

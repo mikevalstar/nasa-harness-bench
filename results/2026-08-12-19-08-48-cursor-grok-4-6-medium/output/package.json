@@ -1,0 +1,17 @@
+{
+  "name": "neo-atlas",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pack": "node scripts/pack-data.mjs",
+    "dev": "node scripts/pack-data.mjs && vite",
+    "build": "node scripts/pack-data.mjs && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.167.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
+  }
+}
