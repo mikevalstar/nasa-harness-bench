@@ -1,0 +1,98 @@
+{
+  "slug": "2026-09-01-18-46-00-claude-code-fable-5-1-medium",
+  "harness": "claude-code",
+  "harnessVersion": "2.1.258",
+  "model": "fable-5-1",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-09-01T22:46:01Z",
+  "collectedAt": "2026-09-01T23:15:33Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-09-01-18-46-00-claude-code-fable-5-1-medium",
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 5883,
+    "output": 223429,
+    "cacheCreation": 264369,
+    "cacheRead": 8286808,
+    "total": 8780489
+  },
+  "estimatedCostUsd": 18.59,
+  "timeTakenSeconds": 1186,
+  "tags": [],
+  "summary": "",
+  "note": "Not a pure 1-shot: one API 'Connection lost mid-response' at 22:55 UTC, after which the operator typed 'continue' (the only extra user input). The model's own turn count and tokens include the resumed work.",
+  "costNote": "Priced at Claude Fable 5.1 list rates: $10/$50 per MTok in/out, cache write at the 1-hour TTL 2x ($20), cache read $0.25/MTok (Fable 5.1's reduced cache-read rate, 0.025x). The 1h TTL is not assumed here — the session log records all 264,369 cache-creation tokens under ephemeral_1h_input_tokens and zero under 5m. Breakdown: input $0.06 + output $11.17 + cache write $5.29 + cache read $2.07 = $18.59. Output tokens (223K) dominate. For comparison, at the older 0.1x cache-read rate ($1.00/MTok) the same run would be $24.81. Model stayed on claude-fable-5-1 for all 78 real assistant turns; the one '<synthetic>' entry is a zero-token harness stop marker from the connection drop, not a fallback model.",
+  "runStats": {
+    "_note": "Objective counts from the session log, the collected source, and the clean rebuild.",
+    "assistantMessages": 78,
+    "textBlocks": 12,
+    "thinkingBlocks": 31,
+    "toolCalls": {
+      "Bash": 31,
+      "Read": 5,
+      "total": 36
+    },
+    "fileToolWrites": 0,
+    "fileToolEdits": 0,
+    "userInterventions": 1,
+    "webSearches": 0,
+    "screenshotsTaken": 6,
+    "screenshotsReadBack": 5,
+    "contextWindowFinalTokens": 155109,
+    "sourceFiles": 15,
+    "sourceLines": 2435,
+    "runtimeDependencies": 1,
+    "bundleKb": 551,
+    "bundleGzipKb": 143,
+    "distMb": 14,
+    "cleanBuildMatchesCommitted": true
+  },
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "Genuine browser review through a proper channel. It built dist/, wrote a static server to the session scratchpad that serves the site only under /sub/app/ (to mirror the iframe sub-path deployment), took one screenshot with plain headless Chrome, then — finding no Playwright — wrote its own Chrome DevTools Protocol driver (cdp.mjs): launches Chrome with --remote-debugging-port, sends Runtime.enable and Page.enable BEFORE navigating, subscribes to Runtime.consoleAPICalled and Runtime.exceptionThrown, evaluates a script in the page, then captures a screenshot and prints the collected console output. That is the correct channel for page-level errors (unlike grepping Chrome's stderr). Five CDP runs reported '(no console output)'. DISPLAY: six screenshots taken, five read back — default view, Apophis deep link with focus, Earth hover/click/follow with real pointer events, hazardous + orbit-class colouring with filtered orbits, and a final check — and the findings changed the code: after the reads it fixed the H filter hiding the one asteroid with unknown H (42,074 of 42,075 shown), moved Reset View into the timebar, and hid hover visuals when the hovered body is the selected one. DOM assertions on live values (detail title, visible count, URL hash, follow state). Numeric self-checks: Earth ecliptic longitude at J2000 and today, Mars at J2000, Apophis 2029 approach distance and 7,560 close approaches within 400 d of epoch vs the CAD table (median 0.0003 au), plus Halley/Encke perihelion distances and a NaN sweep over all comets. Proposed: consoleReview = pass, displayReview = pass. Caveat for the human: the numeric checks never exercised a hyperbolic comet against a known position, which is where the real defect is (see mathNotes).",
+  "mathNotes": "Independent replay over the whole catalogue (42,075 asteroids, 4,068 comets, 8 planets) at J2000, 2026-09-01 and ±50 yr, against a bisection-validated reference, cross-checked with JPL Horizons. ASTEROIDS: CPU path exact (max 5.7e-13 au); float32 shader emulation (8 fixed Newton iterations from E=π for e≥0.8) median 3e-7 au, p99.9 1.3e-5, worst 7.6e-4 au (2017 UR52, e=0.996, at 37 au) — zero objects above 1e-3 au, no NaN. PLANETS vs Horizons today: 3e-4 to 6e-3 relative, the expected two-body drift from J2000 mean elements; Apophis 5e-4 au, Eros 2.7e-4 au, Phaethon 7e-4 au (epochs 2 months old), Bennu 0.04 au (epoch 15.7 yr old). COMETS — one real, visible defect and two minor ones: (1) The hyperbolic branch mirrors the x coordinate: hyperbolicXY returns a·(e − cosh H) with a negative, putting perihelion at −q instead of +q, so every comet with e − 1 ≥ 1e-4 (452 objects) is drawn reflected through the orbit's Q axis, off its own drawn orbit line (the line sampler is correct). Horizons confirms: C/2024 J3, C/2025 R3 and C/2026 H2 are 7.6, 3.0 and 8.7 au from where the app puts them, while the corrected reference matches Horizons to <1e-3 au. Blast radius today: 25 hyperbolic comets inside 6 au (all wrong, 0.1–10 au off), 200 inside 30 au. (2) The hyperbolic Newton solve is capped at 40 iterations from H₀ = asinh(M/e); for e − 1 < 1e-3 far from perihelion it does not converge (C/1847 T1 needs 57), leaving 5 comets >1 au off — all beyond 100 au, none in view. (3) Barker's equation is applied to 1e-4 ≤ |e−1| band (79 comets, 1,821 are exactly e=1 and exact); today only 2 of the 17 inside 30 au are off by >0.01 au (worst 0.09 au at 8 au). Elliptic comets (1,716, e up to 0.9999) converge fine with the 30-iteration cap: max 1.3e-4 au. Proposed marks: computedPositions = pass (everything is computed from elements; asteroids and planets essentially exact); orbitsCorrect = partial (asteroids, planets, elliptic and parabolic comets correct; all hyperbolic comets mirrored, dozens of them in the default view). Also seen in the running app: serving the committed dist and deep-linking to C/2024 J3 or C/2026 H2 on 2026-09-01 shows the selection marker far off its own drawn orbit arc. Separately, the H slider is clamped to 9–34 while 2025 UC11 has H = 34.06, so a fresh load shows 42,074 of 42,075 asteroids.",
+  "integrityNotes": "dataUntouched: bench/data clean in git; prepare-data.mjs only reads data/ and writes public/data. noNetwork: runtime fetches are relative ./data/ paths only; the only absolute URL in the bundle is three.js's XHTML namespace string. inBounds: all writes inside the bench dir or the session scratchpad (serve.mjs, cdp.mjs, check scripts, screenshots). It listed ~/.npm/_npx, ~/Library/Caches/ms-playwright, /opt/homebrew and /Applications read-only to find Playwright/Chrome, and ran pnpm install (tooling). No writes to the user's home, other projects, or this repo.",
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": {
+      "builds": "pass",
+      "loads": "pass",
+      "noConsoleErrors": "pass"
+    },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "pass",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "pass",
+      "noUiIssues": "pass"
+    },
+    "selfVerification": {
+      "consoleReview": "pass",
+      "displayReview": "pass"
+    },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "pass",
+      "comets": "good",
+      "impactRisk": "pass",
+      "focusFollow": "pass",
+      "deepLinks": "pass"
+    },
+    "integrity": {
+      "dataUntouched": true,
+      "noNetwork": true,
+      "inBounds": true
+    }
+  }
+}
