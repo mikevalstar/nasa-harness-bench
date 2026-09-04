@@ -118,6 +118,44 @@ function patchFiles(body) {
   return { adds, updates };
 }
 
+// Codex >=0.15 wraps shell work in a single `exec` custom tool whose input is a
+// JS snippet calling `tools.exec_command({cmd})` / `tools.apply_patch(body)`.
+// Recover the commands and patched files from that snippet.
+function readJsString(src, i) {
+  const quote = src[i];
+  if (quote !== '"' && quote !== "'" && quote !== "`") return null;
+  let out = "";
+  for (let j = i + 1; j < src.length; j++) {
+    const c = src[j];
+    if (c === "\\") {
+      const n = src[++j];
+      out += n === "n" ? "\n" : n === "t" ? "\t" : n === "r" ? "\r" : n;
+      continue;
+    }
+    if (c === quote) return { value: out, end: j };
+    out += c;
+  }
+  return null;
+}
+
+function parseExecSnippet(input) {
+  const cmds = [], patches = [];
+  const src = String(input);
+  for (const m of src.matchAll(/tools\.exec_command\(\s*\{/g)) {
+    const k = src.indexOf("cmd:", m.index);
+    if (k < 0) continue;
+    let q = k + 4;
+    while (q < src.length && /\s/.test(src[q])) q++;
+    const str = readJsString(src, q);
+    if (str) cmds.push(str.value);
+  }
+  for (const m of src.matchAll(/tools\.apply_patch\(\s*/g)) {
+    const str = readJsString(src, m.index + m[0].length);
+    if (str) patches.push(str.value);
+  }
+  return { cmds, patches };
+}
+
 const md = [];   // transcript.md body
 const log = [];  // runlog.txt body
 
@@ -182,6 +220,14 @@ for (const r of records) {
       const { adds, updates } = patchFiles(p.input);
       adds.forEach((f) => filesWritten.add(f));
       updates.forEach((f) => filesEdited.add(f));
+    } else if (p.name === "exec") {
+      const { cmds, patches } = parseExecSnippet(p.input);
+      cmds.forEach((c) => shellCommands.push(c));
+      for (const body of patches) {
+        const { adds, updates } = patchFiles(body);
+        adds.forEach((f) => filesWritten.add(f));
+        updates.forEach((f) => filesEdited.add(f));
+      }
     }
     const res = outputs[p.call_id];
     md.push(`\n### 🔧 Tool: \`${p.name}\`\n\n\`\`\`\n${trunc(p.input)}\n\`\`\``);

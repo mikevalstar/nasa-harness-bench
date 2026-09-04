@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import {prepare,position,K} from './orbits.js';
+const base={i:0,om:0,w:0,epoch:2451545,ma:0};
+test('circular orbit advances from its own epoch',()=>{const o=prepare({...base,a:1,e:0,n:1});assert.ok(Math.abs(position(o,o.epoch+90)[1]-1)<1e-10);assert.ok(Math.abs(position(o,o.epoch+360)[0]-1)<1e-10)});
+test('elliptical perihelion and aphelion',()=>{const o=prepare({...base,a:2,e:.5,n:1});assert.ok(Math.abs(position(o,o.epoch)[0]-1)<1e-10);assert.ok(Math.abs(position(o,o.epoch+180)[0]+3)<1e-10)});
+test('open orbits pass perihelion and are symmetric in time',()=>{for(const e of [1,1.00001,1.2,3]){const o=prepare({...base,e,q:.7,tp:2451545});assert.ok(Math.abs(position(o,o.tp)[0]-.7)<1e-7);const a=position(o,o.tp-100),b=position(o,o.tp+100);assert.ok(Math.abs(a[0]-b[0])<1e-8);assert.ok(Math.abs(a[1]+b[1])<1e-8)}});
+test('all dataset orbits produce finite positions at multiple dates',async()=>{for(const file of ['planets','asteroids','comets']){const data=JSON.parse(await readFile(new URL('../data/'+file+'.json',import.meta.url)));for(const o of data){prepare(o);for(const jd of [2451545,2461287.5,2469807.5])assert.ok(position(o,jd).every(Number.isFinite),`${file}: ${o.full_name||o.name}`)}}});

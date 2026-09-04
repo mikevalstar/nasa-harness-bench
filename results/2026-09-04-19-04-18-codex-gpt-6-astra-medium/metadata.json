@@ -1,0 +1,72 @@
+{
+  "slug": "2026-09-04-19-04-18-codex-gpt-6-astra-medium",
+  "harness": "codex",
+  "harnessVersion": "0.153.3",
+  "model": "gpt-6-astra",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-09-04T23:04:19Z",
+  "collectedAt": "2026-09-04T23:14:02Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-09-04-19-04-18-codex-gpt-6-astra-medium",
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": null,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 437830,
+    "output": 14228,
+    "cached": 400640,
+    "reasoning": 688,
+    "total": 452058
+  },
+  "estimatedCostUsd": 1.48,
+  "timeTakenSeconds": 510,
+  "tags": [],
+  "summary": "",
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded \u00b7 partial = tried but failed \u00b7 fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "partial/partial proposed - it tried to look at the running app and was blocked by the environment, which is different from not trying. Sequence: after `pnpm install && pnpm build && pnpm test && node --check src/app.js` it queried its own tool list for anything browser-shaped, started `pnpm dev` (which first failed with EPERM binding 0.0.0.0:5173, so it re-ran the command with escalated sandbox permissions and the justification 'Allow the local development server so I can verify the website in a browser?'), got the server up on :5173, then called `cua.getBrowser({url:'http://localhost:5173'})` and received 'No browser is available'. It gave up on the browser at that point and said so honestly in its final message: 'Browser visual verification was unavailable.' No screenshot, no DOM dump from a real page, no console capture. What it did instead is unusually substantive: it wrote src/app.test.mjs, which imports the shipped src/app.js under a stubbed document/WebGL context and a fetch shim over the real data files, then asserts on live values - catalogue count renders as '42,075', the inspector shows Eros, searching 'Apophis' filters the list, and a selected comet is labelled COMET. That last assertion FAILED (Halley came back badged 'NEAR-EARTH ASTEROID' because comets also appear in asteroids.json), it diagnosed the duplicate-designation bug, fixed `filter()` to de-duplicate by pdes, and re-ran to green. It also has src/orbits.test.mjs covering circular advance from epoch, perihelion/aphelion, open-orbit symmetry about perihelion, and finite positions for every supplied orbit at multiple dates, and it verified byte-for-byte that dist/data matches data/. That is a real self-check loop that found and fixed a real user-visible defect - it just never ran in a browser, so nothing here establishes that the page paints or that the console is clean. consoleReview and displayReview both look like 'partial' to me, but the call is yours: a strict reading of 'reviewed the console' is fail, since no console was ever read.",
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+   "runs": {
+      "builds": "pass",
+      "loads": "pass",
+      "noConsoleErrors": "pass"
+    },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "pass",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "pass",
+      "noUiIssues": "pass"
+    },
+    "selfVerification": {
+      "consoleReview": "pass",
+      "displayReview": "pass"
+    },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "pass",
+      "comets": "good",
+      "impactRisk": "pass",
+      "focusFollow": "pass",
+      "deepLinks": "pass"
+    },
+    "integrity": {
+      "dataUntouched": true,
+      "noNetwork": true,
+      "inBounds": true
+    }
+  },
+  "_tokenUsageNote": "From the Codex rollout's cumulative total_token_usage. Following the other Codex runs' convention, 'input' is all-in (fresh + cached reads) and 'cached' is the cache-read portion, so fresh input is 37,190. 'reasoning' (688) is a subset of output. Largest single request was 47,158 input tokens, far under the 272k long-context threshold, so no long-context multiplier applies.",
+  "costNote": "GPT-6 Astra list pricing (OpenAI, Sept 2026 launch): $10.00/M input, $1.00/M cached input, $50.00/M output (cache writes are listed at $12.50/M but Codex reports no cache-write bucket). 37,190 fresh input @ $10/M = $0.372 + 400,640 cache reads @ $1/M = $0.401 + 14,228 output @ $50/M = $0.711 -> $1.48. Output is 3% of tokens and 48% of the cost. Upper bound if every fresh input token were billed at the cache-write rate instead: $1.58. Standard tier assumed (Batch/Flex would halve it, Fast mode double it).",
+  "_timeTakenNote": "Codex-reported task duration (510 s); the rollout's first-to-last record span is 549 s. Time to first token 3.1 s."
+}

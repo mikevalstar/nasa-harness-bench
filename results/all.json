@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-01T23:39:30.992Z",
-  "count": 24,
+  "generatedAt": "2026-09-04T23:36:12.611Z",
+  "count": 26,
   "rubric": {
     "scale": {
       "pass": 1,
@@ -154,6 +154,186 @@
     ]
   },
   "benches": [
+    {
+      "slug": "2026-09-04-19-04-18-codex-gpt-6-astra-medium",
+      "harness": "codex",
+      "harnessVersion": "0.153.3",
+      "model": "gpt-6-astra",
+      "effort": "medium",
+      "interface": "cli",
+      "createdAt": "2026-09-04T23:04:19Z",
+      "collectedAt": "2026-09-04T23:14:02Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-09-04-19-04-18-codex-gpt-6-astra-medium",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": null,
+      "cheated": false,
+      "buildSucceeded": true,
+      "tokenUsage": {
+        "input": 437830,
+        "output": 14228,
+        "cached": 400640,
+        "reasoning": 688,
+        "total": 452058
+      },
+      "estimatedCostUsd": 1.48,
+      "timeTakenSeconds": 510,
+      "tags": [],
+      "summary": "",
+      "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+      "selfVerificationNotes": "partial/partial proposed - it tried to look at the running app and was blocked by the environment, which is different from not trying. Sequence: after `pnpm install && pnpm build && pnpm test && node --check src/app.js` it queried its own tool list for anything browser-shaped, started `pnpm dev` (which first failed with EPERM binding 0.0.0.0:5173, so it re-ran the command with escalated sandbox permissions and the justification 'Allow the local development server so I can verify the website in a browser?'), got the server up on :5173, then called `cua.getBrowser({url:'http://localhost:5173'})` and received 'No browser is available'. It gave up on the browser at that point and said so honestly in its final message: 'Browser visual verification was unavailable.' No screenshot, no DOM dump from a real page, no console capture. What it did instead is unusually substantive: it wrote src/app.test.mjs, which imports the shipped src/app.js under a stubbed document/WebGL context and a fetch shim over the real data files, then asserts on live values - catalogue count renders as '42,075', the inspector shows Eros, searching 'Apophis' filters the list, and a selected comet is labelled COMET. That last assertion FAILED (Halley came back badged 'NEAR-EARTH ASTEROID' because comets also appear in asteroids.json), it diagnosed the duplicate-designation bug, fixed `filter()` to de-duplicate by pdes, and re-ran to green. It also has src/orbits.test.mjs covering circular advance from epoch, perihelion/aphelion, open-orbit symmetry about perihelion, and finite positions for every supplied orbit at multiple dates, and it verified byte-for-byte that dist/data matches data/. That is a real self-check loop that found and fixed a real user-visible defect - it just never ran in a browser, so nothing here establishes that the page paints or that the console is clean. consoleReview and displayReview both look like 'partial' to me, but the call is yours: a strict reading of 'reviewed the console' is fail, since no console was ever read.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": null,
+          "noConsoleErrors": null
+        },
+        "correctness": {
+          "solarSystem": null,
+          "planets": null,
+          "asteroids": null,
+          "computedPositions": null,
+          "orbitsCorrect": null,
+          "timeAnimation": null
+        },
+        "usability": {
+          "camera": null,
+          "scale": null,
+          "legible": null,
+          "noUiIssues": null
+        },
+        "selfVerification": {
+          "consoleReview": null,
+          "displayReview": null
+        },
+        "features": {
+          "filterSearch": null,
+          "investigate": null,
+          "highlight": null,
+          "scaleRisk": null,
+          "comets": null,
+          "impactRisk": null,
+          "focusFollow": null,
+          "deepLinks": null
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "_tokenUsageNote": "From the Codex rollout's cumulative total_token_usage. Following the other Codex runs' convention, 'input' is all-in (fresh + cached reads) and 'cached' is the cache-read portion, so fresh input is 37,190. 'reasoning' (688) is a subset of output. Largest single request was 47,158 input tokens, far under the 272k long-context threshold, so no long-context multiplier applies.",
+      "costNote": "GPT-6 Astra list pricing (OpenAI, Sept 2026 launch): $10.00/M input, $1.00/M cached input, $50.00/M output (cache writes are listed at $12.50/M but Codex reports no cache-write bucket). 37,190 fresh input @ $10/M = $0.372 + 400,640 cache reads @ $1/M = $0.401 + 14,228 output @ $50/M = $0.711 -> $1.48. Output is 3% of tokens and 48% of the cost. Upper bound if every fresh input token were billed at the cache-write rate instead: $1.58. Standard tier assumed (Batch/Flex would halve it, Fast mode double it).",
+      "_timeTakenNote": "Codex-reported task duration (510 s); the rollout's first-to-last record span is 549 s. Time to first token 3.1 s.",
+      "scoring": {
+        "status": "ungraded",
+        "score": null,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": null,
+          "usability": null,
+          "selfVerification": null,
+          "features": null
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
+    {
+      "slug": "2026-09-04-18-47-47-cursor-gemini-3-8-flash-medium",
+      "harness": "cursor",
+      "harnessVersion": "3.19.7",
+      "model": "gemini-3-8-flash",
+      "effort": "medium",
+      "interface": "agent-window",
+      "createdAt": "2026-09-04T22:47:49Z",
+      "collectedAt": "2026-09-04T22:57:32Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-09-04-18-47-47-cursor-gemini-3-8-flash-medium",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": null,
+      "cheated": false,
+      "buildSucceeded": true,
+      "tokenUsage": {
+        "input": 515210,
+        "output": 80872,
+        "cacheWrite": 0,
+        "cacheRead": 4481447,
+        "total": 5077529
+      },
+      "estimatedCostUsd": 1.03,
+      "timeTakenSeconds": 539,
+      "tags": [],
+      "summary": "",
+      "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+      "selfVerificationNotes": "fail/fail - no browser of any kind. All 27 shell commands are `ls`, `node -e` data/math scratch scripts, `pnpm init/add/build`, `node scripts/preprocess.mjs` and `git status`. No Playwright/Puppeteer, no headless Chrome, no vite preview, no screenshot, no DOM dump, no console capture. The closest thing to a runtime check is one `node -e` script that spins up a bare http.createServer over `dist/` on a random port and `fetch`es index.html, the JS and CSS assets and all five data files under a `/subpath/` prefix, asserting HTTP 200 on each ('ALL SUBPATH TESTS PASSED!'). That establishes relative asset paths resolve when served from a subpath - a real check, and more than most runs do - but it never executes the bundle, so it says nothing about whether the page renders or logs errors. It did run several genuine numeric self-checks against its own math before writing it (Earth-Sun distance at J2000 vs the expected 0.983-1.017 au; a computed asteroid-Earth distance vs a close-approaches.json nominal `dist`; hyperbolic/parabolic comet spot checks; Sentry and close-approach key join coverage; JSON parse timings) - but those all ran against Node scratch scripts, not the shipped code path, and none of them exercised the 3-iteration solver it actually shipped. consoleReview = fail, displayReview = fail. Not a budget problem: the run finished in 539 s.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": null,
+          "noConsoleErrors": null
+        },
+        "correctness": {
+          "solarSystem": null,
+          "planets": null,
+          "asteroids": null,
+          "computedPositions": null,
+          "orbitsCorrect": null,
+          "timeAnimation": null
+        },
+        "usability": {
+          "camera": null,
+          "scale": null,
+          "legible": null,
+          "noUiIssues": null
+        },
+        "selfVerification": {
+          "consoleReview": "fail",
+          "displayReview": "fail"
+        },
+        "features": {
+          "filterSearch": null,
+          "investigate": null,
+          "highlight": null,
+          "scaleRisk": null,
+          "comets": null,
+          "impactRisk": null,
+          "focusFollow": null,
+          "deepLinks": null
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "_tokenUsageNote": "From the Cursor dashboard for this run (Cursor stores no token counts in its local DB). Input is fresh (non-cached) input only; 515,210 + 4,481,447 + 80,872 = 5,077,529, matching the dashboard total. Cache write is reported as 0, as on every other Cursor run.",
+      "costNote": "Gemini 3.8 Flash list pricing (promotional rates in effect through 2026-12-31): $0.75/M input, $3.75/M output, $0.075/M cached input; no separate cache-write charge (implicit caching). 515,210 fresh input @ $0.75/M = $0.386 + 4,481,447 cache reads @ $0.075/M = $0.336 + 80,872 output @ $3.75/M = $0.303 -> $1.03. Cache reads are 88% of all tokens but only 33% of the cost. Token counts are UI-sourced (Cursor dashboard), not from a local log. Note list price doubles on 2027-01-01 ($1.50/$7.50/$0.15), which would make the same run ~$2.05.",
+      "_timeTakenNote": "Cursor composer span from extract-session-cursor.mjs: 2026-09-04T22:48:20Z -> 22:57:19Z.",
+      "contextWindowFinal": {
+        "totalUsedTokens": 119514,
+        "maxTokens": 200000
+      },
+      "scoring": {
+        "status": "ungraded",
+        "score": null,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": null,
+          "usability": null,
+          "selfVerification": 0,
+          "features": null
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
     {
       "slug": "2026-09-01-18-46-00-claude-code-fable-5-1-medium",
       "harness": "claude-code",

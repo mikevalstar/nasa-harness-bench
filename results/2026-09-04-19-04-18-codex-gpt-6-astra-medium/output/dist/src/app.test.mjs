@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+
+test('application loads the full local catalogue and responds to controls',async()=>{
+ const nodes=new Map();
+ const gl=new Proxy({getShaderParameter:()=>true,getAttribLocation:()=>1,getUniformLocation:()=>({})},{get:(target,key)=>target[key]||(()=>({}))});
+ const node=id=>{if(!nodes.has(id))nodes.set(id,{id,value:'',checked:['asteroids','risks','orbits'].includes(id),style:{},classList:{toggle(){}},dataset:{},textContent:'',innerHTML:'',clientWidth:900,clientHeight:650,addEventListener(event,fn){this['on'+event]=fn},getContext:()=>gl});return nodes.get(id)};
+ globalThis.document={getElementById:node,querySelectorAll:()=>[]};
+ globalThis.location={hash:'',href:'http://localhost/observatory/'};
+ globalThis.devicePixelRatio=1;
+ let frame,resolveReady;const ready=new Promise(resolve=>resolveReady=resolve);
+ globalThis.requestAnimationFrame=fn=>{frame=fn;resolveReady()};
+ globalThis.fetch=async url=>({ok:true,json:async()=>JSON.parse(await readFile(url))});
+ node('size').value='0';node('speed').value='10';
+ await import('./app.js');await ready;
+ assert.equal(node('total').textContent,'42,075');
+ assert.match(node('details').innerHTML,/Eros/);
+ frame(100);
+ node('search').value='Apophis';node('search').oninput();
+ assert.match(node('objects').innerHTML,/Apophis/);
+ node('objects').onclick({target:{closest:()=>({dataset:{index:'0'}})}});
+ assert.match(node('details').innerHTML,/Apophis/);
+ node('focus').onclick();node('follow').onclick();frame(200);
+ node('play').onclick();frame(300);node('play').onclick();
+ assert.equal(node('play').textContent,'▶');
+ node('comets').checked=true;node('search').value='Halley';node('comets').onchange();
+ assert.match(node('objects').innerHTML,/Halley/);
+ node('objects').onclick({target:{closest:()=>({dataset:{index:'0'}})}});frame(400);
+ assert.match(node('details').innerHTML,/COMET/);
+ node('outer').onclick();frame(500);
+ assert.equal(node('view-title').textContent,'The solar system');
+});
