@@ -1,0 +1,96 @@
+{
+  "extractedAt": "2026-09-04T22:59:08.716Z",
+  "composerId": "1be71898-10e0-4555-9d73-05badceb60a4",
+  "cursorChatName": "Implementation of PLAN.md",
+  "model": "gemini-3.8-flash",
+  "effort": null,
+  "span": {
+    "start": "2026-09-04T22:48:20.082Z",
+    "end": "2026-09-04T22:57:19.115Z",
+    "wallSeconds": 539
+  },
+  "messages": {
+    "user": 1,
+    "assistant": 1,
+    "thinking": 43
+  },
+  "tokenUsage": null,
+  "contextWindowFinal": {
+    "totalUsedTokens": 119514,
+    "maxTokens": 200000,
+    "note": "Final context-window size at end of run — NOT cumulative input/output usage."
+  },
+  "linesChanged": {
+    "added": 4252,
+    "removed": 1
+  },
+  "filesChangedCount": 25,
+  "tools": {
+    "read_file_v2": 10,
+    "glob_file_search": 2,
+    "run_terminal_command_v2": 27,
+    "todo_write": 9,
+    "edit_file_v2": 26,
+    "ripgrep_raw_search": 2
+  },
+  "filesEdited": [
+    "scripts/preprocess.mjs",
+    "vite.config.ts",
+    "tsconfig.json",
+    "package.json",
+    "src/types/solar.ts",
+    "src/math/time.ts",
+    "src/math/kepler.ts",
+    "src/data/dataLoader.ts",
+    "src/scene/EclipticGrid.ts",
+    "src/scene/SunView.ts",
+    "src/scene/PlanetView.ts",
+    "src/scene/AsteroidPointCloud.ts",
+    "src/scene/CometPointCloud.ts",
+    "src/scene/OrbitLines.ts",
+    "src/scene/SolarScene.ts",
+    "src/styles/main.css",
+    "src/utils/urlState.ts",
+    "src/components/TimeControls.tsx",
+    "src/components/TopNav.tsx",
+    "src/components/ObjectInspector.tsx",
+    "src/components/StatisticsHUD.tsx",
+    "src/components/LoadingOverlay.tsx",
+    "src/App.tsx",
+    "src/index.tsx",
+    "index.html"
+  ],
+  "shellCommands": [
+    "ls -lh data/",
+    "node -e '\n[\"asteroids\", \"sentry\", \"close-approaches\", \"comets\"].forEach(f => {\n  const data = JSON.parse(require(\"fs\").readFileSync(`./data/${f}.json`));\n  console.log(\"===\", f, \"count:\", data.length);\n  console.log(JSON.stringify(data[0], null, 2));\n});\n'",
+    "node -e '\nconst comets = JSON.parse(require(\"fs\").readFileSync(\"./data/comets.json\"));\nconsole.log(\"total comets:\", comets.length);\nconsole.log(\"e >= 1:\", comets.filter(c => c.e >= 1).length);\nconsole.log(\"e < 1:\", comets.filter(c => c.e < 1).length);\nconsole.log(\"sample e >= 1:\", comets.find(c => c.e >= 1));\n'",
+    "node -v && pnpm -v",
+    "node -e '\nconst planets = JSON.parse(require(\"fs\").readFileSync(\"./data/planets.json\"));\nconst earth = planets.find(p => p.name === \"Earth\");\nconsole.log(\"Earth:\", earth);\n\nfunction solveKepler(M, e) {\n  let E = M;\n  for (let iter = 0; iter < 10; iter++) {\n    const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));\n    E -= dE;\n    if (Math.abs(dE) < 1e-12) break;\n  }\n  return E;\n}\n\nconst d2r = Math.PI / 180;\n// Test Earth at epoch 2451545 (J2000.0: Jan 1 2000 12:00 UTC)\nconst M = (earth.ma * d2r) % (2 * Math.PI);\nconst E = solveKepler(M, earth.e);\nconst a = earth.a;\nconst xp = a * (Math.cos(E) - earth.e);\nconst yp = a * Math.sqrt(1 - earth.e * earth.e) * Math.sin(E);\nconst dist = Math.hypot(xp, yp);\nconsole.log(\"Earth distance to Sun at J2000:\", dist, \"au (expected ~0.983 - 1.017)\");\n'",
+    "node -e '\nconst asteroids = JSON.parse(require(\"fs\").readFileSync(\"./data/asteroids.json\"));\nconst cas = JSON.parse(require(\"fs\").readFileSync(\"./data/close-approaches.json\"));\nconst planets = JSON.parse(require(\"fs\").readFileSync(\"./data/planets.json\"));\nconst earth = planets.find(p => p.name === \"Earth\");\n\nconst d2r = Math.PI / 180;\n\nfunction solveKepler(M, e) {\n  let E = M;\n  for (let iter = 0; iter < 10; iter++) {\n    const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));\n    E -= dE;\n    if (Math.abs(dE) < 1e-12) break;\n  }\n  return E;\n}\n\nfunction getPos(body, jd) {\n  const dt = jd - body.epoch;\n  let n = body.n;\n  if (!n) {\n    n = 360 / body.per;\n  }\n  let M_deg = (body.ma + n * dt) % 360;\n  if (M_deg < 0) M_deg += 360;\n  const M = M_deg * d2r;\n  const E = solveKepler(M, body.e);\n  const a = body.a;\n  const xp = a * (Math.cos(E) - body.e);\n  const yp = a * Math.sqrt(Math.max(0, 1 - body.e * body.e)) * Math.sin(E);\n  \n  const om = body.om * d2r;\n  const w = body.w * d2r;\n  const inc = body.i * d2r;\n  \n  const cosOm = Math.cos(om), sinOm = Math.sin(om);\n  const cosW = Math.cos(w), sinW = Math.sin(w);\n  const cosI = Math.cos(inc), sinI = Math.sin(inc);\n  \n  const Px = cosOm * cosW - sinOm * sinW * cosI;\n  const Py = sinOm * cosW + cosOm * sinW * cosI;\n  const Pz = sinW * sinI;\n  \n  const Qx = -cosOm * sinW - sinOm * cosW * cosI;\n  const Qy = -sinOm * sinW + cosOm * cosW * cosI;\n  const Qz = cosW * sinI;\n  \n  return {\n    x: xp * Px + yp * Qx,\n    y: xp * Py + yp * Qy,\n    z: xp * Pz + yp * Qz\n  };\n}\n\n// Find a close approach near year 2024 or 2025\nconst sampleCA = cas.find(c => c.jd > 2460300 && c.dist < 0.05);\nconsole.log(\"Sample CA:\", sampleCA);\nconst ast = asteroids.find(a => a.pdes === sampleCA.des);\nconsole.log(\"Asteroid:\", ast.pdes, ast.full_name);\n\nconst posAst = getPos(ast, sampleCA.jd);\nconst posEarth = getPos(earth, sampleCA.jd);\nconst dx = posAst.x - posEarth.x;\nconst dy = posAst.y - posEarth.y;\nconst dz = posAst.z - posEarth.z;\nconst d = Math.hypot(dx, dy, dz);\nconsole.log(\"Calculated distance to Earth:\", d, \"au vs CA nominal dist:\", sampleCA.dist, \"au\");\n'",
+    "node -e '\nconst comets = JSON.parse(require(\"fs\").readFileSync(\"./data/comets.json\"));\nconst hypComets = comets.filter(c => c.e > 1);\nconst parComets = comets.filter(c => Math.abs(c.e - 1) < 1e-4);\nconsole.log(\"Hyperbolic comets count:\", hypComets.length, \"parabolic:\", parComets.length);\n\nconst k = 0.01720209895; // Gaussian grav constant in rad/day\nconst d2r = Math.PI / 180;\n\nfunction solveHyperbolicKepler(M, e) {\n  let H = Math.asinh(M / e);\n  for (let i = 0; i < 15; i++) {\n    const f = e * Math.sinh(H) - H - M;\n    const fPrime = e * Math.cosh(H) - 1;\n    const dH = f / fPrime;\n    H -= dH;\n    if (Math.abs(dH) < 1e-12) break;\n  }\n  return H;\n}\n\nfunction solveBarker(W) {\n  // B^3 + 3B - 6W = 0\n  // Cardano: B = (3W + sqrt(9W^2 + 1))^(1/3) + (3W - sqrt(9W^2 + 1))^(1/3)\n  const disc = Math.sqrt(9 * W * W + 1);\n  const u = Math.cbrt(3 * W + disc);\n  const v = Math.cbrt(3 * W - disc);\n  return u + v;\n}\n\nconst c1 = hypComets[0];\nconsole.log(\"Hyp comet:\", c1.full_name, \"e:\", c1.e, \"q:\", c1.q, \"tp:\", c1.tp);\nconst a_abs = c1.q / (c1.e - 1);\nconst n_h = k / Math.pow(a_abs, 1.5);\nconst Mh = n_h * (c1.tp + 10 - c1.tp); // 10 days after perihelion\nconst H = solveHyperbolicKepler(Mh, c1.e);\nconst xp = a_abs * (c1.e - Math.cosh(H)); // Wait! At H=0, cosh(0)=1, xp = a_abs*(e - 1) = q.\nconst yp = a_abs * Math.sqrt(c1.e * c1.e - 1) * Math.sinh(H);\nconsole.log(\"xp, yp:\", xp, yp, \"r:\", Math.hypot(xp, yp));\n'",
+    "node -e '\nconsole.time(\"read and parse asteroids.json\");\nconst raw = require(\"fs\").readFileSync(\"./data/asteroids.json\");\nconst data = JSON.parse(raw);\nconsole.timeEnd(\"read and parse asteroids.json\");\nconsole.log(\"Count:\", data.length);\n'",
+    "node -e '\nconsole.time(\"read and parse close-approaches.json\");\nconst raw = require(\"fs\").readFileSync(\"./data/close-approaches.json\");\nconst data = JSON.parse(raw);\nconsole.timeEnd(\"read and parse close-approaches.json\");\nconsole.log(\"Count:\", data.length);\n'",
+    "node -e '\nconst asteroids = JSON.parse(require(\"fs\").readFileSync(\"./data/asteroids.json\"));\nconst N = asteroids.length;\n// Pack orbital elements into typed arrays for maximum cache locality and SIMD-friendly loop\nconst a = new Float32Array(N);\nconst e = new Float32Array(N);\nconst Px = new Float32Array(N);\nconst Py = new Float32Array(N);\nconst Pz = new Float32Array(N);\nconst Qx = new Float32Array(N);\nconst Qy = new Float32Array(N);\nconst Qz = new Float32Array(N);\nconst epoch = new Float64Array(N);\nconst n = new Float32Array(N);\nconst ma = new Float32Array(N);\n\nconst d2r = Math.PI / 180;\nfor (let i = 0; i < N; i++) {\n  const ast = asteroids[i];\n  a[i] = ast.a;\n  e[i] = ast.e;\n  epoch[i] = ast.epoch;\n  n[i] = (ast.n || (360 / ast.per)) * d2r;\n  ma[i] = ast.ma * d2r;\n  \n  const om = ast.om * d2r;\n  const w = ast.w * d2r;\n  const inc = ast.i * d2r;\n  const cosOm = Math.cos(om), sinOm = Math.sin(om);\n  const cosW = Math.cos(w), sinW = Math.sin(w);\n  const cosI = Math.cos(inc), sinI = Math.sin(inc);\n  \n  Px[i] = cosOm * cosW - sinOm * sinW * cosI;\n  Py[i] = sinOm * cosW + cosOm * sinW * cosI;\n  Pz[i] = sinW * sinI;\n  \n  Qx[i] = -cosOm * sinW - sinOm * cosW * cosI;\n  Qy[i] = -sinOm * sinW + cosOm * cosW * cosI;\n  Qz[i] = cosW * sinI;\n}\n\nconst outX = new Float32Array(N);\nconst outY = new Float32Array(N);\nconst outZ = new Float32Array(N);\n\nconst TWO_PI = Math.PI * 2;\nconsole.time(\"Compute 42,075 asteroid positions\");\nconst jd = 2460500.5;\nfor (let i = 0; i < N; i++) {\n  const dt = jd - epoch[i];\n  let M = (ma[i] + n[i] * dt) % TWO_PI;\n  if (M < 0) M += TWO_PI;\n  const ecc = e[i];\n  // Kepler solver\n  let E = M + ecc * Math.sin(M);\n  for (let iter = 0; iter < 4; iter++) {\n    const dE = (E - ecc * Math.sin(E) - M) / (1 - ecc * Math.cos(E));\n    E -= dE;\n    if (Math.abs(dE) < 1e-6) break;\n  }\n  const semi = a[i];\n  const xp = semi * (Math.cos(E) - ecc);\n  const yp = semi * Math.sqrt(Math.max(0, 1 - ecc * ecc)) * Math.sin(E);\n  outX[i] = xp * Px[i] + yp * Qx[i];\n  outY[i] = xp * Py[i] + yp * Qy[i];\n  outZ[i] = xp * Pz[i] + yp * Qz[i];\n}\nconsole.timeEnd(\"Compute 42,075 asteroid positions\");\n'",
+    "pnpm init",
+    "pnpm add three lucide-react react react-dom && pnpm add -D vite @vitejs/plugin-react typescript @types/react @types/react-dom @types/three",
+    "node -e '\nconst asteroids = JSON.parse(require(\"fs\").readFileSync(\"./data/asteroids.json\"));\nconst cas = JSON.parse(require(\"fs\").readFileSync(\"./data/close-approaches.json\"));\nconst sentry = JSON.parse(require(\"fs\").readFileSync(\"./data/sentry.json\"));\n\nconst astPdes = new Set(asteroids.map(a => a.pdes));\n\nlet sentryMatched = 0;\nfor (const s of sentry) {\n  if (astPdes.has(s.des)) sentryMatched++;\n}\nconsole.log(\"Sentry matched:\", sentryMatched, \"out of\", sentry.length);\n\nlet caMatched = 0;\nfor (const c of cas) {\n  if (astPdes.has(c.des)) caMatched++;\n}\nconsole.log(\"Close approaches matched:\", caMatched, \"out of\", cas.length);\n'",
+    "node -e '\nconst comets = JSON.parse(require(\"fs\").readFileSync(\"./data/comets.json\"));\nconst sentry = JSON.parse(require(\"fs\").readFileSync(\"./data/sentry.json\"));\nconst cas = JSON.parse(require(\"fs\").readFileSync(\"./data/close-approaches.json\"));\nconst cometPdes = new Set(comets.map(c => c.pdes));\nconsole.log(\"Comet pdes in sentry:\", sentry.filter(s => cometPdes.has(s.des)).length);\nconsole.log(\"Comet pdes in cas:\", cas.filter(c => cometPdes.has(c.des)).length);\n'",
+    "node -e '\nconst comets = JSON.parse(require(\"fs\").readFileSync(\"./data/comets.json\"));\nlet missing = { a_in_closed: 0, tp: 0, q: 0, i: 0, om: 0, w: 0 };\nfor (const c of comets) {\n  if (c.e < 1 && (c.a == null || isNaN(c.a))) missing.a_in_closed++;\n  if (c.tp == null || isNaN(c.tp)) missing.tp++;\n  if (c.q == null || isNaN(c.q)) missing.q++;\n  if (c.i == null || isNaN(c.i)) missing.i++;\n  if (c.om == null || isNaN(c.om)) missing.om++;\n  if (c.w == null || isNaN(c.w)) missing.w++;\n}\nconsole.log(\"Missing fields in comets:\", missing);\n'",
+    "node -e '\nconst planets = JSON.parse(require(\"fs\").readFileSync(\"./data/planets.json\"));\nconst earth = planets.find(p => p.name === \"Earth\");\n\nfunction solveKepler(M, e) {\n  let E = M;\n  for (let iter = 0; iter < 10; iter++) {\n    const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));\n    E -= dE;\n    if (Math.abs(dE) < 1e-12) break;\n  }\n  return E;\n}\n\nconst d2r = Math.PI / 180;\nfunction pos(body, jd) {\n  const dt = jd - body.epoch;\n  let M = (body.ma + body.n * dt) * d2r;\n  M = ((M % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);\n  const E = solveKepler(M, body.e);\n  const xp = body.a * (Math.cos(E) - body.e);\n  const yp = body.a * Math.sqrt(1 - body.e * body.e) * Math.sin(E);\n  \n  const om = body.om * d2r;\n  const w = body.w * d2r;\n  const inc = body.i * d2r;\n  const cosOm = Math.cos(om), sinOm = Math.sin(om);\n  const cosW = Math.cos(w), sinW = Math.sin(w);\n  const cosI = Math.cos(inc), sinI = Math.sin(inc);\n  \n  const Px = cosOm * cosW - sinOm * sinW * cosI;\n  const Py = sinOm * cosW + cosOm * sinW * cosI;\n  const Pz = sinW * sinI;\n  const Qx = -cosOm * sinW - sinOm * cosW * cosI;\n  const Qy = -sinOm * sinW + cosOm * cosW * cosI;\n  const Qz = cosW * sinI;\n  \n  const rx = xp * Px + yp * Qx;\n  const ry = xp * Py + yp * Qy;\n  const rz = xp * Pz + yp * Qz;\n  \n  return { x: rx, y: rz, z: -ry };\n}\n\nconst p0 = pos(earth, 2451545);\nconst p1 = pos(earth, 2451545 + 30);\nconsole.log(\"Day 0:\", p0);\nconsole.log(\"Day 30:\", p1);\n\n// Angular momentum vector L = r0 x (r1 - r0)\nconst v = { x: p1.x - p0.x, y: p1.y - p0.y, z: p1.z - p0.z };\nconst Ly = p0.z * v.x - p0.x * v.z; // component along +Y axis\nconsole.log(\"Ly (along ecliptic north +Y):\", Ly, \"(must be > 0 for prograde)\");\n'",
+    "mkdir -p public/data scripts src",
+    "node scripts/preprocess.mjs",
+    "node -e '\nimport(\"three/examples/jsm/controls/OrbitControls.js\").then(m => console.log(\"OrbitControls loaded:\", !!m.OrbitControls));\n'",
+    "node -e '\nconst THREE = await import(\"three\");\nconst N = 42075;\nconst geom = new THREE.BufferGeometry();\nconst posAttr = new THREE.BufferAttribute(new Float32Array(N * 3), 3);\ngeom.setAttribute(\"position\", posAttr);\n\nconsole.time(\"update and mark needsUpdate\");\nconst arr = posAttr.array;\nfor (let i = 0; i < N * 3; i++) {\n  arr[i] = Math.random();\n}\nposAttr.needsUpdate = true;\nconsole.timeEnd(\"update and mark needsUpdate\");\n'",
+    "pnpm build",
+    "ls -lh dist/ && ls -lh dist/data/",
+    "pnpm build",
+    "node -e '\nconst http = require(\"http\");\nconst fs = require(\"fs\");\nconst path = require(\"path\");\n\nconst server = http.createServer((req, res) => {\n  // simulate subpath serving: /subpath/...\n  let url = req.url.replace(/^\\/subpath/, \"\");\n  if (url === \"\" || url === \"/\") url = \"/index.html\";\n  const filePath = path.join(__dirname, \"dist\", url);\n  if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {\n    res.writeHead(200);\n    fs.createReadStream(filePath).pipe(res);\n  } else {\n    res.writeHead(404);\n    res.end(\"Not found: \" + url);\n  }\n});\n\nserver.listen(0, async () => {\n  const port = server.address().port;\n  console.log(\"Testing on port\", port);\n  const base = `http://127.0.0.1:${port}/subpath/`;\n\n  try {\n    const htmlRes = await fetch(base);\n    console.log(\"index.html status:\", htmlRes.status);\n    const html = await htmlRes.text();\n    console.log(\"HTML length:\", html.length);\n\n    // Test asset resolution\n    const jsMatch = html.match(/src=\"(\\.[^\"]+)\"/);\n    if (jsMatch) {\n      const jsUrl = new URL(jsMatch[1], base).href;\n      const jsRes = await fetch(jsUrl);\n      console.log(\"JS asset status:\", jsRes.status, jsUrl);\n    }\n\n    const cssMatch = html.match(/href=\"(\\.[^\"]+)\"/);\n    if (cssMatch) {\n      const cssUrl = new URL(cssMatch[1], base).href;\n      const cssRes = await fetch(cssUrl);\n      console.log(\"CSS asset status:\", cssRes.status, cssUrl);\n    }\n\n    // Test data files resolution\n    for (const f of [\"planets.json\", \"asteroids.json\", \"comets.json\", \"sentry.json\", \"close-approaches.json\"]) {\n      const dataUrl = new URL(`./data/${f}`, base).href;\n      const dataRes = await fetch(dataUrl);\n      console.log(\"Data file\", f, \"status:\", dataRes.status);\n    }\n\n    console.log(\"ALL SUBPATH TESTS PASSED!\");\n  } catch (err) {\n    console.error(\"Test failed:\", err);\n  } finally {\n    server.close();\n  }\n});\n'",
+    "git status",
+    "node -e '\n[\"asteroids\", \"close-approaches\", \"comets\", \"sentry\", \"planets\"].forEach(f => {\n  const d = JSON.parse(require(\"fs\").readFileSync(`./data/${f}.json`));\n  console.log(f, d.length);\n});\n'",
+    "pnpm build"
+  ],
+  "files": {
+    "raw": "session/cursor-composer.json",
+    "transcript": "session/transcript.md"
+  }
+}

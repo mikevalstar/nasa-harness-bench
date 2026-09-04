@@ -1,0 +1,76 @@
+{
+  "slug": "2026-09-04-18-47-47-cursor-gemini-3-8-flash-medium",
+  "harness": "cursor",
+  "harnessVersion": "3.19.7",
+  "model": "gemini-3-8-flash",
+  "effort": "medium",
+  "interface": "agent-window",
+  "createdAt": "2026-09-04T22:47:49Z",
+  "collectedAt": "2026-09-04T22:57:32Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-09-04-18-47-47-cursor-gemini-3-8-flash-medium",
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": null,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 515210,
+    "output": 80872,
+    "cacheWrite": 0,
+    "cacheRead": 4481447,
+    "total": 5077529
+  },
+  "estimatedCostUsd": 1.03,
+  "timeTakenSeconds": 539,
+  "tags": [],
+  "summary": "",
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded \u00b7 partial = tried but failed \u00b7 fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "fail/fail - no browser of any kind. All 27 shell commands are `ls`, `node -e` data/math scratch scripts, `pnpm init/add/build`, `node scripts/preprocess.mjs` and `git status`. No Playwright/Puppeteer, no headless Chrome, no vite preview, no screenshot, no DOM dump, no console capture. The closest thing to a runtime check is one `node -e` script that spins up a bare http.createServer over `dist/` on a random port and `fetch`es index.html, the JS and CSS assets and all five data files under a `/subpath/` prefix, asserting HTTP 200 on each ('ALL SUBPATH TESTS PASSED!'). That establishes relative asset paths resolve when served from a subpath - a real check, and more than most runs do - but it never executes the bundle, so it says nothing about whether the page renders or logs errors. It did run several genuine numeric self-checks against its own math before writing it (Earth-Sun distance at J2000 vs the expected 0.983-1.017 au; a computed asteroid-Earth distance vs a close-approaches.json nominal `dist`; hyperbolic/parabolic comet spot checks; Sentry and close-approach key join coverage; JSON parse timings) - but those all ran against Node scratch scripts, not the shipped code path, and none of them exercised the 3-iteration solver it actually shipped. consoleReview = fail, displayReview = fail. Not a budget problem: the run finished in 539 s.",
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": {
+      "builds": "pass",
+      "loads": null,
+      "noConsoleErrors": null
+    },
+    "correctness": {
+      "solarSystem": null,
+      "planets": null,
+      "asteroids": null,
+      "computedPositions": null,
+      "orbitsCorrect": null,
+      "timeAnimation": null
+    },
+    "usability": {
+      "camera": null,
+      "scale": null,
+      "legible": null,
+      "noUiIssues": null
+    },
+    "selfVerification": {
+      "consoleReview": "fail",
+      "displayReview": "fail"
+    },
+    "features": {
+      "filterSearch": null,
+      "investigate": null,
+      "highlight": null,
+      "scaleRisk": null,
+      "comets": null,
+      "impactRisk": null,
+      "focusFollow": null,
+      "deepLinks": null
+    },
+    "integrity": {
+      "dataUntouched": true,
+      "noNetwork": true,
+      "inBounds": true
+    }
+  },
+  "_tokenUsageNote": "From the Cursor dashboard for this run (Cursor stores no token counts in its local DB). Input is fresh (non-cached) input only; 515,210 + 4,481,447 + 80,872 = 5,077,529, matching the dashboard total. Cache write is reported as 0, as on every other Cursor run.",
+  "costNote": "Gemini 3.8 Flash list pricing (promotional rates in effect through 2026-12-31): $0.75/M input, $3.75/M output, $0.075/M cached input; no separate cache-write charge (implicit caching). 515,210 fresh input @ $0.75/M = $0.386 + 4,481,447 cache reads @ $0.075/M = $0.336 + 80,872 output @ $3.75/M = $0.303 -> $1.03. Cache reads are 88% of all tokens but only 33% of the cost. Token counts are UI-sourced (Cursor dashboard), not from a local log. Note list price doubles on 2027-01-01 ($1.50/$7.50/$0.15), which would make the same run ~$2.05.",
+  "_timeTakenNote": "Cursor composer span from extract-session-cursor.mjs: 2026-09-04T22:48:20Z -> 22:57:19Z.",
+  "contextWindowFinal": {
+    "totalUsedTokens": 119514,
+    "maxTokens": 200000
+  }
+}
