@@ -9,7 +9,7 @@
   "collectedAt": "2026-09-04T23:14:02Z",
   "benchPath": "/Users/mikevalstar/projects/nbench/2026-09-04-19-04-18-codex-gpt-6-astra-medium",
   "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
-  "broken": null,
+  "broken": false,
   "cheated": false,
   "buildSucceeded": true,
   "tokenUsage": {

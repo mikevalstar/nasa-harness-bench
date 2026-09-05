@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NEO Explorer — Inner Solar System in 3D</title>
+  <script type="module" crossorigin src="./assets/index-DeRgaGZE.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-W9SSfWzl.css">
+</head>
+<body>
+  <div id="loading"><div class="load-box"><h1>NEO Explorer</h1><p id="load-msg">Starting…</p></div></div>
+
+  <header id="topbar">
+    <div class="brand">NEO&nbsp;Explorer</div>
+    <div class="time-ctl">
+      <button id="btn-play" title="Play / pause (Space)">⏸</button>
+      <button id="btn-rev" title="Reverse time direction">⇄</button>
+      <label class="speed">speed
+        <input id="speed" type="range" min="0" max="100" value="62" />
+        <span id="speed-label"></span>
+      </label>
+      <button id="step-b" title="-30 days">−30d</button>
+      <button id="step-s" title="-1 day">−1d</button>
+      <button id="step-f" title="+1 day">+1d</button>
+      <button id="step-fb" title="+30 days">+30d</button>
+      <input id="date-input" placeholder="YYYY-MM-DD" spellcheck="false" />
+      <button id="btn-go" title="Jump to date">Go</button>
+      <button id="btn-now" title="Back to now">Now</button>
+    </div>
+    <div id="clock" title="Current scene time (UTC)">—</div>
+    <button id="btn-help" title="About / help">?</button>
+  </header>
+
+  <div id="scrubbar">
+    <span>1900</span>
+    <input id="scrub" type="range" min="0" max="2000" value="1000" />
+    <span>2200</span>
+  </div>
+
+  <aside id="left">
+    <section>
+      <h2>Search</h2>
+      <input id="search" placeholder="designation or name, e.g. Eros, 433, Apophis…" spellcheck="false" />
+      <ul id="search-results"></ul>
+    </section>
+    <section>
+      <h2>Filter asteroids <span id="match-count"></span></h2>
+      <label class="row"><input id="f-pha" type="checkbox" /> Potentially hazardous only</label>
+      <div id="f-classes"></div>
+      <label class="row">H ≤ <span id="f-hmax-v">30</span>
+        <input id="f-hmax" type="range" min="10" max="30" step="0.5" value="30" /></label>
+      <label class="row">Diameter ≥ <span id="f-dmin-v">0</span> km
+        <input id="f-dmin" type="range" min="0" max="20" step="0.5" value="0" /></label>
+      <label class="row">MOID ≤ <span id="f-moid-v">1</span> au
+        <input id="f-moid" type="range" min="0.01" max="1" step="0.01" value="1" /></label>
+      <button id="btn-reset-filters">Reset filters</button>
+    </section>
+    <section>
+      <h2>Highlight</h2>
+      <label class="row"><input type="radio" name="hl" value="none" checked /> None (orbit classes)</label>
+      <label class="row"><input type="radio" name="hl" value="pha" /> Potentially hazardous</label>
+      <label class="row"><input type="radio" name="hl" value="upcoming" /> Close approaches ±45 d</label>
+      <label class="row"><input type="radio" name="hl" value="sentry" /> Sentry impact-risk objects</label>
+      <label class="row"><input type="radio" name="hl" value="large" /> Large (≥ 1 km)</label>
+    </section>
+    <section>
+      <h2>Layers</h2>
+      <label class="row"><input id="l-comets" type="checkbox" checked /> Comets</label>
+      <label class="row"><input id="l-orbits" type="checkbox" checked /> Planet orbits</label>
+      <label class="row"><input id="l-labels" type="checkbox" checked /> Labels</label>
+      <label class="row"><input id="l-true" type="checkbox" /> True body sizes</label>
+      <div class="legend">
+        <span><i style="background:#7ad9ff"></i>ATE</span>
+        <span><i style="background:#ffd27a"></i>APO</span>
+        <span><i style="background:#b49aff"></i>AMO</span>
+        <span><i style="background:#7affc4"></i>IEO</span>
+        <span><i style="background:#ff5252"></i>PHA</span>
+        <span><i style="background:#ff9a3c"></i>approach</span>
+        <span><i style="background:#e07aff"></i>sentry</span>
+        <span><i style="background:#7ce8ff"></i>comet</span>
+      </div>
+    </section>
+  </aside>
+
+  <aside id="right" class="hidden">
+    <button id="btn-close-detail" title="Close (Esc)">✕</button>
+    <h2 id="d-title">—</h2>
+    <div id="d-badges"></div>
+    <div id="d-actions">
+      <button id="btn-follow">Follow</button>
+      <button id="btn-jump-next">Next approach ↓</button>
+      <button id="btn-copylink">Copy link</button>
+    </div>
+    <div id="d-body"></div>
+    <h2 id="d-ca-h">Close approaches</h2>
+    <div id="d-ca"></div>
+  </aside>
+
+  <section id="upcoming" class="hidden">
+    <h2>Upcoming close approaches</h2>
+    <ul id="up-list"></ul>
+  </section>
+
+  <div id="view"></div>
+
+  <footer id="statusbar"><span id="stats"></span><span id="hint">drag: orbit · wheel: zoom · click object: inspect · Space: play/pause</span></footer>
+
+  <div id="help" class="hidden">
+    <div class="help-box">
+      <h1>NEO Explorer</h1>
+      <p>Interactive 3D map of the inner solar system and ~42,000 near-Earth asteroids,
+        computed live from JPL orbital elements (J2000 ecliptic frame). Every body is
+        propagated from its own epoch by solving Kepler's equation each frame.</p>
+      <ul>
+        <li><b>Time:</b> play/pause, log-speed slider, ⇄ reverses, scrub 1900–2200, or jump to a date.</li>
+        <li><b>Bodies:</b> dot size tracks absolute magnitude H (brighter = bigger); colour tracks orbit class.</li>
+        <li><b>Sizes exaggerated ~900×</b> unless “True body sizes” is on — then planets shrink to reality.</li>
+        <li><b>Comets</b> include hyperbolic/parabolic orbits propagated from perihelion passage.</li>
+        <li><b>Share:</b> time, selection, camera and layers live in the URL — “Copy link” on any object.</li>
+        <li><b>Data:</b> NASA/JPL SBDB + CAD + CNEOS Sentry snapshot; see README for provenance.</li>
+      </ul>
+      <button id="btn-close-help">Close</button>
+    </div>
+  </div>
+
+</body>
+</html>

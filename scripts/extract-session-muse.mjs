@@ -55,7 +55,17 @@ import { homedir } from "node:os";
 
 // --- pricing (USD per 1M tokens) ----------------------------------------------
 // Supplied by the operator for the model under test; muse persists no cost.
-const PRICING = { input: 1.25, cachedInput: 0.15, output: 4.25 };
+// List price per Mtok, keyed by the model id the session log reports. Muse
+// ships the same model at two tiers and they differ ~30x, so pricing by family
+// name alone silently misprices a run: the "contributor" tier trades a much
+// lower rate for Meta being allowed to train on the prompts and outputs.
+// Add a row per model under test; DEFAULT_PRICING is the standard tier.
+const DEFAULT_PRICING = { input: 1.25, cachedInput: 0.15, output: 4.25 };
+const PRICING_BY_MODEL = {
+  "muse-spark-1.2": { input: 1.25, cachedInput: 0.15, output: 4.25 },
+  "muse-spark-1.3": { input: 1.25, cachedInput: 0.15, output: 4.25 },
+  "muse-spark-1.3-contributor": { input: 0.1, cachedInput: 0.002, output: 0.2 },
+};
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const slug = process.argv[2];
@@ -161,6 +171,7 @@ const tokens = {
 tokens.total = tokens.input + tokens.output;
 // input_tokens already contains the cached prefix; only the remainder is full price.
 const uncachedInput = tokens.input - tokens.cacheRead;
+const PRICING = PRICING_BY_MODEL[model] ?? DEFAULT_PRICING;
 const costUsd = Math.round((
   (uncachedInput / 1e6) * PRICING.input
   + (tokens.cacheRead / 1e6) * PRICING.cachedInput

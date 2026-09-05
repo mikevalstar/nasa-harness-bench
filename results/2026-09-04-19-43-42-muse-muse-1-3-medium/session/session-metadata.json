@@ -1,0 +1,173 @@
+{
+  "extractedAt": "2026-09-05T00:02:13.481Z",
+  "sessionId": "01a06ece-d0ab-7c43-ac47-c3290e142c14",
+  "harness": "muse",
+  "harnessVersion": "1.0.3",
+  "harnessBuild": "238bb03ff3",
+  "model": "muse-spark-1.3-contributor",
+  "providerId": "meta",
+  "profileId": "tbh",
+  "workspaceDir": "/Users/mikevalstar/projects/nbench/2026-09-04-19-43-42-muse-muse-1-3-medium",
+  "span": {
+    "start": 1788565443610,
+    "end": 1788566088533,
+    "wallSeconds": 645,
+    "logSpanSeconds": 645
+  },
+  "messages": {
+    "user": 1,
+    "assistant": 1,
+    "thinking": 56
+  },
+  "modelCalls": {
+    "main": 50,
+    "helperAgents": 0
+  },
+  "tokenUsage": {
+    "input": 4231376,
+    "output": 66061,
+    "reasoning": 20679,
+    "cacheRead": 4106401,
+    "cacheWrite": 0,
+    "total": 4297437
+  },
+  "tokenUsageBreakdown": {
+    "main": {
+      "input": 4231376,
+      "output": 66061,
+      "reasoning": 20679,
+      "cacheRead": 4106401,
+      "cacheWrite": 0,
+      "calls": 50
+    },
+    "helperAgents": {
+      "input": 0,
+      "output": 0,
+      "reasoning": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "calls": 0
+    }
+  },
+  "pricingUsdPerMTok": {
+    "input": 0.1,
+    "cachedInput": 0.002,
+    "output": 0.2
+  },
+  "estimatedCostUsd": 0.033923,
+  "costBasis": {
+    "uncachedInput": 124975,
+    "cacheRead": 4106401,
+    "output": 66061,
+    "note": "input_tokens includes the cached prefix; uncachedInput = input - cacheRead. LOWER BOUND: this recomputation ran ~39% under muse's own dev-console figure on the first muse run, likely an unsurfaced cache-write charge. Prefer the dev console."
+  },
+  "tools": {
+    "read_file": 1,
+    "bash": 27,
+    "write_todos": 3,
+    "write_file": 15,
+    "edit_file": 16
+  },
+  "helperAgentSessions": [],
+  "approvals": [
+    {
+      "tool": "network",
+      "args": "https nodejs.org:443"
+    },
+    {
+      "tool": "network",
+      "args": "https registry.npmjs.org:443"
+    },
+    {
+      "tool": "bash",
+      "args": "{\"command\":\"./node_modules/.bin/tsc --noEmit 2>&1 | head -30; echo \\\"TSC_EXIT:$?\\\"\",\"description\":\"Typecheck the project with tsc\",\"yield_time_ms\":120000}"
+    },
+    {
+      "tool": "bash",
+      "args": "{\"command\":\"./node_modules/.bin/esbuild src/orbit.ts src/time.ts --format=esm --bundle --outfile=/tmp/orb.mjs --log-level=error && cat > /tmp/test-orb.mjs <<'EOF'\\nimport { elementsToPos, orbitPath, solveKepler, meanMotion } from '/tmp/orb.mjs';\\nimport { jdFromDate, dateFromJd, parseDateInput } from '/tmp/orb.mjs';\\nlet fails = 0;\\nconst ok = (name, cond, extra='') => { if (!cond) { fails++; console.log('FAIL', name, extra); } else console.log('ok', name, extra); };\\nconst out = [0,0,0];\\n// Earth at J2000 epoch: M=357.5° -> near perihelion, r ~= a(1-e) = 0.9833\\nconst earth = {a:1.00000261,e:0.01671123,i:-0.00001531,om:0,w:102.937682,ma:357.52689,epoch:2451545,n:0.985604,tp:NaN,q:NaN};\\nelementsToPos(earth, 2451545, out);\\nconst r = Math.hypot(out[0],out[1],out[2]);\\nok('earth r at epoch ~0.9833', Math.abs(r-0.9833)<0.002, r.toFixed(5));\\n// closure after one period\\nconst per = 365.2569;\\nelementsToPos(earth, 2451545+per, out);\\nconst r2 = Math.hypot(out[0],out[1],out[2]);\\nelementsToPos(earth, 2451545, out);\\nconst dx = Math.hypot(out[0]-0,0,0); // placeholder\\nimport('node:assert');\\nconst p1 = [0,0,0], p2=[0,0,0];\\nelementsToPos(earth, 2451545, p1); elementsToPos(earth, 2451545+per, p2);\\nok('earth closes after 1 period', Math.hypot(p1[0]-p2[0],p1[1]-p2[1],p1[2]-p2[2])<1e-6);\\n// Eros at epoch within [q, ad]\\nconst eros = {a:1.458,e:0.2229,i:10.83,om:304.27,w:178.92,ma:62.51,epoch:2461200.5,n:0.5597,tp:2461088.81,q:1.133};\\nelementsToPos(eros, 2461200.5, out);\\nconst re = Math.hypot(out[0],out[1],out[2]);\\nok('eros r in [1.133,1.783]', re>=1.132 && re<=1.784, re.toFixed(4));\\n// Halley at tp -> r == q\\nconst halley = {a:17.93,e:0.9679,i:162.19,om:59.1,w:112.24,ma:274.38,epoch:2439875.5,n:0.01298,tp:2446469.97,q:0.575};\\nelementsToPos(halley, 2446469.97, out);\\nconst rh = Math.hypot(out[0],out[1],out[2]);\\nok('halley r(tp)==q', Math.abs(rh-0.575)<1e-3, rh.toFixed(5));\\n// hyperbolic: e=1.2, q=0.5 -> r(tp)==q\\nconst hyp = {a:NaN,e:1.2,i:10,om:20,w:30,ma:NaN,epoch:2460000,n:NaN,tp:2460000.5,q:0.5};\\nelementsToPos(hyp, 2460000.5, out);\\nconst rhu = Math.hypot(out[0],out[1],out[2]);\\nok('hyperbolic r(tp)==q', Math.abs(rhu-0.5)<1e-6, rhu.toFixed(6));\\nelementsToPos(hyp, 2460000.5+100, out);\\nok('hyperbolic +100d finite & farther', Number.isFinite(out[0]) && Math.hypot(out[0],out[1],out[2])>0.5);\\n// parabolic e=1\\nconst par = {a:NaN,e:1.0,i:5,om:10,w:20,ma:NaN,epoch:2460000,n:NaN,tp:2460000,q:1.0};\\nelementsToPos(par, 2460000, out);\\nok('parabolic r(tp)==q', Math.abs(Math.hypot(out[0],out[1],out[2])-1.0)<1e-6);\\n// time utils\\nok('jdFromDate J2000', Math.abs(jdFromDate(2000,1,1,12,0,0)-2451545.0)<1e-9);\\nok('roundtrip', Math.abs(parseDateInput('2026-09-04') - jdFromDate(2026,9,4))<1e-9);\\nconst d = dateFromJd(2451545.0);\\nok('dateFromJd', d.getUTCFullYear()===2000 && d.getUTCMonth()===0 && d.getUTCDate()===1 && d.getUTCHours()===12);\\n// orbit path closes for ellipse\\nconst pts = orbitPath(eros, 64);\\nconst dd = Math.hypot(pts[0]-pts[192], pts[1]-pts[193], pts[2]-pts[194]);\\nok('orbitPath closes', dd < 1e-4, dd.toExponential(1));\\nconsole.log(fails === 0 ? 'ALL PASS' : fails + ' FAILURES');\\nprocess.exit(fails ? 1 : 0);\\nEOF\\nnode /tmp/test-orb.mjs\",\"description\":\"Bundle orbit math and run assertions\",\"yield_time_ms\":60000}"
+    },
+    {
+      "tool": "bash",
+      "args": "{\"command\":\"cat > /tmp/test-orb2.js <<'EOF'\\nconst { elementsToPos } = require('/tmp/orbjs/orbit.js');\\nlet fails = 0;\\nconst ok = (name, cond, extra='') => { if(!cond){fails++;console.log('FAIL',name,extra);} else console.log('ok  ',name,extra); };\\nconst earth = {a:1.00000261,e:0.01671123,i:-0.00001531,om:0,w:102.937682,ma:357.52689,epoch:2451545,n:0.985604,tp:NaN,q:NaN};\\n// exact osculating period from n\\nconst p1=[0,0,0],p2=[0,0,0];\\nelementsToPos(earth,2451545,p1);\\nelementsToPos(earth,2451545+360/0.985604,p2);\\nok('earth closes after 360/n days', Math.hypot(p1[0]-p2[0],p1[1]-p2[1],p1[2]-p2[2])<1e-9);\\n// external fact: Earth's heliocentric ecliptic longitude at J2000.0 ~= 100.4 deg\\nconst lon = Math.atan2(p1[1],p1[0])/Math.PI*180;\\nconst lonN = ((lon%360)+360)%360;\\nok('earth longitude at J2000 ~100.4', Math.abs(lonN-100.4)<0.6, lonN.toFixed(3));\\n// external fact: Mars at J2000: L = w+M = 286.496832+19.390198 = 305.887 -> true lon ~ 305.9 +/- 2 (e=0.093)\\nconst mars = {a:1.52371034,e:0.0933941,i:1.84969142,om:49.559539,w:286.496832,ma:19.390198,epoch:2451545,n:0.524023,tp:NaN,q:NaN};\\nconst m=[0,0,0]; elementsToPos(mars,2451545,m);\\nconst mlon=((Math.atan2(m[1],m[0])/Math.PI*180%360)+360)%360;\\nok('mars longitude at J2000 ~304-308', mlon>303&&mlon<309, mlon.toFixed(3));\\nconst mr=Math.hypot(m[0],m[1],m[2]);\\nok('mars r in [1.38,1.67]', mr>1.38&&mr<1.67, mr.toFixed(4));\\nconsole.log(fails===0?'ALL PASS':fails+' FAILURES'); process.exit(fails?1:0);\\nEOF\\nnode /tmp/test-orb2.js\",\"description\":\"Validate positions against known astronomy facts\"}"
+    },
+    {
+      "tool": "bash",
+      "args": "{\"command\":\"cd dist && (python3 -m http.server 8471 >/tmp/http.log 2>&1 &) && sleep 1 && curl -s -o /dev/null -w 'index:%{http_code} ' http://localhost:8471/ && curl -s -o /dev/null -w 'manifest:%{http_code} ' http://localhost:8471/data/manifest.json && curl -s -o /dev/null -w 'abin:%{http_code} ' http://localhost:8471/data/asteroids.bin && curl -s http://localhost:8471/data/manifest.json && echo && python3 -c \\\"\\nimport struct\\nd=open('data/asteroids.bin','rb').read()\\nn=struct.unpack('<I',d[:4])[0]\\nprint('bin N:',n,'bytes ok:',len(d)==4+n*13*4)\\nimport json; m=json.load(open('data/manifest.json')); print('manifest asteroids:',m['asteroids'])\\n\\\"; pkill -f 'http.server 8471' || true\",\"description\":\"Serve dist and smoke-test asset delivery\",\"yield_time_ms\":60000}"
+    }
+  ],
+  "networkHosts": [
+    "nodejs.org:443",
+    "registry.npmjs.org:443"
+  ],
+  "filesWritten": [
+    "package.json",
+    "vite.config.ts",
+    "tsconfig.json",
+    ".gitignore",
+    "src/orbit.ts",
+    "src/time.ts",
+    "scripts/preprocess.mjs",
+    "src/data.ts",
+    "src/scene.ts",
+    "index.html",
+    "src/style.css",
+    "src/main.ts",
+    "/tmp/test-orb.js",
+    "README.md"
+  ],
+  "filesEdited": [
+    "scripts/preprocess.mjs",
+    "src/data.ts",
+    "src/main.ts",
+    "src/scene.ts"
+  ],
+  "filesRead": [
+    "PLAN.md"
+  ],
+  "shellCommands": [
+    "ls -la; echo ---; ls -la data/ | head -n 50; echo ---; cat package.json 2>/dev/null; echo ---; cat data/README.md 2>/dev/null | head -n 200",
+    "python3 -c \"\nimport json\nfor f in ['data/planets.json','data/provenance.json']:\n    print('=== '+f+' ===')\n    d=json.load(open(f))\n    print(json.dumps(d,indent=1)[:3000])\nprint('=== asteroids sample ===')\nd=json.load(open('data/asteroids.json'))\nprint(len(d)); print(json.dumps(d[0],indent=1)); print(json.dumps(d[1],indent=1))\nprint('=== comets sample ===')\nc=json.load(open('data/comets.json'))\nprint(len(c))\nimport collections\necc=[x.get('e') for x in c]\nprint('e>=1:',sum(1 for e in ecc if e is not None and e>=1),'e<1:',sum(1 for e in ecc if e is not None and e<1))\nprint(json.dumps(c[0],indent=1))\nprint('=== sentry sample ===')\ns=json.load(open('data/sentry.json'))\nprint(len(s)); print(json.dumps(s[0],indent=1))\nprint('=== CA sample ===')\nca=json.load(open('data/close-approaches.json'))\nprint(len(ca)); print(json.dumps(ca[0],indent=1))\n\"",
+    "node --version; pnpm --version; npm --version; ls ~/.npm 2>/dev/null | head; npm config get registry",
+    "python3 -c \"\nimport json\nd=json.load(open('data/asteroids.json'))\nnulls={}\nfor k in ['a','e','i','om','w','ma','epoch','n','per','q','tp']:\n    nulls[k]=sum(1 for x in d if x.get(k) is None)\nprint('asteroid nulls:',nulls)\nprint('max e:',max(x['e'] for x in d if x.get('e') is not None))\nprint('classes:',sorted(set(x.get('class') for x in d)))\nprint('pha:',sum(1 for x in d if x.get('pha')))\nc=json.load(open('data/comets.json'))\nprint('comet nulls a:',sum(1 for x in c if x.get('a') is None),'tp:',sum(1 for x in c if x.get('tp') is None),'e:',sum(1 for x in c if x.get('e') is None))\nprint('comet classes:',sorted(set(x.get('class') for x in c))[:20])\nca=json.load(open('data/close-approaches.json'))\njds=[x['jd'] for x in ca]\nprint('CA jd range:',min(jds),max(jds),'count:',len(ca))\nprint('CA keys:',sorted(ca[0].keys()))\n\"",
+    "tail -5 src/main.ts; wc -l src/main.ts",
+    "python3 - <<'EOF'\nprint(\"anchor test\")\nEOF",
+    "pnpm install 2>&1 | tail -5",
+    "node scripts/preprocess.mjs && ls -la public/data/",
+    "./node_modules/.bin/tsc --noEmit 2>&1 | head -30; echo \"TSC_EXIT:$?\"",
+    "pnpm build 2>&1 | tail -20",
+    "pnpm approve-builds esbuild 2>&1 | tail -3; echo \"---\"; pnpm install 2>&1 | tail -3",
+    "pnpm build 2>&1 | tail -15 && echo === && ls -la dist/ dist/data/ | head -30",
+    "python3 -c \"\nimport json\nc=json.load(open('data/comets.json'))\ndef fin(v): return isinstance(v,(int,float))\nprint('e<1 & a missing:',sum(1 for x in c if x['e']<1 and not fin(x.get('a'))))\nprint('e>=1 & q missing:',sum(1 for x in c if x['e']>=1 and not fin(x.get('q'))))\nprint('e>=1 & a<0 count:',sum(1 for x in c if x['e']>=1 and fin(x.get('a')) and x['a']<0))\nprint('e>=1 & a missing & q present:',sum(1 for x in c if x['e']>=1 and not fin(x.get('a')) and fin(x.get('q'))))\nprint('ma missing:',sum(1 for x in c if not fin(x.get('ma'))),'n missing:',sum(1 for x in c if not fin(x.get('n'))))\nprint('e<1 & ma missing:',sum(1 for x in c if x['e']<1 and not fin(x.get('ma'))))\n\"",
+    "./node_modules/.bin/esbuild src/orbit.ts src/time.ts --format=esm --bundle --outfile=/tmp/orb.mjs --log-level=error && cat > /tmp/test-orb.mjs <<'EOF'\nimport { elementsToPos, orbitPath, solveKepler, meanMotion } from '/tmp/orb.mjs';\nimport { jdFromDate, dateFromJd, parseDateInput } from '/tmp/orb.mjs';\nlet fails = 0;\nconst ok = (name, cond, extra='') => { if (!cond) { fails++; console.log('FAIL', name, extra); } else console.log('ok', name, extra); };\nconst out = [0,0,0];\n// Earth at J2000 epoch: M=357.5° -> near perihelion, r ~= a(1-e) = 0.9833\nconst earth = {a:1.00000261,e:0.01671123,i:-0.00001531,om:0,w:102.937682,ma:357.52689,epoch:2451545,n:0.985604,tp:NaN,q:NaN};\nelementsToPos(earth, 2451545, out);\nconst r = Math.hypot(out[0],out[1],out[2]);\nok('earth r at epoch ~0.9833', Math.abs(r-0.9833)<0.002, r.toFixed(5));\n// closure after one period\nconst per = 365.2569;\nelementsToPos(earth, 2451545+per, out);\nconst r2 = Math.hypot(out[0],out[1],out[2]);\nelementsToPos(earth, 2451545, out);\nconst dx = Math.hypot(out[0]-0,0,0); // placeholder\nimport('node:assert');\nconst p1 = [0,0,0], p2=[0,0,0];\nelementsToPos(earth, 2451545, p1); elementsToPos(earth, 2451545+per, p2);\nok('earth closes after 1 period', Math.hypot(p1[0]-p2[0],p1[1]-p2[1],p1[2]-p2[2])<1e-6);\n// Eros at epoch within [q, ad]\nconst eros = {a:1.458,e:0.2229,i:10.83,om:304.27,w:178.92,ma:62.51,epoch:2461200.5,n:0.5597,tp:2461088.81,q:1.133};\nelementsToPos(eros, 2461200.5, out);\nconst re = Math.hypot(out[0],out[1],out[2]);\nok('eros r in [1.133,1.783]', re>=1.132 && re<=1.784, re.toFixed(4));\n// Halley at tp -> r == q\nconst halley = {a:17.93,e:0.9679,i:162.19,om:59.1,w:112.24,ma:274.38,epoch:2439875.5,n:0.01298,tp:2446469.97,q:0.575};\nelementsToPos(halley, 2446469.97, out);\nconst rh = Math.hypot(out[0],out[1],out[2]);\nok('halley r(tp)==q', Math.abs(rh-0.575)<1e-3, rh.toFixed(5));\n// hyperbolic: e=1.2, q=0.5 -> r(tp)==q\nconst hyp = {a:NaN,e:1.2,i:10,om:20,w:30,ma:NaN,epoch:2460000,n:NaN,tp:2460000.5,q:0.5};\nelementsToPos(hyp, 2460000.5, out);\nconst rhu = Math.hypot(out[0],out[1],out[2]);\nok('hyperbolic r(tp)==q', Math.abs(rhu-0.5)<1e-6, rhu.toFixed(6));\nelementsToPos(hyp, 2460000.5+100, out);\nok('hyperbolic +100d finite & farther', Number.isFinite(out[0]) && Math.hypot(out[0],out[1],out[2])>0.5);\n// parabolic e=1\nconst par = {a:NaN,e:1.0,i:5,om:10,w:20,ma:NaN,epoch:2460000,n:NaN,tp:2460000,q:1.0};\nelementsToPos(par, 2460000, out);\nok('parabolic r(tp)==q', Math.abs(Math.hypot(out[0],out[1],out[2])-1.0)<1e-6);\n// time utils\nok('jdFromDate J2000', Math.abs(jdFromDate(2000,1,1,12,0,0)-2451545.0)<1e-9);\nok('roundtrip', Math.abs(parseDateInput('2026-09-04') - jdFromDate(2026,9,4))<1e-9);\nconst d = dateFromJd(2451545.0);\nok('dateFromJd', d.getUTCFullYear()===2000 && d.getUTCMonth()===0 && d.getUTCDate()===1 && d.getUTCHours()===12);\n// orbit path closes for ellipse\nconst pts = orbitPath(eros, 64);\nconst dd = Math.hypot(pts[0]-pts[192], pts[1]-pts[193], pts[2]-pts[194]);\nok('orbitPath closes', dd < 1e-4, dd.toExponential(1));\nconsole.log(fails === 0 ? 'ALL PASS' : fails + ' FAILURES');\nprocess.exit(fails ? 1 : 0);\nEOF\nnode /tmp/test-orb.mjs",
+    "pwd; ls node_modules/.bin/ 2>/dev/null | head -20; ls node_modules/esbuild/bin 2>/dev/null; find node_modules -maxdepth 4 -name esbuild -type f 2>/dev/null | head -3",
+    "./node_modules/.bin/tsc src/orbit.ts src/time.ts --outDir /tmp/orbjs --module commonjs --target es2020 --skipLibCheck && ls /tmp/orbjs/",
+    "node /tmp/test-orb.js",
+    "cat > /tmp/test-orb2.js <<'EOF'\nconst { elementsToPos } = require('/tmp/orbjs/orbit.js');\nlet fails = 0;\nconst ok = (name, cond, extra='') => { if(!cond){fails++;console.log('FAIL',name,extra);} else console.log('ok  ',name,extra); };\nconst earth = {a:1.00000261,e:0.01671123,i:-0.00001531,om:0,w:102.937682,ma:357.52689,epoch:2451545,n:0.985604,tp:NaN,q:NaN};\n// exact osculating period from n\nconst p1=[0,0,0],p2=[0,0,0];\nelementsToPos(earth,2451545,p1);\nelementsToPos(earth,2451545+360/0.985604,p2);\nok('earth closes after 360/n days', Math.hypot(p1[0]-p2[0],p1[1]-p2[1],p1[2]-p2[2])<1e-9);\n// external fact: Earth's heliocentric ecliptic longitude at J2000.0 ~= 100.4 deg\nconst lon = Math.atan2(p1[1],p1[0])/Math.PI*180;\nconst lonN = ((lon%360)+360)%360;\nok('earth longitude at J2000 ~100.4', Math.abs(lonN-100.4)<0.6, lonN.toFixed(3));\n// external fact: Mars at J2000: L = w+M = 286.496832+19.390198 = 305.887 -> true lon ~ 305.9 +/- 2 (e=0.093)\nconst mars = {a:1.52371034,e:0.0933941,i:1.84969142,om:49.559539,w:286.496832,ma:19.390198,epoch:2451545,n:0.524023,tp:NaN,q:NaN};\nconst m=[0,0,0]; elementsToPos(mars,2451545,m);\nconst mlon=((Math.atan2(m[1],m[0])/Math.PI*180%360)+360)%360;\nok('mars longitude at J2000 ~304-308', mlon>303&&mlon<309, mlon.toFixed(3));\nconst mr=Math.hypot(m[0],m[1],m[2]);\nok('mars r in [1.38,1.67]', mr>1.38&&mr<1.67, mr.toFixed(4));\nconsole.log(fails===0?'ALL PASS':fails+' FAILURES'); process.exit(fails?1:0);\nEOF\nnode /tmp/test-orb2.js",
+    "python3 -c \"\nimport json, math\ndef kep(M,e):\n    M=M%(2*math.pi)\n    if M>math.pi: M-=2*math.pi\n    E=M if e<0.8 else math.pi\n    for _ in range(12):\n        d=(E-e*math.sin(E)-M)/(1-e*math.cos(E)); E-=d\n        if abs(d)<1e-12: break\n    return E\ndef pos(o,jd):\n    import math\n    e=o['e']; D=math.pi/180\n    om=o['om']*D; w=o['w']*D; ci=math.cos(o['i']*D); si=math.sin(o['i']*D)\n    M=(o['ma']+o['n']*(jd-o['epoch']))*D\n    E=kep(M,e)\n    nu=2*math.atan2(math.sqrt(1+e)*math.sin(E/2),math.sqrt(1-e)*math.cos(E/2))\n    r=o['a']*(1-e*math.cos(E))\n    cw,s=math.cos(w+nu),math.sin(w+nu)\n    return r,(r*(math.cos(om)*cw-math.sin(om)*s*ci),r*(math.sin(om)*cw+math.cos(om)*s*ci),r*(s*si))\nd=json.load(open('data/asteroids.json'))\nbad=0; worst=0\nfor jd in (2461200.5, 2460000.0, 2470000.0):\n    for o in d:\n        r,p=pos(o,jd)\n        if not math.isfinite(r) or not (o['q']*0.999<=r<=o['ad']*1.001): bad+=1; worst=max(worst,abs(r-(o['q']+o['ad'])/2))\nprint('asteroids out-of-bounds samples:',bad,'of',len(d)*3)\nc=json.load(open('data/comets.json'))\nok=sum(1 for o in c if math.isfinite(o['q']))\nprint('comets with finite q:',ok,'/',len(c))\n\"",
+    "python3 -c \"\nimport json, math\ndef kep(M,e):\n    M=M%(2*math.pi)\n    if M>math.pi: M-=2*math.pi\n    E=M if e<0.8 else math.pi\n    for _ in range(12):\n        d=(E-e*math.sin(E)-M)/(1-e*math.cos(E)); E-=d\n        if abs(d)<1e-12: break\n    return E\nd=json.load(open('data/asteroids.json'))\nworst=[]\nfor o in d:\n    D=math.pi/180\n    M=(o['ma']+o['n']*(2460000.0-o['epoch']))*D\n    E=kep(M,o['e'])\n    r=o['a']*(1-o['e']*math.cos(E))\n    if not (o['q']*0.999<=r<=o['ad']*1.001):\n        worst.append((abs(r-o['q']) if r<o['q'] else abs(r-o['ad']), o['pdes'], r, o['q'], o['ad'], o['a'], o['e']))\nworst.sort(reverse=True)\nprint(len(worst))\nfor w in worst[:8]: print(w)\n\"",
+    "cat dist/index.html | head -20; echo ===; grep -o 'src=\"[^\"]*\"\\|href=\"[^\"]*\"' dist/index.html; echo === external refs in bundle:; grep -o 'https\\?://[^\"'\\'' )]*' dist/assets/*.js | sort -u | head -20",
+    "grep -o 'fetch([^)]*)' dist/assets/*.js | head -5; grep -c 'cdn\\|googleapis\\|gstatic\\|unpkg\\|jsdelivr' dist/assets/*.js; cp dist/assets/index-*.js /tmp/bundle.mjs && node --check /tmp/bundle.mjs && echo BUNDLE_SYNTAX_OK",
+    "cd dist && (python3 -m http.server 8471 >/tmp/http.log 2>&1 &) && sleep 1 && curl -s -o /dev/null -w 'index:%{http_code} ' http://localhost:8471/ && curl -s -o /dev/null -w 'manifest:%{http_code} ' http://localhost:8471/data/manifest.json && curl -s -o /dev/null -w 'abin:%{http_code} ' http://localhost:8471/data/asteroids.bin && curl -s http://localhost:8471/data/manifest.json && echo && python3 -c \"\nimport struct\nd=open('data/asteroids.bin','rb').read()\nn=struct.unpack('<I',d[:4])[0]\nprint('bin N:',n,'bytes ok:',len(d)==4+n*13*4)\nimport json; m=json.load(open('data/manifest.json')); print('manifest asteroids:',m['asteroids'])\n\"; pkill -f 'http.server 8471' || true",
+    "python3 -c \"\nimport threading, urllib.request, struct, json\nfrom http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler\nfrom functools import partial\nsrv = ThreadingHTTPServer(('127.0.0.1', 8471), partial(SimpleHTTPRequestHandler, directory='dist'))\nthreading.Thread(target=srv.serve_forever, daemon=True).start()\nfor p in ['/', '/data/manifest.json', '/data/asteroids.bin', '/data/sentry.json', '/assets/']:\n    try:\n        r = urllib.request.urlopen('http://127.0.0.1:8471'+p, timeout=10)\n        print(p, r.status, len(r.read()), 'bytes')\n    except Exception as e:\n        print(p, 'ERROR', e)\nsrv.shutdown()\nd = open('dist/data/asteroids.bin','rb').read()\nn = struct.unpack('<I', d[:4])[0]\nprint('bin N:', n, 'size ok:', len(d) == 4+n*13*4)\nm = json.load(open('dist/data/manifest.json'))\nprint('manifest asteroids:', m['asteroids'], 'match:', m['asteroids']==n)\n\"",
+    "python3 -c \"\nimport struct, json\nfor name, stride in [('asteroids',13),('comets',13)]:\n    d=open(f'dist/data/{name}.bin','rb').read()\n    n=struct.unpack('<I',d[:4])[0]\n    print(name, n, 'size ok:', len(d)==4+n*stride*4)\nm=json.load(open('dist/data/manifest.json')); print(json.dumps(m))\ntl=json.load(open('dist/data/ca-timeline.json')); print('timeline sorted:', all(tl[i][0]<=tl[i+1][0] for i in range(len(tl)-1)), len(tl))\n\"; echo ===; command -v chromium chromium-browser google-chrome firefox 2>/dev/null; echo \"browser_check_done\"",
+    "./node_modules/.bin/tsc --noEmit && echo TSC_OK && pnpm install 2>&1 | tail -2 && pnpm build 2>&1 | tail -6 && echo === && git status --short | head -20 && ls data/",
+    "ls; echo ===; ls src/ scripts/; echo ===; ls dist/; du -sh dist/"
+  ],
+  "finalMessage": "Done — PLAN.md is fully implemented and `pnpm install && pnpm build` emits a self-contained 8.8 MB site into [dist/](dist/index.html).\n\n**Base (all four):** 3D Sun + 8 planets + 42,075 asteroids positioned by per-frame Kepler solves from each body's own epoch ([orbit.ts](src/orbit.ts)); interactive time (play/pause, log speed 0.01–365 d/s, reverse, ±1/±30d steps, date jump, Now, 1900–2200 scrub); real data via relative `fetch` of compact pre-processed packs in `dist/data/` (~8 MB, down from 27 MB); OrbitControls camera, class-colored points sized by H, planet labels, scale grid.\n\n**Open-ended (all eight):** filter by PHA/class/H/diameter/MOID + designation/name search across planets, asteroids, comets; click-or-search detail view with physical + orbital data, close-approach table (click a future row to jump), and Sentry impact probability/Palermo/Torino/window; highlight modes for PHA, ±45d approaches (with upcoming list), Sentry, and ≥1 km bodies; 4,068 comets with hyperbolic/parabolic `tp`-based propagation; Sentry overlay joined on designation; follow-cam tracking; full view state (time, selection, camera, layers, speed) in the URL hash with copy-link.\n\n**Verified:** `tsc` clean; math checked against independent facts (Earth's J2000 longitude computes to 100.38°, Mars mean-longitude + equation-of-center lands at 359.4°, exact orbit closure, perihelion identities for elliptical/hyperbolic/parabolic); all 42,075 asteroids stay within their [q, ad] bounds up to source rounding (≤0.005 AU); audit shows relative asset paths, zero CDN/remote references, bundle parses; `data/` untouched.\n\nTwo honest caveats: no browser exists in this sandbox, so I could not visually confirm the render — worth one look on your side (`npx vite preview --outDir dist`); and positions are pure two-body Kepler (no perturbations), noted in the README alongside the other assumptions.",
+  "resourceUsage": {
+    "rss_self_peak_bytes": 152977408,
+    "rss_tree_peak_bytes": 152977408,
+    "cpu_self_ms": 27509,
+    "cpu_children_ms": 13073,
+    "threads_live": 19,
+    "load_avg_1m_hundredths": 193,
+    "workspace_free_bytes": 625304248320,
+    "data_dir_free_bytes": 625304248320,
+    "session_log_bytes": 2393936
+  },
+  "exitReason": "clean",
+  "files": {
+    "raw": "session/muse-session.jsonl",
+    "transcript": "session/transcript.md"
+  }
+}

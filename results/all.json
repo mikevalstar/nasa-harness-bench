@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-04T23:36:12.611Z",
-  "count": 26,
+  "generatedAt": "2026-09-05T00:04:40.349Z",
+  "count": 27,
   "rubric": {
     "scale": {
       "pass": 1,
@@ -155,32 +155,33 @@
   },
   "benches": [
     {
-      "slug": "2026-09-04-19-04-18-codex-gpt-6-astra-medium",
-      "harness": "codex",
-      "harnessVersion": "0.153.3",
-      "model": "gpt-6-astra",
+      "slug": "2026-09-04-19-43-42-muse-muse-1-3-medium",
+      "harness": "muse",
+      "harnessVersion": "1.0.3",
+      "model": "muse-1-3",
       "effort": "medium",
       "interface": "cli",
-      "createdAt": "2026-09-04T23:04:19Z",
-      "collectedAt": "2026-09-04T23:14:02Z",
-      "benchPath": "/Users/mikevalstar/projects/nbench/2026-09-04-19-04-18-codex-gpt-6-astra-medium",
+      "createdAt": "2026-09-04T23:43:43Z",
+      "collectedAt": "2026-09-04T23:54:57Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-09-04-19-43-42-muse-muse-1-3-medium",
       "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
       "broken": null,
       "cheated": false,
       "buildSucceeded": true,
       "tokenUsage": {
-        "input": 437830,
-        "output": 14228,
-        "cached": 400640,
-        "reasoning": 688,
-        "total": 452058
+        "input": 4231376,
+        "output": 66061,
+        "reasoning": 20679,
+        "cacheRead": 4106401,
+        "cacheWrite": 0,
+        "total": 4297437
       },
-      "estimatedCostUsd": 1.48,
-      "timeTakenSeconds": 510,
+      "estimatedCostUsd": 0.033923,
+      "timeTakenSeconds": 645,
       "tags": [],
       "summary": "",
       "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
-      "selfVerificationNotes": "partial/partial proposed - it tried to look at the running app and was blocked by the environment, which is different from not trying. Sequence: after `pnpm install && pnpm build && pnpm test && node --check src/app.js` it queried its own tool list for anything browser-shaped, started `pnpm dev` (which first failed with EPERM binding 0.0.0.0:5173, so it re-ran the command with escalated sandbox permissions and the justification 'Allow the local development server so I can verify the website in a browser?'), got the server up on :5173, then called `cua.getBrowser({url:'http://localhost:5173'})` and received 'No browser is available'. It gave up on the browser at that point and said so honestly in its final message: 'Browser visual verification was unavailable.' No screenshot, no DOM dump from a real page, no console capture. What it did instead is unusually substantive: it wrote src/app.test.mjs, which imports the shipped src/app.js under a stubbed document/WebGL context and a fetch shim over the real data files, then asserts on live values - catalogue count renders as '42,075', the inspector shows Eros, searching 'Apophis' filters the list, and a selected comet is labelled COMET. That last assertion FAILED (Halley came back badged 'NEAR-EARTH ASTEROID' because comets also appear in asteroids.json), it diagnosed the duplicate-designation bug, fixed `filter()` to de-duplicate by pdes, and re-ran to green. It also has src/orbits.test.mjs covering circular advance from epoch, perihelion/aphelion, open-orbit symmetry about perihelion, and finite positions for every supplied orbit at multiple dates, and it verified byte-for-byte that dist/data matches data/. That is a real self-check loop that found and fixed a real user-visible defect - it just never ran in a browser, so nothing here establishes that the page paints or that the console is clean. consoleReview and displayReview both look like 'partial' to me, but the call is yours: a strict reading of 'reviewed the console' is fail, since no console was ever read.",
+      "selfVerificationNotes": "partial/fail proposed. No browser existed in the sandbox and it established that explicitly, running `command -v chromium chromium-browser google-chrome firefox` and getting nothing, then saying so in its final message: 'no browser exists in this sandbox, so I could not visually confirm the render - worth one look on your side (npx vite preview --outDir dist)'. Honest, and it is the only run of the three today to check for a browser by name rather than assume. What it did instead: served dist/ under `python3 -m http.server` and curled index/manifest for HTTP 200; then a second python ThreadingHTTPServer where it fetched the built payloads with urllib and struct-parsed both .bin packs, confirming the record counts (42,075 / 4,068) and that byte length equals 4 + N*13*4; audited dist/index.html for relative asset paths and grepped the bundle for CDN/remote references (only the three.js XHTML namespace string); `node --check` on the bundle; `tsc --noEmit` clean. It also compiled src/orbit.ts and src/time.ts and ran two hand-written assertion suites against the REAL compiled module - Earth's heliocentric longitude at J2000 (~100.4 deg), Mars longitude and range, orbit closure after 360/n days, r(tp) == q for elliptic/parabolic/hyperbolic cases - plus a full-catalogue python check that every one of the 42,075 asteroids stays inside [q, ad] at three dates. Two things keep this from being a pass on the console side. First, no console was ever read: nothing executed the bundle in a page, so a runtime WebGL or three.js error would not have surfaced. Second, and more important, its headline numeric check is structurally incapable of failing: it computes r = a(1 - e*cos E) and asserts q <= r <= ad, but that inequality holds for ANY value of E, converged or not. Its own solver diverges outright on high-e objects (see notes.md) and the check still passed for every one of them. The 1,043 of 126,225 samples it did flag were all source rounding, worst 0.0054 au, which it correctly diagnosed. Its first assertion suite reported two FAILs ('earth closes after 1 period', 'halley r(tp)==q'); it rewrote the suite rather than investigating. Both turn out to be tolerance artifacts - the closure test used 365.25 d instead of 360/n, and Halley's r(tp) is 0.577 au against a recorded q of 0.575, which is dataset rounding (a(1-e) = 0.5756) - so nothing real was buried, but the reflex was to adjust the test.",
       "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
       "grade": {
         "runs": {
@@ -222,9 +223,11 @@
           "inBounds": true
         }
       },
-      "_tokenUsageNote": "From the Codex rollout's cumulative total_token_usage. Following the other Codex runs' convention, 'input' is all-in (fresh + cached reads) and 'cached' is the cache-read portion, so fresh input is 37,190. 'reasoning' (688) is a subset of output. Largest single request was 47,158 input tokens, far under the 272k long-context threshold, so no long-context multiplier applies.",
-      "costNote": "GPT-6 Astra list pricing (OpenAI, Sept 2026 launch): $10.00/M input, $1.00/M cached input, $50.00/M output (cache writes are listed at $12.50/M but Codex reports no cache-write bucket). 37,190 fresh input @ $10/M = $0.372 + 400,640 cache reads @ $1/M = $0.401 + 14,228 output @ $50/M = $0.711 -> $1.48. Output is 3% of tokens and 48% of the cost. Upper bound if every fresh input token were billed at the cache-write rate instead: $1.58. Standard tier assumed (Batch/Flex would halve it, Fast mode double it).",
-      "_timeTakenNote": "Codex-reported task duration (510 s); the rollout's first-to-last record span is 549 s. Time to first token 3.1 s.",
+      "_modelNote": "The session log reports the model as `muse-spark-1.3-contributor`, not the standard tier. The contributor tier is ~30x cheaper and carries the condition that Meta may use prompts and outputs to improve its products. The earlier muse run in this bench (2026-08-07) was on standard `muse-spark-1.2`, so cost is not directly comparable across the two.",
+      "_tokenUsageNote": "From muse's own session log (extract-session-muse.mjs). `input` is the FULL input including the cached prefix, so billable uncached input = 4,231,376 - 4,106,401 = 124,975. `reasoning` (20,679) is a subset of output. 50 model calls, no helper agents spawned. cacheWrite is reported as 0 on every call, as on previous muse runs.",
+      "recomputedCostUsd": 1.052938,
+      "costNote": "$0.033923 recomputed at muse-spark-1.3-CONTRIBUTOR list price ($0.10/M input, $0.002/M cache read, $0.20/M output — the tier the session log names): 124,975 uncached input = $0.0125 + 4,106,401 cache reads = $0.0082 + 66,061 output = $0.0132. `recomputedCostUsd` 1.052938 is the same token counts at the STANDARD muse-spark-1.3 rate ($1.25/$0.15/$4.25), i.e. what this run would have cost on the tier the previous muse run used — kept so the two runs stay comparable. NOTE: no dev-console figure was supplied for this run. On the first muse run the log-derived number came out ~39% below muse's own console ($0.518 vs $0.72), the suspected cause being an unreported cache-write charge, so treat this as a LOWER BOUND and replace it with the console figure when available.",
+      "_timeTakenNote": "muse session log span, 2026-09-04T23:44:03Z -> 23:54:48Z. Exit reason: clean. 6 tool approvals granted during the run.",
       "scoring": {
         "status": "ungraded",
         "score": null,
@@ -234,6 +237,94 @@
           "usability": null,
           "selfVerification": null,
           "features": null
+        },
+        "integrityPassed": true,
+        "voided": false
+      },
+      "hasDist": true,
+      "hasNotes": true,
+      "hasRunlog": true
+    },
+    {
+      "slug": "2026-09-04-19-04-18-codex-gpt-6-astra-medium",
+      "harness": "codex",
+      "harnessVersion": "0.153.3",
+      "model": "gpt-6-astra",
+      "effort": "medium",
+      "interface": "cli",
+      "createdAt": "2026-09-04T23:04:19Z",
+      "collectedAt": "2026-09-04T23:14:02Z",
+      "benchPath": "/Users/mikevalstar/projects/nbench/2026-09-04-19-04-18-codex-gpt-6-astra-medium",
+      "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+      "broken": false,
+      "cheated": false,
+      "buildSucceeded": true,
+      "tokenUsage": {
+        "input": 437830,
+        "output": 14228,
+        "cached": 400640,
+        "reasoning": 688,
+        "total": 452058
+      },
+      "estimatedCostUsd": 1.48,
+      "timeTakenSeconds": 510,
+      "tags": [],
+      "summary": "",
+      "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+      "selfVerificationNotes": "partial/partial proposed - it tried to look at the running app and was blocked by the environment, which is different from not trying. Sequence: after `pnpm install && pnpm build && pnpm test && node --check src/app.js` it queried its own tool list for anything browser-shaped, started `pnpm dev` (which first failed with EPERM binding 0.0.0.0:5173, so it re-ran the command with escalated sandbox permissions and the justification 'Allow the local development server so I can verify the website in a browser?'), got the server up on :5173, then called `cua.getBrowser({url:'http://localhost:5173'})` and received 'No browser is available'. It gave up on the browser at that point and said so honestly in its final message: 'Browser visual verification was unavailable.' No screenshot, no DOM dump from a real page, no console capture. What it did instead is unusually substantive: it wrote src/app.test.mjs, which imports the shipped src/app.js under a stubbed document/WebGL context and a fetch shim over the real data files, then asserts on live values - catalogue count renders as '42,075', the inspector shows Eros, searching 'Apophis' filters the list, and a selected comet is labelled COMET. That last assertion FAILED (Halley came back badged 'NEAR-EARTH ASTEROID' because comets also appear in asteroids.json), it diagnosed the duplicate-designation bug, fixed `filter()` to de-duplicate by pdes, and re-ran to green. It also has src/orbits.test.mjs covering circular advance from epoch, perihelion/aphelion, open-orbit symmetry about perihelion, and finite positions for every supplied orbit at multiple dates, and it verified byte-for-byte that dist/data matches data/. That is a real self-check loop that found and fixed a real user-visible defect - it just never ran in a browser, so nothing here establishes that the page paints or that the console is clean. consoleReview and displayReview both look like 'partial' to me, but the call is yours: a strict reading of 'reviewed the console' is fail, since no console was ever read.",
+      "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+      "grade": {
+        "runs": {
+          "builds": "pass",
+          "loads": "pass",
+          "noConsoleErrors": "pass"
+        },
+        "correctness": {
+          "solarSystem": "pass",
+          "planets": "pass",
+          "asteroids": "pass",
+          "computedPositions": "pass",
+          "orbitsCorrect": "pass",
+          "timeAnimation": "pass"
+        },
+        "usability": {
+          "camera": "pass",
+          "scale": "pass",
+          "legible": "pass",
+          "noUiIssues": "pass"
+        },
+        "selfVerification": {
+          "consoleReview": "pass",
+          "displayReview": "pass"
+        },
+        "features": {
+          "filterSearch": "pass",
+          "investigate": "pass",
+          "highlight": "pass",
+          "scaleRisk": "pass",
+          "comets": "good",
+          "impactRisk": "pass",
+          "focusFollow": "pass",
+          "deepLinks": "pass"
+        },
+        "integrity": {
+          "dataUntouched": true,
+          "noNetwork": true,
+          "inBounds": true
+        }
+      },
+      "_tokenUsageNote": "From the Codex rollout's cumulative total_token_usage. Following the other Codex runs' convention, 'input' is all-in (fresh + cached reads) and 'cached' is the cache-read portion, so fresh input is 37,190. 'reasoning' (688) is a subset of output. Largest single request was 47,158 input tokens, far under the 272k long-context threshold, so no long-context multiplier applies.",
+      "costNote": "GPT-6 Astra list pricing (OpenAI, Sept 2026 launch): $10.00/M input, $1.00/M cached input, $50.00/M output (cache writes are listed at $12.50/M but Codex reports no cache-write bucket). 37,190 fresh input @ $10/M = $0.372 + 400,640 cache reads @ $1/M = $0.401 + 14,228 output @ $50/M = $0.711 -> $1.48. Output is 3% of tokens and 48% of the cost. Upper bound if every fresh input token were billed at the cache-write rate instead: $1.58. Standard tier assumed (Batch/Flex would halve it, Fast mode double it).",
+      "_timeTakenNote": "Codex-reported task duration (510 s); the rollout's first-to-last record span is 549 s. Time to first token 3.1 s.",
+      "scoring": {
+        "status": "graded",
+        "score": 99,
+        "categoryScores": {
+          "runs": 100,
+          "correctness": 100,
+          "usability": 100,
+          "selfVerification": 100,
+          "features": 97
         },
         "integrityPassed": true,
         "voided": false
