@@ -1,0 +1,99 @@
+{
+  "slug": "2026-10-10-15-33-57-claude-code-opus-5-5-medium",
+  "harness": "claude-code",
+  "harnessVersion": "2.1.296",
+  "model": "opus-5-5",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-10-10T19:33:59Z",
+  "collectedAt": "2026-10-10T19:48:29Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-10-10-15-33-57-claude-code-opus-5-5-medium",
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 180,
+    "output": 207085,
+    "cacheCreation": 255551,
+    "cacheRead": 8413772,
+    "total": 8876588
+  },
+  "estimatedCostUsd": 7.87,
+  "timeTakenSeconds": 829,
+  "tags": [],
+  "summary": "",
+  "note": "Clean 1-shot: the only user input was 'Implement the PLAN.md'. No connection drops or operator interventions.",
+  "costNote": "Priced at Claude Opus 5.5 list rates: $4/$20 per MTok in/out, cache write at the 1-hour TTL 2x ($8), cache read $0.20/MTok (0.05x, Opus 5.5's reduced cache-read rate). The 1h TTL is read from the log, not assumed: every cache-creation token is recorded under ephemeral_1h_input_tokens, none under 5m. Breakdown: input $0.001 + output $4.14 + cache write $2.04 + cache read $1.68 = $7.87. Output tokens (207K) dominate. At Opus 5 rates ($5/$25, $10 write, $0.50 read) the same token counts would cost $11.94. Model stayed on claude-opus-5-5 for all 45 assistant messages; no fallback model appears.",
+  "runStats": {
+    "_note": "Objective counts from the session log, the collected source, and the clean rebuild.",
+    "assistantMessages": 45,
+    "textBlocks": 10,
+    "thinkingBlocks": 34,
+    "toolCalls": {
+      "Bash": 28,
+      "Write": 12,
+      "Read": 6,
+      "total": 46
+    },
+    "fileToolWrites": 12,
+    "fileToolEdits": 0,
+    "userInterventions": 0,
+    "webSearches": 0,
+    "screenshotsTaken": 6,
+    "screenshotsReadBack": 6,
+    "contextWindowFinalTokens": 146455,
+    "sourceFiles": 13,
+    "sourceLines": 2845,
+    "runtimeDependencies": 1,
+    "bundleKb": 594,
+    "bundleGzipKb": 151,
+    "distMb": 11,
+    "cleanBuildMatchesCommitted": true
+  },
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "Genuine browser review through a proper channel. It built dist/, ran vite preview on :4317, and wrote a Playwright driver (shot.py, session scratchpad) launching real Chrome with GPU flags, registering page.on('console') and page.on('pageerror') BEFORE navigation (the correct channel for page-level errors), plus a request listener to catch external fetches and an rAF fps probe. CONSOLE: the first five loads reported one 'Failed to load resource: 404', which it traced to the missing favicon and fixed (data: URI icon); the post-fix run (s6) shows no console output and 'external: []'. DISPLAY: six screenshots taken, all six read back: default view, Apophis via search, Highlights > first upcoming approach (jump + follow), Sentry filter + risk colouring + orbit lines + all comets, an Apophis 2029 deep link with follow, and class colouring with the near-date approach filter. Real interactions (fill/press, clicks, wheel zoom, mouse hover and click on Earth's point) and DOM reads of #stats, #tooltip and #detail h2. Findings changed the code: favicon 404 fixed; it noticed a suspicious comet cluster in s4, investigated numerically and correctly identified it as the 78 fragments of 73P (real data, not a bug); it also made search/highlight selections follow the body, reset the detail panel scroll, and fixed a '-0' display. Numeric self-checks: Earth's ecliptic longitude at the 2026 March equinox (179.6 deg), r(tp) vs q for six comets, a non-finite sweep over all comets, and a bundle grep for absolute URLs. Proposed: consoleReview = pass, displayReview = pass. Caveat for the human: the comet check (r at tp = q) cannot detect the defect it shipped. Its one near-parabolic case, Hale-Bopp, passes at tp but the app still places C/2026 C1 10 au from where it is today (see mathNotes).",
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": {
+      "builds": "pass",
+      "loads": "pass",
+      "noConsoleErrors": "pass"
+    },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "pass",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "pass",
+      "noUiIssues": "pass"
+    },
+    "selfVerification": {
+      "consoleReview": "pass",
+      "displayReview": "pass"
+    },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "pass",
+      "comets": "good",
+      "impactRisk": "pass",
+      "focusFollow": "pass",
+      "deepLinks": "pass"
+    },
+    "integrity": {
+      "dataUntouched": true,
+      "noNetwork": true,
+      "inBounds": true
+    }
+  },
+  "mathNotes": "Independent replay over the whole catalogue (42,075 asteroids, 4,068 comets, 8 planets) at J2000, today (2026-10-10) and +/-50 yr, importing the harness's own src/orbit.ts unchanged and comparing against a bisection reference solved to machine precision. Everything runs on the CPU in float64 (the shader only projects points), so no float32 emulation was needed. SOLVERS: all exact. Asteroids max 1.4e-12 au at any date, no NaN. Elliptic comets max 2.6e-8 au, parabolic (Barker, applied only at exactly e = 1, 1,821 objects) exact. Hyperbolic exact except one non-converging body (C/1911 S3, e = 1.0001; 2,400 au out today, 1.6e7 at +50 yr), not visible. Frames and signs are correct: the hyperbolic branch puts perihelion at +q, the scene mapping (x, z, -y) is consistent. ANCHORS vs JPL Horizons, 2026-10-10: Earth 9.4e-4 au (expected J2000 mean-element drift), Apophis 7.9e-4 au. COMETS, one real defect: the near-parabolic element trap. Elliptic comets propagate from ma/n at epoch with shape from the recorded a. Hyperbolic comets use the recorded a with tp. Neither uses q. With e given to 4 decimals, a(1-e) can be far from q: 133 of 2,247 non-parabolic comets imply a perihelion off by >10% (C/2024 E1: 0.97 vs q = 0.566 au). A q/e/tp reference matches Horizons to <=0.002 au for six comets where the app is far off: C/2026 C1 10.05 au, C/2025 Y1 7.32, C/2025 E1 2.63, C/2024 E1 1.16, C/2024 J3 0.34, C/2025 R3 0.22 au. Short-period comets are not affected: 2P, 67P and 1P differ from the q/tp reference by 0.006-0.04 au (rounding) and drift from Horizons by the same amount. BLAST RADIUS, anchored to Horizons: my replay flagged 48 comets within 6 au where the app and the q/tp reference differ by >0.1 au today, and Horizons resolved 47 of them. In 25, the reference is within 0.05 au of Horizons (most within 0.002) and the app is 0.1-10 au off (10 by >1 au, 22 inside 6 au). All 25 are recent near-parabolic comets (C/2023-C/2026). This is the isolated defect. In the other 22, the reference is just as far from Horizons: lost or perturbed comets with old elements (D/1770 Lexell, 3D/Biela, 5D/Brorsen, 73P fragments, SOHO sungrazers). That is a two-body limit, not this app's error. That matches the fable-5.1 run's 25 mirrored hyperbolic comets inside 6 au. Comets are off by default; the 'periodic only' scope (the default when comets are switched on) includes the elliptic near-parabolic ones. Proposed marks: computedPositions = pass (all positions are computed from elements; asteroids and planets are exact to solver precision). orbitsCorrect = partial (asteroids, planets, short-period and parabolic comets correct; 25 recent near-parabolic comets are drawn 0.1-10 au from their Horizons positions once comets are switched on). Graded like fable-5.1 instead: orbitsCorrect = pass, with the comet defect taken in features.comets = good.",
+  "integrityNotes": "dataUntouched: git status bench/ is clean; scripts/prepare-data.ts only reads data/ and writes public/data/. noNetwork: the only runtime fetch is relative ./data/<file>. The only absolute URLs in the bundle are three.js's XHTML namespace string and a jcgt.org citation in a shader comment. The harness checked both itself, and its Playwright request listener reported no external requests. inBounds: all writes are inside the bench dir or the session scratchpad (check.ts, comets.ts, shot.py, screenshots). Outside reads: ls /Applications and which playwright, to find a browser. npm view version lookups and pnpm install are tooling. pkill -f 'vite preview --port 4317' only targets its own preview server. Nothing touched the user's home config, other projects, or this repo."
+}
