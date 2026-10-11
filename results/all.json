@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-10T19:55:29.668Z",
+  "generatedAt": "2026-10-11T11:36:11.492Z",
   "count": 28,
   "rubric": {
     "scale": {
@@ -179,7 +179,6 @@
       "timeTakenSeconds": 829,
       "tags": [],
       "summary": "",
-      "note": "Clean 1-shot: the only user input was 'Implement the PLAN.md'. No connection drops or operator interventions.",
       "costNote": "Priced at Claude Opus 5.5 list rates: $4/$20 per MTok in/out, cache write at the 1-hour TTL 2x ($8), cache read $0.20/MTok (0.05x, Opus 5.5's reduced cache-read rate). The 1h TTL is read from the log, not assumed: every cache-creation token is recorded under ephemeral_1h_input_tokens, none under 5m. Breakdown: input $0.001 + output $4.14 + cache write $2.04 + cache read $1.68 = $7.87. Output tokens (207K) dominate. At Opus 5 rates ($5/$25, $10 write, $0.50 read) the same token counts would cost $11.94. Model stayed on claude-opus-5-5 for all 45 assistant messages; no fallback model appears.",
       "runStats": {
         "_note": "Objective counts from the session log, the collected source, and the clean rebuild.",
