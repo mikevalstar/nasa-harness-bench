@@ -1,0 +1,99 @@
+{
+  "slug": "2026-11-09-17-19-35-claude-code-fable-5-2-medium",
+  "harness": "claude-code",
+  "harnessVersion": "v2.1.321",
+  "model": "fable-5-2",
+  "effort": "medium",
+  "interface": "cli",
+  "createdAt": "2026-11-09T22:19:37Z",
+  "collectedAt": "2026-11-09T22:48:33Z",
+  "benchPath": "/Users/mikevalstar/projects/nbench/2026-11-09-17-19-35-claude-code-fable-5-2-medium",
+  "_comment": "Fields below are graded BY HAND after collection. null = not yet filled.",
+  "broken": false,
+  "cheated": false,
+  "buildSucceeded": true,
+  "tokenUsage": {
+    "input": 92,
+    "output": 133424,
+    "cacheCreation": 200989,
+    "cacheRead": 6692061,
+    "total": 7026566
+  },
+  "estimatedCostUsd": 9.89,
+  "timeTakenSeconds": 1490,
+  "tags": [],
+  "summary": "",
+  "costNote": "Priced at Claude Fable 5.2 list rates: $8/$40 per MTok in/out, cache write at the 1-hour TTL 2x ($16), cache read $0.20/MTok. The 1h TTL is read from the log: all 200,989 cache-creation tokens are under ephemeral_1h_input_tokens, none under 5m. Breakdown: input $0.001 + output $5.34 + cache write $3.22 + cache read $1.34 = $9.89. Output tokens (133K) dominate. TOKEN COUNTS ARE DEDUPLICATED BY API MESSAGE ID AND ARE NOT COMPARABLE WITH EARLIER CLAUDE CODE RUNS AS RECORDED: the session log writes one line per content block and repeats the message's usage on each (100 lines, 46 messages here), and scripts/extract-session.mjs sums every line. Its figures for this run (output 314,019, cache write 465,770, cache read 14,512,215, $22.92) are 2.3x too high; the final context window was 221,718 tokens, which a 314K-output session could not fit in. session/session-metadata.json still holds the extractor's undeduplicated numbers. The six earlier Claude Code runs were recorded with the same double count. Model stayed on claude-fable-5-2 for all 46 messages, standard speed; no fallback model appears.",
+  "runStats": {
+    "_note": "Objective counts from the session log (deduplicated by message id), the collected source, and the clean rebuild.",
+    "assistantMessages": 46,
+    "textBlocks": 11,
+    "thinkingBlocks": 35,
+    "toolCalls": {
+      "Bash": 36,
+      "Read": 13,
+      "Skill": 2,
+      "TaskStop": 2,
+      "ToolSearch": 1,
+      "total": 54
+    },
+    "fileToolWrites": 0,
+    "fileToolEdits": 0,
+    "userInterventions": 0,
+    "webSearches": 0,
+    "screenshotsReadBack": 10,
+    "contextWindowFinalTokens": 221718,
+    "sourceFiles": 26,
+    "sourceLines": 4252,
+    "runtimeDependencies": 1,
+    "bundleKb": 635,
+    "bundleGzipKb": 163,
+    "distMb": 8.3,
+    "cleanBuildMatchesCommitted": true
+  },
+  "_selfVerification": "Did the harness review the running app in a browser (from the run log)? pass = reviewed and succeeded · partial = tried but failed · fail = no attempt. Note what it actually did.",
+  "selfVerificationNotes": "Genuine browser review through a proper channel. It wrote a small static server that serves dist/ under /embed/site/ inside an iframe on a host page (the way the site is graded), and Playwright drivers (shot.mjs, flow.mjs, direct.mjs; session scratchpad) launching real Chrome with GPU flags. page.on('console') and page.on('pageerror') were registered before navigation, with requestfailed, >=400 response and external-request listeners and an rAF fps probe (60.5 fps with all 42,075 shown). CONSOLE: every run reported one 'Failed to load resource: 404'. It added an inline data: favicon to the app, the 404 persisted, and it then ran direct.mjs with the message URL printed and traced it to /favicon.ico of its own host page, not the app. My own load of dist/ under a sub-path, top-level and in an iframe with a favicon on the wrapper, shows no console output at all, which confirms that reading. No external requests were logged. DISPLAY: 10 distinct screenshots read back (default view, Apophis 2029 deep link with follow, selection, flyby, risk colouring, Earth close-up, comet, an 820x620 narrow layout, a follow run while playing, final). Real interactions: label-based checks and selects, search, hover and click on the canvas, DOM reads of the count line and hover label. Findings changed the code: detail-panel order and the size-scale label collisions, follow/fly easing that never landed on the body, distant comets reading as a clump beside the Sun (faded by depth, and made unpickable while faded), history writes throttled to once a second, favicon. Numeric self-checks: a float32 emulation of its shader solver over 4..8 iterations (it chose 6 from the result), a vitest suite (6 tests: Kepler residual, universal-variable vs elliptic solver, energy on open orbits, 500+ recorded close approaches near epoch reproduced to a median under 0.01 au, r(tp) = q), and a comet dump to explain a cluster it saw. Proposed and set: consoleReview = pass, displayReview = pass.",
+  "_grade": "Marks: pass | good | partial | poor | fail | na | null(ungraded). See RUBRIC.md. Score is computed by pnpm compile.",
+  "grade": {
+    "runs": {
+      "builds": "pass",
+      "loads": "pass",
+      "noConsoleErrors": "pass"
+    },
+    "correctness": {
+      "solarSystem": "pass",
+      "planets": "pass",
+      "asteroids": "pass",
+      "computedPositions": "pass",
+      "orbitsCorrect": "pass",
+      "timeAnimation": "pass"
+    },
+    "usability": {
+      "camera": "pass",
+      "scale": "pass",
+      "legible": "pass",
+      "noUiIssues": "pass"
+    },
+    "selfVerification": {
+      "consoleReview": "pass",
+      "displayReview": "pass"
+    },
+    "features": {
+      "filterSearch": "pass",
+      "investigate": "pass",
+      "highlight": "pass",
+      "scaleRisk": "pass",
+      "comets": "pass",
+      "impactRisk": "pass",
+      "focusFollow": "pass",
+      "deepLinks": "pass"
+    },
+    "integrity": {
+      "dataUntouched": true,
+      "noNetwork": true,
+      "inBounds": true
+    }
+  },
+  "mathNotes": "Independent replay over the whole catalogue (42,075 asteroids, 3,860 comets as drawn, 8 planets) at 1900, today-50y, J2000, today (2026-11-09), today+50y and 2200, importing the harness's own src/bodies.ts and src/orbit.ts unchanged and feeding them the built dist/data tables (verified element-for-element identical to bench/data). Reference: safeguarded Newton/bisection Kepler solve for ellipses, Barker for e = 1, bisection on the hyperbolic Kepler equation, with separately written rotations. ASTEROIDS, CPU float64 path (picking, labels, readouts): max 1.4e-12 au at any date, no non-finite values. ASTEROIDS, GPU path: float32 emulation of the vertex shader (float32 attributes, 6 fixed Newton iterations, the cubic starter for e >= 0.6, and the 2000-day mean-anomaly re-anchor at uDays = 0 and +/-1999): median 1e-7 to 8e-7 au, p99 under 5e-6 au, max 5.2e-5 au (2017 UR52, e = 0.9964), max relative error 1e-4. Nothing above 1e-3 au at any date. PLANETS: 1e-14 au. COMETS, universal-variable solver from q, e, tp: elliptic max 3.5e-11 au, parabolic 1.4e-10, hyperbolic 1.9e-9 (3I/ATLAS in 2200), no non-finite values, perihelion on the correct side. ANCHORS vs JPL Horizons, 2026-11-09, heliocentric ecliptic J2000: Earth 9.1e-4 au, Mercury..Neptune 7e-4 to 3e-2 au (J2000 mean elements, no rates), Apophis 9.7e-4, Eros 2.6e-4, Icarus 1.7e-4, Phaethon 3.9e-4, Bennu 3.9e-2 (2011 epoch). The near-parabolic comets the opus-5.5, fable-5.1, muse-1.3 and astra runs misplaced by 0.2-10 au are all correct here because nothing is taken from the recorded a or ma: C/2026 C1 1.6e-3 au, C/2025 Y1 2.7e-4, C/2025 E1 3.7e-4, C/2024 E1 2.8e-3, C/2024 J3 8.3e-4, C/2025 R3 7.4e-4, C/2023 A3 2.6e-3; interstellar C/2025 N1 9.1e-3 at 13 au and 2I/Borisov 1.5e-2 at 49 au. Largest residuals are a two-body limit, not a defect: 9P/Tempel 1 0.65 au and 67P 0.33 au from 2015-2016 elements, where an ma/n/epoch model lands within 0.013 au of the app; 1P 0.19 au at 35 au. 208 comets that are also in the NEO list are drawn once, from the asteroid table. Its own claims hold: the README's description of both solvers matches the code and its stated Apophis 2029 miss (about 2.5 LD against a recorded 0.1) is the app's two-body answer. Proposed and set: computedPositions = pass, orbitsCorrect = pass. No comet defect to carry into features.comets.",
+  "integrityNotes": "dataUntouched: git status bench/ is clean; build/prepare-data.ts reads data/ and writes only public/data/. noNetwork: the only runtime fetch is the relative data/<file>. The only absolute URLs in the bundle are the XHTML and SVG namespace strings; dist/index.html uses ./assets/ paths and a data: favicon. Its Playwright request listener and mine logged no external requests. inBounds: no Write/Edit tool calls at all; every file was written from Bash heredocs or python patch scripts inside the bench dir or the session scratchpad (f32.mjs, comets.mts, the pw/ drivers, screenshots). Outside reads: ls /Applications and ~/Library/Caches/ms-playwright to find a browser, the harness's own spilled tool-result file under ~/.claude/projects/<this session>, and two skills the harness loaded on its own (the bundled dataviz skill, and unslop from the operator's ~/.claude/skills, so operator config did reach this run). pnpm add of three/vite/typescript/vitest and of playwright-core in the scratchpad is tooling. Nothing touched other projects, home config, or this repo."
+}
